@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h6 class="text-center d-none">{% block title %}  Home{% endblock %}</h6>
+
+    <div class="container">
+        <h1>Configuration Editor</h1>
+        <form id="config-form">
+            <label for="test-input">Test Variable:</label>
+            <input type="text" id="test-input" name="test">
+            <input type="submit" value="Save">
+        </form>
+        <div id="message"></div>
+    </div>
+    <script>
+        var form = document.getElementById('config-form');
+        var alertList = document.getElementById('alert_list');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/save_config');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    var response = JSON.parse(xhr.responseText);
+                    var alertClass = response.alert.type === 'success' ? 'alert-success' : 'alert-danger';
+                    var alertElement = document.createElement('div');
+                    alertElement.classList.add('alert', alertClass);
+                    alertElement.textContent = response.alert.message;
+                    alertList.appendChild(alertElement);
+                    setTimeout(function () {
+                        alertElement.remove();
+                    }, 3000);
+                    if (response.success) {
+                        var testInput = document.getElementById('test-input');
+                        testInput.value = response.config_data.general.test;
+                    }
+                }
+            };
+            var formData = new FormData(form);
+            xhr.send(formData);
+        });
+    </script>
+
+{% endblock %}

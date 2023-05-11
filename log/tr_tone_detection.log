@@ -1,0 +1,181 @@
+2023-05-10 16:16:49,594 ERROR: Configuration file etc/config.json not found.
+2023-05-10 16:17:02,138 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:17:16,585 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:17:16,697 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:24:17,470 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:24:17,569 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:24:46,149 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:24:46,250 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 16:38:12,230 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:07:26,000 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:07:26,101 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:11:36,937 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:12:43,479 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:12:47,278 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:12:47,378 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:13:33,325 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:13:33,427 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:13:51,791 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:15:35,403 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:15:41,862 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:15:47,664 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:18:09,542 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:19:17,069 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:19:24,663 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:19:24,765 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:21:34,445 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:24:23,833 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:24:23,933 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:25:20,348 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:25:45,142 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:25:45,243 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:25:49,777 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:27:29,859 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:27:35,538 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:27:57,352 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:28:03,858 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 17:28:16,471 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:21:23,683 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:21:23,683 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:21:24,010 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:21:24,010 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:23:45,225 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:23:45,225 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:25:15,236 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:25:15,236 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:45:14,678 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:45:14,678 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:45:15,001 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:45:15,002 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:45:18,627 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:45:18,627 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:45:51,452 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:45:51,452 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:45:59,174 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:45:59,175 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:46:09,814 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:46:09,815 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:46:38,194 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:46:38,194 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:46:38,517 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:46:38,517 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:46:42,169 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:46:42,170 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:46:43,878 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:46:43,878 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:47:29,705 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:47:29,705 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:48:11,508 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:48:11,508 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 20:49:08,342 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 20:49:08,342 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:04:03,485 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:04:03,485 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:06:24,673 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:06:24,673 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:06:27,359 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:06:27,359 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:06:51,110 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:06:51,111 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:06:55,821 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:06:55,822 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:07:08,513 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:07:08,513 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:08:06,441 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:08:06,441 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:18:28,820 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:18:28,820 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:18:29,141 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:18:29,141 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:19:06,975 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:19:06,975 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:19:39,969 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:19:39,969 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:19:40,301 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:19:40,302 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:19:53,009 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:19:53,009 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:20:16,256 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:20:16,256 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:20:16,579 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:20:16,579 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:25:59,523 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:25:59,523 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:26:10,206 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:26:10,206 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:28:43,507 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:28:43,507 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:28:44,157 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:28:44,158 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:29:39,005 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:29:39,005 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:29:40,480 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:29:40,480 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:29:40,810 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:29:40,810 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:32:50,289 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:32:50,290 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:34:10,314 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:34:10,314 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:34:22,978 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:34:22,978 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:34:31,687 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:34:31,687 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:34:41,363 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:34:41,364 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:37:17,688 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:37:17,688 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:38:21,295 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:38:21,295 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:38:21,632 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:38:21,632 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:39:42,661 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:39:42,662 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:39:44,138 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:39:44,138 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:39:44,469 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:39:44,470 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:40:18,263 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:40:18,263 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:42:06,320 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:42:06,320 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:42:24,063 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:42:24,063 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:42:24,388 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:42:24,388 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:43:31,289 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:43:31,289 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:43:31,915 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:43:31,915 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:43:56,594 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:43:56,594 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:45:24,580 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:45:24,581 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:45:29,855 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:45:29,855 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:45:30,198 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:45:30,198 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:46:29,094 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:46:29,094 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:46:38,611 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:46:38,611 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:46:38,937 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:46:38,937 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:47:58,900 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:47:58,900 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:48:00,593 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:48:00,593 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:48:40,555 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:48:40,556 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:48:40,879 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:48:40,879 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:49:39,362 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:49:39,363 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:51:07,424 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:51:07,424 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 21:59:31,414 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 21:59:31,414 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-10 22:01:59,767 INFO: Successfully loaded configuration from etc/config.json
+2023-05-10 22:01:59,767 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-05-11 11:28:04,683 INFO: Successfully loaded configuration from etc/config.json
+2023-05-11 11:28:04,683 INFO: Successfully loaded detector configuration from etc/detectors.json

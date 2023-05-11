@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Alert Page</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <!-- Font Awesome -->
+    <link href="{{ url_for('static', filename='font_awesome/css/all.css') }}" rel="stylesheet"/>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-transparent">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img
+                    src="{{ url_for('static', filename='img/logo.png') }}"
+                    height="45px"
+                    alt="Alert Page Logo"
+                    loading="lazy"
+            />
+        </a>
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("index") }}">Home</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<hr>
+<div class="content">
+    <div id="alert_list">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div id="alert" class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+    {% endfor %}
+    </div>
+    {% block content %} {% endblock %}
+</div>
+
+<!-- Footer -->
+<footer class="bg-light text-center py-3 footer">
+    <div class="container">
+        <span>&copy; 2023 iCarey Software Solutions</span>
+    </div>
+</footer>
+
+<!-- Bootstrap 5 JS -->
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+<script type="text/javascript">
+    if (document.getElementById('alert') != null) {
+        window.setTimeout("document.getElementById('alert').style.display='none';", 3000);
+    }
+</script>
+</body>
+</html>
