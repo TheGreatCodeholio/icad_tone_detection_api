@@ -3,8 +3,12 @@ audio/
 
 etc/config.json
 etc/detectors.json
-/log/*
+
 /tr_tone_detect.db
 /tones.cfg
 /test.cfg
 /etc/secret_key.txt
+/.idea/
+/.idea/*.*
+/log/
+/log/*.log
