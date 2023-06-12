@@ -1473,3 +1473,39 @@
 2023-06-12 12:18:51,608 INFO: Successfully loaded configuration from config.json
 2023-06-12 12:18:51,608 INFO: Successfully loaded detector configuration from detectors.json
 2023-06-12 12:18:51,608 INFO: SQLite Database connected successfully.
+2023-06-12 12:22:10,544 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:22:48,389 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:22:50,448 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:23:22,507 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:24:18,391 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:24:18,392 ERROR: Detector configuration file detectors.json not found.
+2023-06-12 12:24:18,392 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:25:50,198 WARNING: Configuration file config.json not found. Creating default.
+2023-06-12 12:25:50,199 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:25:50,199 INFO: Successfully created and loaded configuration from config.json
+2023-06-12 12:25:50,199 ERROR: Detector configuration file detectors.json not found.
+2023-06-12 12:25:50,199 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-12 12:27:57,766 WARNING: Configuration file config.json not found. Creating default.
+2023-06-12 12:27:57,766 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:27:57,766 INFO: Successfully created and loaded configuration from config.json
+2023-06-12 12:27:57,766 ERROR: Detector configuration file detectors.json not found.
+2023-06-12 12:27:57,766 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-12 12:27:57,766 INFO: Successfully created and loaded detectors from detectors.json
+2023-06-12 12:27:57,766 INFO: SQLite Database connected successfully.
+2023-06-12 12:28:34,638 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:28:50,419 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:29:09,412 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:29:29,450 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 12:29:39,398 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:30:09,487 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:30:35,252 WARNING: Configuration file config.json not found. Creating default.
+2023-06-12 12:30:35,252 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:30:35,252 INFO: Successfully created and loaded configuration from config.json
+2023-06-12 12:30:35,252 WARNING: Detector configuration file detectors.json not found.
+2023-06-12 12:30:35,252 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-12 12:30:35,252 INFO: Successfully created and loaded detectors from detectors.json
+2023-06-12 12:30:35,252 WARNING: Database not found, Creating.
+2023-06-12 12:30:35,466 INFO: Database Created Successfully
+2023-06-12 12:30:35,466 INFO: SQLite Database connected successfully.
+2023-06-12 12:30:58,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:31:14,503 DEBUG: No tones found in audio. [] [] [] []

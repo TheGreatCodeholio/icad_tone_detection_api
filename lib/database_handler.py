@@ -15,8 +15,13 @@ class SQLiteDatabase:
         self.db_path = db_path
         self.schema_path = "etc/tr_tone_detect.sql"
         if not os.path.exists(self.db_path):
-            self._create_database()
-            self.create_admin_user()
+            module_logger.warning("Database not found, Creating.")
+            try:
+                self._create_database()
+                self.create_admin_user()
+            except Exception as e:
+                module_logger.error(f"Unexpected Error Creating Database: {e}")
+            module_logger.info(f"Database Created Successfully")
 
     def _create_database(self):
         with open(self.schema_path, 'r') as f:

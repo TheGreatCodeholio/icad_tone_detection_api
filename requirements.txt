@@ -1,0 +1,8 @@
+DateTime~=5.1
+colorama~=0.4.6
+mysql-connector-python~=8.0.33
+Werkzeug~=2.3.5
+numpy~=1.24.3
+scipy~=1.10.1
+pydub~=0.25.1
+Flask~=2.3.2

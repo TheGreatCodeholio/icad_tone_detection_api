@@ -62,8 +62,7 @@ def load_configuration():
         try:
             create_main_config(root_path, config_file)
             # Load the newly created configuration file
-            with open(config_path, 'r') as f:
-                config_data = json.load(f)
+            load_configuration()
         except Exception as e:
             logger.error(f'Error creating default configuration file: {e}')
             return {'success': False, 'alert': {'type': 'danger',
@@ -91,9 +90,18 @@ def load_detectors():
         f.close()
 
     except FileNotFoundError:
-        logger.error(f'Detector configuration file {detector_file} not found.')
-        create_detector_config(root_path, detector_file)
-        load_configuration()
+        logger.warning(f'Detector configuration file {detector_file} not found.')
+        try:
+            create_detector_config(root_path, detector_file)
+            load_detectors()
+        except Exception as e:
+            logger.error(f'Error creating default detectors file: {e}')
+            return {'success': False, 'alert': {'type': 'danger',
+                                                'message': f'Error creating default detectors file: {e}'}}
+        logger.info(f'Successfully created and loaded detectors from {detector_file}')
+        return {'success': True, 'alert': {'type': 'success',
+                                           'message': f'Successfully created and loaded detectors from {detector_file}'}}
+
 
     except json.JSONDecodeError:
         logger.error(f'Detector configuration file {detector_file} is not in valid JSON format.')
