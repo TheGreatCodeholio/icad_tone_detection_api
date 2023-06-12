@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h6 class="text-center d-none">{% block title %}  Global Config{% endblock %}</h6>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form id="configurationForm" class="container">
+                <h3>Configuration</h3>
+                <div class="form-group">
+                    <label for="thresholdPercent">Threshold Percent</label>
+                    <input type="number" class="form-control" id="thresholdPercent"
+                           value="{{ config_data['tone_extraction']['threshold_percent'] }}" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="dtmfEnabled">DTMF</label>
+                        <select class="form-control" id="dtmfEnabled" required>
+                            <option value="1"
+                                    {% if config_data['tone_extraction']['dtmf']['enabled'] == 1 %}selected{% endif %}>
+                                Enabled
+                            </option>
+                            <option value="0"
+                                    {% if config_data['tone_extraction']['dtmf']['enabled'] == 0 %}selected{% endif %}>
+                                Disabled
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="quickCallEnabled">Quick Call</label>
+                        <select class="form-control" id="quickCallEnabled" required>
+                            <option value="1"
+                                    {% if config_data['tone_extraction']['quick_call']['enabled'] == 1 %}selected{% endif %}>
+                                Enabled
+                            </option>
+                            <option value="0"
+                                    {% if config_data['tone_extraction']['quick_call']['enabled'] == 0 %}selected{% endif %}>
+                                Disabled
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="longToneEnabled">Long Tone</label>
+                        <select class="form-control" id="longToneEnabled" required>
+                            <option value="1"
+                                    {% if config_data['tone_extraction']['long_tone']['enabled'] == 1 %}selected{% endif %}>
+                                Enabled
+                            </option>
+                            <option value="0"
+                                    {% if config_data['tone_extraction']['long_tone']['enabled'] == 0 %}selected{% endif %}>
+                                Disabled
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="hiLowToneEnabled">Hi-Low Tone</label>
+                        <select class="form-control" id="hiLowToneEnabled" required>
+                            <option value="1"
+                                    {% if config_data['tone_extraction']['hi-low_tone']['enabled'] == 1 %}selected{% endif %}>
+                                Enabled
+                            </option>
+                            <option value="0"
+                                    {% if config_data['tone_extraction']['hi-low_tone']['enabled'] == 0 %}selected{% endif %}>
+                                Disabled
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="sqliteEnabled">SQLite</label>
+                    <select class="form-control" id="sqliteEnabled" required>
+                        <option value="1" {% if config_data['sqlite']['enabled'] == 1 %}selected{% endif %}>Enabled
+                        </option>
+                        <option value="0" {% if config_data['sqlite']['enabled'] == 0 %}selected{% endif %}>Disabled
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="databasePath">Database Path</label>
+                    <input type="text" class="form-control" id="databasePath"
+                           value="{{ config_data['sqlite']['database_path'] }}" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('configurationForm');
+        const alertList = document.getElementById('alert_list');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/save_main_config');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const alertClass = response.alert.type === 'success' ? 'alert-success' : 'alert-danger';
+                    const alertElement = document.createElement('div');
+                    alertElement.classList.add('alert', alertClass);
+                    alertElement.textContent = response.alert.message;
+                    alertList.appendChild(alertElement);
+                    setTimeout(function () {
+                        alertElement.remove();
+                    }, 3000);
+                    if (response.success) {
+                        const testInput = document.getElementById('test-input');
+                        testInput.value = response.config_data.general.test;
+                    }
+                }
+            };
+            const formData = new FormData(form);
+            xhr.send(formData);
+        });
+    </script>
+
+{% endblock %}
