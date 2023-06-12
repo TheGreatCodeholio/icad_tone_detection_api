@@ -253,7 +253,7 @@ def tone_upload():
             return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
 
         if config_data["detection_mode"] == 1:
-            qc_result = ToneDetection(config_data, detector_data, detector_list).detect_quick_call(quick_call)
+            qc_result = ToneDetection(config_data, detector_data, detector_list).detect_quick_call(quick_call, audio, audio_path)
             detector_list = qc_result
         elif config_data["detection_mode"] == 2:
             # check for detections
