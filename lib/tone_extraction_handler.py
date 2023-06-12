@@ -1,8 +1,10 @@
 import io
+import logging
 
 import numpy as np
 from scipy.signal import stft
 
+module_logger = logging.getLogger('tr_tone_detection.tone_extraction')
 
 class ToneExtraction:
     """Extracts tones from an audio file."""
@@ -37,10 +39,10 @@ class ToneExtraction:
             return long_matches
         last_set = matches[0]
         for tt in final_list:
-            if tt[2][0] not in excluded_frequencies:
-                excluded_frequencies.append(tt[2][0])
-            if tt[2][1] not in excluded_frequencies:
-                excluded_frequencies.append(tt[2][1])
+            if tt["actual"][0] not in excluded_frequencies:
+                excluded_frequencies.append(tt["actual"][0])
+            if tt["actual"][1] not in excluded_frequencies:
+                excluded_frequencies.append(tt["actual"][1])
 
         for x in matches:
             if len(x[1]) >= 8:
@@ -54,11 +56,12 @@ class ToneExtraction:
                         continue
 
                     if x[1][0] > 250:
-                        long_matches.append((round(x[0], 2), x[1][0]))
+                        tone_data = {"actual": x[1][0], "occurred": round(x[0], 2)}
+                        long_matches.append(tone_data)
 
         return long_matches
 
-    def find_warble_matches(self, lst):
+    def find_hi_low_matches(self, lst):
         detected = True
         final_results = []
         result = []
@@ -87,9 +90,10 @@ class ToneExtraction:
                     detected = False
 
             if detected:
-                first = ct[0][1][0]
-                second = ct[1][1][0]
-                final_results.append((round(ct[0][0], 2), first, second))
+                # first = ct[0][1][0]
+                # second = ct[1][1][0]
+                tone_data = {"actual": [ct[0][1][0], ct[1][1][0]], "occurred": round(ct[0][0], 2)}
+                final_results.append(tone_data)
 
         return final_results
 
@@ -124,10 +128,11 @@ class ToneExtraction:
                             b_tone_exact = self.closest_match(x[1][0])
                             a_tone_actual = last_set[1][0]
                             b_tone_actual = x[1][0]
-                            exact = [a_tone_exact, b_tone_exact]
-                            actual = [a_tone_actual, b_tone_actual]
-                            start_time = last_set[0]
-                            qc2_matches.append((round(start_time, 2), exact, actual))
+                            tone_data = {"exact": [a_tone_exact, b_tone_exact], "actual": [a_tone_actual, b_tone_actual], "occured": round(last_set[0], 2)}
+                            # exact = [a_tone_exact, b_tone_exact]
+                            # actual = [a_tone_actual, b_tone_actual]
+                            # start_time = last_set[0]
+                            qc2_matches.append(tone_data)
                             last_set = x
                         else:
                             # set as last set and check next time for matching tone.
@@ -254,13 +259,13 @@ class ToneExtraction:
                 current_group.append(press)
             else:
                 if len(current_group) >= min_presses:
-                    positive_key_presses.append((current_group[0]['key'], round(current_group[0]['ms_time'] / 1000, 2),
-                                                 round(current_group[-1]['ms_time'] / 1000, 2)))
+                    tone_data = {"key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+                    positive_key_presses.append(tone_data)
                 current_group = [press]
 
         if current_group and len(current_group) >= min_presses:
-            positive_key_presses.append((current_group[0]['key'], round(current_group[0]['ms_time'] / 1000, 2),
-                                         round(current_group[-1]['ms_time'] / 1000, 2)))
+            tone_data = {"key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+            positive_key_presses.append(tone_data)
 
         return positive_key_presses
 
@@ -276,30 +281,30 @@ class ToneExtraction:
                                                      self.config_data["tone_extraction"]["threshold_percent"])
 
         if self.config_data["tone_extraction"]["quick_call"]["enabled"]:
-            # Find Quick Call Matches. Frequency must be +- 2% of actual QC2 Tones
+            # Find Quick Call Matches. Frequency must be +- 2% of actual QC2 Tones. Tries to match what it heard to actual QCII frequencies within +-2%
             quick_call = self.normalize_qc2_matches(matched_frequencies, 2)
         else:
             # required empty list for Long Tone
             quick_call = []
 
         if self.config_data["tone_extraction"]["long_tone"]["enabled"]:
-            # Find Lone Tone Matches. Frequency must not be part of a QC 2 Group
+            # Find Lone Tone Matches. If QCII enabled check Detected QCII tones to make sure match isn't part of the QCII tone set. Tone must last for 1.2 seconds minimum.
             long_tones = self.find_long_tones(matched_frequencies, quick_call)
         else:
             long_tones = []
 
         if self.config_data["tone_extraction"]["hi-low_tone"]["enabled"]:
-            # Find any Alternating Hi-Low Tone patterns as short as .2 of a second must be atleast 3 sets of alternating matches.
-            warble_tones = self.find_warble_matches(matched_frequencies)
+            # Find any Alternating Hi-Low Tone patterns as short as 200ms each. Must occur 3 times alternating matched frequencies.
+            hi_low_tones = self.find_hi_low_matches(matched_frequencies)
         else:
-            warble_tones = []
+            hi_low_tones = []
 
 
-        # Find DTMF Key Presses must detect a key press for 250ms minimum
+        # Find DTMF Key Presses must detect a key press for 250ms minimum and last for 1000ms. Considers 1000ms length one key press.
         if self.config_data["tone_extraction"]["dtmf"]["enabled"]:
             key_presses = self.detect_key_presses(audio_data, rate, file_duration)
             dtmf_tones = self.get_positive_key_presses(key_presses)
         else:
             dtmf_tones = []
 
-        return quick_call, warble_tones, long_tones, dtmf_tones
+        return quick_call, hi_low_tones, long_tones, dtmf_tones

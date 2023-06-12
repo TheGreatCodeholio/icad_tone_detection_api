@@ -179,3 +179,1297 @@
 2023-05-10 22:01:59,767 INFO: Successfully loaded detector configuration from etc/detectors.json
 2023-05-11 11:28:04,683 INFO: Successfully loaded configuration from etc/config.json
 2023-05-11 11:28:04,683 INFO: Successfully loaded detector configuration from etc/detectors.json
+2023-06-06 18:40:05,752 INFO: Successfully loaded configuration from config.json
+2023-06-06 18:40:05,752 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 18:40:05,752 ERROR: Error while <<connecting>> to the <<database:>> 'mysql'
+2023-06-06 18:45:21,544 ERROR: Configuration file config.json not found. Creating default.
+2023-06-06 18:45:21,544 INFO: Successfully loaded configuration from config.json
+2023-06-06 18:45:21,544 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 19:09:03,047 INFO: Successfully loaded configuration from config.json
+2023-06-06 19:09:03,047 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 19:09:03,047 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-06 19:09:29,061 ERROR: Configuration file config.json not found. Creating default.
+2023-06-06 19:09:29,061 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 19:09:29,061 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-06 19:10:05,027 WARNING: Configuration file config.json not found. Creating default.
+2023-06-06 19:10:05,027 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 19:10:05,027 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-06 19:10:45,660 INFO: Successfully loaded configuration from config.json
+2023-06-06 19:10:45,660 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-06 19:10:45,660 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-10 14:44:07,313 INFO: Successfully loaded configuration from config.json
+2023-06-10 14:44:07,313 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 14:44:07,313 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-10 14:44:55,533 INFO: Successfully loaded configuration from config.json
+2023-06-10 14:44:55,533 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 14:44:55,534 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-10 17:16:23,396 INFO: Successfully loaded configuration from config.json
+2023-06-10 17:16:23,396 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 17:16:23,396 ERROR: Error while <<connecting>> to the <<database:>> [Errno 2] No such file or directory: 'etc/tr_tone_detect.sql'
+2023-06-10 21:22:01,232 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:22:01,232 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:22:01,440 INFO: SQLite Database connected successfully.
+2023-06-10 21:23:01,390 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:23:01,390 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:23:01,390 INFO: SQLite Database connected successfully.
+2023-06-10 21:35:36,735 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:35:36,736 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:35:36,736 INFO: SQLite Database connected successfully.
+2023-06-10 21:39:24,481 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:39:24,481 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:39:24,481 INFO: SQLite Database connected successfully.
+2023-06-10 21:42:43,854 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:42:43,855 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:42:43,855 INFO: SQLite Database connected successfully.
+2023-06-10 21:52:34,453 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:52:34,453 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:52:34,453 INFO: SQLite Database connected successfully.
+2023-06-10 21:54:20,750 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:54:20,750 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:54:20,750 INFO: SQLite Database connected successfully.
+2023-06-10 21:55:51,826 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:55:51,827 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:55:51,827 INFO: SQLite Database connected successfully.
+2023-06-10 21:57:58,003 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:57:58,003 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:57:58,003 INFO: SQLite Database connected successfully.
+2023-06-10 21:58:07,962 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:58:07,963 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:58:07,963 INFO: SQLite Database connected successfully.
+2023-06-10 21:58:18,521 INFO: Successfully loaded configuration from config.json
+2023-06-10 21:58:18,521 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 21:58:18,521 INFO: SQLite Database connected successfully.
+2023-06-10 22:03:10,362 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:03:10,362 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:03:10,362 INFO: SQLite Database connected successfully.
+2023-06-10 22:05:08,943 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:05:08,943 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:05:08,943 INFO: SQLite Database connected successfully.
+2023-06-10 22:08:17,505 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:08:17,506 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:08:17,506 INFO: SQLite Database connected successfully.
+2023-06-10 22:10:22,572 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:10:22,572 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:10:22,572 INFO: SQLite Database connected successfully.
+2023-06-10 22:11:17,474 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:11:17,474 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:11:17,474 INFO: SQLite Database connected successfully.
+2023-06-10 22:12:07,290 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:12:07,290 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:12:07,290 INFO: SQLite Database connected successfully.
+2023-06-10 22:12:35,534 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:12:35,534 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:12:35,534 INFO: SQLite Database connected successfully.
+2023-06-10 22:15:37,913 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:15:37,913 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:15:37,913 INFO: SQLite Database connected successfully.
+2023-06-10 22:16:17,567 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:16:17,567 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:16:17,567 INFO: SQLite Database connected successfully.
+2023-06-10 22:22:36,791 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:22:36,792 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:22:36,792 INFO: SQLite Database connected successfully.
+2023-06-10 22:27:14,847 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:27:14,847 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:27:14,847 INFO: SQLite Database connected successfully.
+2023-06-10 22:31:29,126 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:31:29,126 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:31:29,127 INFO: SQLite Database connected successfully.
+2023-06-10 22:37:57,493 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:37:57,494 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:37:57,494 INFO: SQLite Database connected successfully.
+2023-06-10 22:39:06,903 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:39:06,903 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:39:06,903 INFO: SQLite Database connected successfully.
+2023-06-10 22:40:07,565 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:40:07,565 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:40:07,565 INFO: SQLite Database connected successfully.
+2023-06-10 22:40:18,936 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:40:18,936 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:40:18,936 INFO: SQLite Database connected successfully.
+2023-06-10 22:48:01,408 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:48:01,408 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:48:01,408 INFO: SQLite Database connected successfully.
+2023-06-10 22:48:21,620 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:48:21,620 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:48:21,620 INFO: SQLite Database connected successfully.
+2023-06-10 22:48:51,175 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:48:51,175 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:48:51,175 INFO: SQLite Database connected successfully.
+2023-06-10 22:49:33,023 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:49:33,023 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:49:33,023 INFO: SQLite Database connected successfully.
+2023-06-10 22:49:40,341 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:49:40,342 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:49:40,342 INFO: SQLite Database connected successfully.
+2023-06-10 22:50:20,801 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:50:20,801 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:50:20,801 INFO: SQLite Database connected successfully.
+2023-06-10 22:54:28,270 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:54:28,270 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:54:28,270 INFO: SQLite Database connected successfully.
+2023-06-10 22:57:08,840 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:57:08,840 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:57:08,840 INFO: SQLite Database connected successfully.
+2023-06-10 22:57:52,324 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:57:52,324 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:57:52,324 INFO: SQLite Database connected successfully.
+2023-06-10 22:58:49,425 INFO: Successfully loaded configuration from config.json
+2023-06-10 22:58:49,425 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 22:58:49,425 INFO: SQLite Database connected successfully.
+2023-06-10 23:01:47,318 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:01:47,318 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:01:47,318 INFO: SQLite Database connected successfully.
+2023-06-10 23:02:29,250 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:02:29,250 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:02:29,250 INFO: SQLite Database connected successfully.
+2023-06-10 23:03:40,090 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:03:40,090 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:03:40,090 INFO: SQLite Database connected successfully.
+2023-06-10 23:06:31,867 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:06:31,867 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:06:31,867 INFO: SQLite Database connected successfully.
+2023-06-10 23:09:57,136 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:09:57,137 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:09:57,137 INFO: SQLite Database connected successfully.
+2023-06-10 23:10:38,932 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:10:38,932 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:10:38,932 INFO: SQLite Database connected successfully.
+2023-06-10 23:11:40,524 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:11:40,524 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:11:40,524 INFO: SQLite Database connected successfully.
+2023-06-10 23:15:03,679 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:15:03,679 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:15:03,679 INFO: SQLite Database connected successfully.
+2023-06-10 23:17:48,368 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:17:48,368 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:17:48,368 INFO: SQLite Database connected successfully.
+2023-06-10 23:22:35,439 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:22:35,439 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:22:35,439 INFO: SQLite Database connected successfully.
+2023-06-10 23:24:59,473 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:24:59,473 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:24:59,473 INFO: SQLite Database connected successfully.
+2023-06-10 23:26:04,433 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:26:04,433 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:26:04,433 INFO: SQLite Database connected successfully.
+2023-06-10 23:27:47,697 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:27:47,697 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:27:47,698 INFO: SQLite Database connected successfully.
+2023-06-10 23:29:19,990 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:29:19,990 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:29:19,990 INFO: SQLite Database connected successfully.
+2023-06-10 23:30:49,757 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:30:49,757 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:30:49,757 INFO: SQLite Database connected successfully.
+2023-06-10 23:30:58,516 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:30:58,516 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:30:58,516 INFO: SQLite Database connected successfully.
+2023-06-10 23:31:07,001 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:31:07,001 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:31:07,001 INFO: SQLite Database connected successfully.
+2023-06-10 23:31:51,478 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:31:51,478 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:31:51,478 INFO: SQLite Database connected successfully.
+2023-06-10 23:35:34,545 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:35:34,545 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:35:34,545 INFO: SQLite Database connected successfully.
+2023-06-10 23:38:59,604 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:38:59,604 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:38:59,604 INFO: SQLite Database connected successfully.
+2023-06-10 23:44:43,460 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:44:43,460 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:44:43,460 INFO: SQLite Database connected successfully.
+2023-06-10 23:46:16,023 INFO: Successfully loaded configuration from config.json
+2023-06-10 23:46:16,023 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-10 23:46:16,024 INFO: SQLite Database connected successfully.
+2023-06-11 00:07:02,709 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:07:02,710 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:07:02,710 INFO: SQLite Database connected successfully.
+2023-06-11 00:08:07,427 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:08:07,427 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:08:07,427 INFO: SQLite Database connected successfully.
+2023-06-11 00:08:33,386 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:08:33,386 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:08:33,386 INFO: SQLite Database connected successfully.
+2023-06-11 00:10:12,754 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:10:12,755 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:10:12,755 INFO: SQLite Database connected successfully.
+2023-06-11 00:11:30,497 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:11:30,497 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:11:30,497 INFO: SQLite Database connected successfully.
+2023-06-11 00:13:34,672 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:13:34,672 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:13:34,672 INFO: SQLite Database connected successfully.
+2023-06-11 00:14:01,748 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:14:01,748 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:14:01,748 INFO: SQLite Database connected successfully.
+2023-06-11 00:16:53,490 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:16:53,490 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:16:53,490 INFO: SQLite Database connected successfully.
+2023-06-11 00:17:32,133 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:17:32,133 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:17:32,133 INFO: SQLite Database connected successfully.
+2023-06-11 00:18:18,137 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:18:18,137 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:18:18,137 INFO: SQLite Database connected successfully.
+2023-06-11 00:18:47,753 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:18:47,753 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:18:47,753 INFO: SQLite Database connected successfully.
+2023-06-11 00:19:12,961 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:19:12,961 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:19:12,961 INFO: SQLite Database connected successfully.
+2023-06-11 00:19:58,424 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:19:58,424 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:19:58,424 INFO: SQLite Database connected successfully.
+2023-06-11 00:25:29,900 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:25:29,900 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:25:29,900 INFO: SQLite Database connected successfully.
+2023-06-11 00:53:11,438 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:53:11,438 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:53:11,632 ERROR: SQLite Commit Query <<failed:>> no such table: admin
+2023-06-11 00:53:11,632 INFO: SQLite Database connected successfully.
+2023-06-11 00:54:10,951 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:54:10,951 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:54:11,161 INFO: SQLite Database connected successfully.
+2023-06-11 00:54:32,989 INFO: Successfully loaded configuration from config.json
+2023-06-11 00:54:32,989 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 00:54:32,989 INFO: SQLite Database connected successfully.
+2023-06-11 14:41:27,094 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:41:27,095 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:41:27,095 INFO: SQLite Database connected successfully.
+2023-06-11 14:43:42,733 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:43:42,734 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:43:42,734 INFO: SQLite Database connected successfully.
+2023-06-11 14:44:43,274 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:44:43,274 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:44:43,274 INFO: SQLite Database connected successfully.
+2023-06-11 14:46:32,981 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:46:32,981 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:46:32,981 INFO: SQLite Database connected successfully.
+2023-06-11 14:46:50,553 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:46:50,553 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:46:50,553 INFO: SQLite Database connected successfully.
+2023-06-11 14:47:38,884 INFO: Successfully loaded configuration from config.json
+2023-06-11 14:47:38,884 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 14:47:38,884 INFO: SQLite Database connected successfully.
+2023-06-11 15:30:33,291 INFO: Successfully loaded configuration from config.json
+2023-06-11 15:30:33,291 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 15:30:33,291 INFO: SQLite Database connected successfully.
+2023-06-11 15:31:17,141 INFO: Successfully loaded configuration from config.json
+2023-06-11 15:31:17,141 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 15:31:17,141 INFO: SQLite Database connected successfully.
+2023-06-11 15:46:55,520 INFO: Successfully loaded configuration from config.json
+2023-06-11 15:46:55,520 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 15:46:55,520 INFO: SQLite Database connected successfully.
+2023-06-11 16:03:15,739 INFO: Successfully loaded configuration from config.json
+2023-06-11 16:03:15,739 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 16:03:15,739 INFO: SQLite Database connected successfully.
+2023-06-11 17:50:50,963 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:50:50,964 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:50:50,964 INFO: SQLite Database connected successfully.
+2023-06-11 17:51:41,998 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:51:41,998 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:51:41,998 INFO: SQLite Database connected successfully.
+2023-06-11 17:52:18,185 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:52:18,185 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:52:18,185 INFO: SQLite Database connected successfully.
+2023-06-11 17:53:40,692 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:53:40,692 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:53:40,692 INFO: SQLite Database connected successfully.
+2023-06-11 17:56:47,122 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:56:47,122 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:56:47,122 INFO: SQLite Database connected successfully.
+2023-06-11 17:59:33,629 INFO: Successfully loaded configuration from config.json
+2023-06-11 17:59:33,629 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 17:59:33,629 INFO: SQLite Database connected successfully.
+2023-06-11 18:02:32,227 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:02:32,227 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:02:32,227 INFO: SQLite Database connected successfully.
+2023-06-11 18:03:09,233 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:03:45,444 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:03:45,444 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:03:45,444 INFO: SQLite Database connected successfully.
+2023-06-11 18:03:48,498 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:04:01,547 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:04:26,831 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:04:26,831 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:04:26,831 INFO: SQLite Database connected successfully.
+2023-06-11 18:04:34,289 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:05:23,126 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:06:25,346 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:09:57,965 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:09:57,966 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:09:57,966 INFO: SQLite Database connected successfully.
+2023-06-11 18:10:09,680 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:10:09,680 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:10:09,680 INFO: SQLite Database connected successfully.
+2023-06-11 18:10:41,869 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:29:34,931 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:29:34,932 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:29:34,932 INFO: SQLite Database connected successfully.
+2023-06-11 18:35:14,883 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:35:14,883 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:35:14,883 INFO: SQLite Database connected successfully.
+2023-06-11 18:35:50,312 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:35:50,312 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:35:50,312 INFO: SQLite Database connected successfully.
+2023-06-11 18:36:26,942 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:36:26,942 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:36:26,942 INFO: SQLite Database connected successfully.
+2023-06-11 18:40:07,072 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:40:07,072 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:40:07,072 INFO: SQLite Database connected successfully.
+2023-06-11 18:41:16,766 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:41:16,766 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:41:16,766 INFO: SQLite Database connected successfully.
+2023-06-11 18:41:48,745 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:41:48,745 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:41:48,745 INFO: SQLite Database connected successfully.
+2023-06-11 18:42:23,930 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:42:23,930 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:42:23,930 INFO: SQLite Database connected successfully.
+2023-06-11 18:42:41,578 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:42:41,578 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:42:41,578 INFO: SQLite Database connected successfully.
+2023-06-11 18:44:30,811 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:44:30,811 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:44:30,811 INFO: SQLite Database connected successfully.
+2023-06-11 18:50:31,799 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:50:31,799 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:50:31,799 INFO: SQLite Database connected successfully.
+2023-06-11 18:51:20,117 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:51:20,117 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:51:20,117 INFO: SQLite Database connected successfully.
+2023-06-11 18:54:11,133 INFO: Successfully loaded configuration from config.json
+2023-06-11 18:54:11,134 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 18:54:11,134 INFO: SQLite Database connected successfully.
+2023-06-11 18:54:21,282 DEBUG: Section: Tone3
+2023-06-11 18:54:21,282 DEBUG: __name__ = Tone3
+2023-06-11 18:54:21,282 DEBUG: description = Canton 2
+2023-06-11 18:54:21,282 DEBUG: atone = 1287.0
+2023-06-11 18:54:21,282 DEBUG: btone = 928.1
+2023-06-11 18:54:21,282 DEBUG: atonelength = 0.6
+2023-06-11 18:54:21,282 DEBUG: btonelength = 1
+2023-06-11 18:54:21,282 DEBUG: tone_tolerance = 0.01
+2023-06-11 18:54:21,282 DEBUG: release_time = 3.5
+2023-06-11 18:54:21,282 DEBUG: record_seconds = 15
+2023-06-11 18:54:21,282 DEBUG: playback_during_record = 0
+2023-06-11 18:54:21,282 DEBUG: gaplength = 0
+2023-06-11 18:54:21,282 DEBUG: ignore_after = 60
+2023-06-11 18:54:21,282 DEBUG: exclude_from = 
+2023-06-11 18:54:21,282 DEBUG: exclude_to = 
+2023-06-11 18:54:21,282 DEBUG: record_delay = 2.5
+2023-06-11 18:54:21,282 DEBUG: post_email_command = ./ttd_helper.sh "[d]" [mp3]
+2023-06-11 18:54:21,282 DEBUG: email_subject = [d] Page Received at [t]
+2023-06-11 18:54:21,282 DEBUG: email_body = [d] Page Received at [t]
+2023-06-11 18:54:21,282 DEBUG: alert_command = ./alert_command.sh "[d]"
+2023-06-11 18:54:21,282 DEBUG: iar_tone_id = 
+2023-06-11 18:54:21,282 DEBUG: amr_emails = 
+2023-06-11 18:54:21,283 DEBUG: Section: Tone4
+2023-06-11 18:54:21,283 DEBUG: __name__ = Tone4
+2023-06-11 18:54:21,283 DEBUG: description = East Smithfield 3
+2023-06-11 18:54:21,283 DEBUG: atone = 2575.0
+2023-06-11 18:54:21,283 DEBUG: btone = 615.8
+2023-06-11 18:54:21,283 DEBUG: atonelength = 0.6
+2023-06-11 18:54:21,283 DEBUG: btonelength = 1
+2023-06-11 18:54:21,283 DEBUG: tone_tolerance = 0.01
+2023-06-11 18:54:21,283 DEBUG: release_time = 3.5
+2023-06-11 18:54:21,283 DEBUG: record_seconds = 15
+2023-06-11 18:54:21,283 DEBUG: playback_during_record = 0
+2023-06-11 18:54:21,283 DEBUG: gaplength = 0
+2023-06-11 18:54:21,283 DEBUG: ignore_after = 60
+2023-06-11 18:54:21,283 DEBUG: exclude_from = 
+2023-06-11 18:54:21,283 DEBUG: exclude_to = 
+2023-06-11 18:54:21,283 DEBUG: record_delay = 2.5
+2023-06-11 18:54:21,283 DEBUG: post_email_command = ./ttd_helper.sh "[d]" [mp3]
+2023-06-11 18:54:21,283 DEBUG: email_subject = [d] Page Received at [t]
+2023-06-11 18:54:21,283 DEBUG: email_body = [d] Page Received at [t]
+2023-06-11 18:54:21,283 DEBUG: alert_command = ./alert_command.sh "[d]"
+2023-06-11 18:54:21,283 DEBUG: iar_tone_id = 
+2023-06-11 18:54:21,283 DEBUG: amr_emails = 
+2023-06-11 19:26:34,197 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:26:34,197 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:26:34,197 INFO: SQLite Database connected successfully.
+2023-06-11 19:27:18,870 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:27:18,870 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:27:18,870 INFO: SQLite Database connected successfully.
+2023-06-11 19:27:31,394 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:27:35,110 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:27:49,611 ERROR: Value error encountered while processing section Greater Valley EMS: invalid literal for int() with base 10: '0.01'
+2023-06-11 19:28:44,429 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:28:44,429 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:28:44,429 INFO: SQLite Database connected successfully.
+2023-06-11 19:28:53,450 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:41:08,876 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:41:08,877 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:41:08,877 INFO: SQLite Database connected successfully.
+2023-06-11 19:54:42,026 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:54:42,027 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:54:42,027 INFO: SQLite Database connected successfully.
+2023-06-11 19:54:47,696 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:54:47,697 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:54:47,697 INFO: SQLite Database connected successfully.
+2023-06-11 19:54:54,639 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:54:54,639 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:54:54,639 INFO: SQLite Database connected successfully.
+2023-06-11 19:55:59,821 INFO: Successfully loaded configuration from config.json
+2023-06-11 19:55:59,821 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 19:55:59,821 INFO: SQLite Database connected successfully.
+2023-06-11 20:04:57,720 INFO: Successfully loaded configuration from config.json
+2023-06-11 20:04:57,720 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 20:04:57,720 INFO: SQLite Database connected successfully.
+2023-06-11 20:05:14,704 WARNING: Tones Detected
+2023-06-11 20:06:14,612 WARNING: Tones Detected
+2023-06-11 20:06:33,599 WARNING: Tones Detected
+2023-06-11 20:10:44,505 WARNING: Tones Detected
+2023-06-11 20:13:12,438 INFO: Successfully loaded configuration from config.json
+2023-06-11 20:13:12,439 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 20:13:12,439 INFO: SQLite Database connected successfully.
+2023-06-11 20:13:20,562 WARNING: Tones Detected
+2023-06-11 20:23:24,512 WARNING: Tones Detected
+2023-06-11 20:25:57,437 WARNING: Tones Detected
+2023-06-11 20:27:02,611 WARNING: Tones Detected
+2023-06-11 20:27:48,521 WARNING: Tones Detected
+2023-06-11 20:28:06,785 WARNING: Tones Detected
+2023-06-11 20:33:55,550 WARNING: Tones Detected
+2023-06-11 20:37:15,593 WARNING: Tones Detected
+2023-06-11 20:37:48,528 WARNING: Tones Detected
+2023-06-11 20:38:34,534 WARNING: Tones Detected
+2023-06-11 20:39:07,646 WARNING: Tones Detected
+2023-06-11 20:39:38,545 WARNING: Tones Detected
+2023-06-11 20:40:14,505 WARNING: Tones Detected
+2023-06-11 20:45:51,619 WARNING: Tones Detected
+2023-06-11 20:46:01,610 WARNING: Tones Detected
+2023-06-11 20:46:13,679 INFO: Successfully loaded configuration from config.json
+2023-06-11 20:46:13,679 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 20:46:13,680 INFO: SQLite Database connected successfully.
+2023-06-11 20:46:23,768 WARNING: Tones Detected
+2023-06-11 20:54:29,623 WARNING: Tones Detected
+2023-06-11 20:54:51,661 WARNING: Tones Detected
+2023-06-11 20:54:57,639 WARNING: Tones Detected
+2023-06-11 20:56:44,593 WARNING: Tones Detected
+2023-06-11 21:00:04,239 INFO: Successfully loaded configuration from config.json
+2023-06-11 21:00:04,239 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-11 21:00:04,239 INFO: SQLite Database connected successfully.
+2023-06-11 21:01:35,726 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:05:04,680 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:05:13,654 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:05:32,677 WARNING: Tones Detected
+2023-06-11 21:07:36,742 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:11:17,591 DEBUG: No tones found in audio. [] None [] []
+2023-06-11 21:14:53,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:15:14,551 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:15:34,519 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:16:34,541 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:18:18,479 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:19:48,541 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:20:20,490 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:21:00,536 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:22:56,526 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:24:55,553 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:25:01,606 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:25:13,513 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:25:24,518 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:27:10,451 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:27:29,384 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:27:42,406 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:28:37,596 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:30:07,609 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:31:21,569 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:33:21,432 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:33:40,385 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:34:06,487 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:34:15,393 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:34:54,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:35:01,665 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:35:22,683 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:35:35,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:36:22,578 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:38:30,404 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:38:48,418 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:39:17,631 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:39:29,602 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:39:41,479 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:41:22,539 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:44:12,773 WARNING: Tones Detected
+2023-06-11 21:45:06,683 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:50:03,618 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:53:41,772 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:54:12,364 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:54:22,378 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:54:43,446 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:54:51,321 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:54:52,703 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:55:00,472 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:55:26,485 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:56:00,790 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:56:01,378 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:56:07,607 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:56:16,416 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:56:34,351 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:58:55,484 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 21:59:35,497 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:00:39,404 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:01:06,451 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:01:19,651 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:01:31,326 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:02:06,664 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:03:03,536 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:03:18,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:03:47,438 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:04:30,553 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:05:26,457 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:06:37,459 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:06:53,611 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:06:53,720 WARNING: Tones Detected
+2023-06-11 22:07:35,606 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:07:48,360 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:07:56,346 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:08:07,739 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:09:22,393 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:01,526 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:15,591 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:18,318 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:18,708 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:28,593 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:29,360 DEBUG: No tones found in audio. [] None [] []
+2023-06-11 22:10:30,620 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:10:43,499 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:16:27,491 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:16:57,457 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:18:01,511 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:20:00,426 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:20:16,395 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:20:45,473 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:20:51,438 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:21:12,381 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:21:19,321 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:21:43,367 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:22:07,575 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:22:21,502 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:23:08,465 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:23:40,410 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:24:11,417 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:25:22,457 DEBUG: No tones found in audio. [] None [] []
+2023-06-11 22:26:27,502 WARNING: Tones Detected
+2023-06-11 22:30:37,342 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:30:45,326 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:32:05,548 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:32:36,790 WARNING: Tones Detected
+2023-06-11 22:32:53,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:34:04,366 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:34:33,419 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:37:01,450 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:37:09,340 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:37:43,463 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:41:41,525 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:43:23,379 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:44:18,654 WARNING: Tones Detected
+2023-06-11 22:44:44,323 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:45:25,340 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:46:27,673 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:46:38,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:46:49,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:47:19,432 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:48:07,785 WARNING: Tones Detected
+2023-06-11 22:49:53,411 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:50:16,669 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:51:14,542 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:52:20,392 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 22:56:18,675 DEBUG: No tones found in audio. [] None [] []
+2023-06-11 22:59:53,393 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:00:54,635 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:01:05,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:01:53,544 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:02:21,721 WARNING: Tones Detected
+2023-06-11 23:04:28,707 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:04:44,716 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:04:44,940 WARNING: Tones Detected
+2023-06-11 23:06:29,699 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:06:30,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:07:57,631 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:08:06,594 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:11:38,666 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:11:40,347 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:11:42,461 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:11:42,647 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:12:10,519 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:13:11,597 DEBUG: No tones found in audio. [] None [] []
+2023-06-11 23:13:22,461 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:13:37,416 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:14:47,624 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:16:30,413 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:17:36,561 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:19:26,469 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:20:02,503 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:21:00,656 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:21:06,538 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:21:56,469 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:22:52,410 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:25:49,482 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:29:23,433 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:29:33,530 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:31:42,665 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:34:45,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:34:50,379 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:36:38,422 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:37:32,452 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:39:26,482 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:40:06,589 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:42:13,549 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:44:27,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:54:00,539 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:56:25,399 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:57:00,556 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:58:07,682 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:59:18,580 DEBUG: No tones found in audio. [] [] [] []
+2023-06-11 23:59:51,568 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:00:05,525 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:00:21,453 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:00:39,449 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:02:18,467 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:02:58,452 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:06:00,443 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:11:25,482 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:11:59,455 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:13:01,576 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:14:13,486 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:18:48,468 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:36:45,640 WARNING: Tones Detected
+2023-06-12 00:40:46,488 WARNING: Tones Detected
+2023-06-12 00:43:30,481 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:45:00,463 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:47:22,453 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:50:01,503 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 00:55:22,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:00:35,478 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:01:12,379 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:01:26,388 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:02:39,457 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:04:09,476 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:10:54,499 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:12:24,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:14:19,463 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:14:38,477 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:17:29,461 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:21:44,503 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:22:13,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:26:40,699 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:27:18,776 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:30:02,500 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:34:11,473 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:35:18,657 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:39:26,434 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:42:18,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:45:43,437 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:48:41,605 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 01:48:43,331 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:48:48,499 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:48:58,692 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:49:22,598 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:49:30,789 WARNING: Tones Detected
+2023-06-12 01:50:45,757 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:56:38,638 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:57:38,478 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:58:44,484 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:58:58,412 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:59:43,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 01:59:50,584 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:00:01,472 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:00:37,416 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:00:52,421 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:02:27,697 WARNING: Tones Detected
+2023-06-12 02:02:37,596 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:02:42,617 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:07:51,516 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:08:17,497 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:15:27,546 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:15:52,530 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:18:39,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:19:55,566 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:20:52,516 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:23:59,451 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:25:10,406 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:29:32,488 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:30:55,693 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:56:28,432 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:56:28,443 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:56:35,438 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:56:43,410 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 02:56:48,315 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 03:00:30,339 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 03:00:33,375 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 03:03:39,343 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 03:29:07,379 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 03:48:43,676 WARNING: Tones Detected
+2023-06-12 03:54:49,492 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:01:20,381 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:01:42,422 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:34:50,761 WARNING: Tones Detected
+2023-06-12 04:37:08,496 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 04:39:01,905 WARNING: Tones Detected
+2023-06-12 04:42:34,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:42:49,448 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:43:16,507 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:44:08,736 WARNING: Tones Detected
+2023-06-12 04:45:06,615 WARNING: Tones Detected
+2023-06-12 04:45:56,461 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:46:04,495 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:46:12,436 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:47:01,455 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:47:40,471 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:47:49,643 WARNING: Tones Detected
+2023-06-12 04:48:32,561 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:49:00,420 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:49:10,513 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:49:26,571 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 04:50:07,568 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:54:03,576 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:54:49,488 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 04:58:34,499 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:01:40,692 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:02:44,395 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:03:06,403 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:04:03,560 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:06:00,673 WARNING: Tones Detected
+2023-06-12 05:06:37,458 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:08:13,579 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:10:13,603 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:10:20,583 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 05:11:03,541 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:16:30,493 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:16:49,472 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:18:31,818 WARNING: Tones Detected
+2023-06-12 05:19:13,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:19:25,652 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:19:30,570 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:19:46,747 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:20:09,361 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:20:16,362 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:21:03,749 WARNING: Tones Detected
+2023-06-12 05:24:30,369 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:24:40,642 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:27:52,613 WARNING: Tones Detected
+2023-06-12 05:37:29,481 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:37:54,418 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:39:43,650 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:40:04,338 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:40:51,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:41:06,528 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:47:39,325 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:48:24,373 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:48:34,658 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:51:03,447 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:51:21,449 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:51:38,636 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:53:07,517 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:54:17,448 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:56:30,480 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:58:49,643 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 05:59:49,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:03:32,429 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:04:30,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:04:43,670 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:05:25,469 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:09:50,444 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:19:09,672 WARNING: Tones Detected
+2023-06-12 06:29:16,532 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:33:39,616 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:34:36,512 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:37:38,466 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:38:33,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:38:36,568 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:38:44,362 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:40:37,414 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:41:00,537 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:41:19,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:42:53,438 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:45:47,472 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:46:26,547 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:53:19,631 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:54:31,414 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:57:58,701 WARNING: Tones Detected
+2023-06-12 06:58:27,690 WARNING: Tones Detected
+2023-06-12 06:58:38,616 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 06:59:05,613 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:01:21,691 WARNING: Tones Detected
+2023-06-12 07:01:42,460 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:04:36,591 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:07:51,482 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:08:22,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:08:25,598 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:08:40,662 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:16:10,496 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:17:36,371 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:17:55,453 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:19:17,594 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:19:51,688 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:20:06,663 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:30:07,363 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:32:38,821 WARNING: Tones Detected
+2023-06-12 07:32:59,729 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:33:13,723 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:33:38,335 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:33:46,329 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:34:54,364 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:34:55,852 WARNING: Tones Detected
+2023-06-12 07:34:55,857 WARNING: Tones Detected
+2023-06-12 07:34:58,630 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:37:29,399 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:37:38,330 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:38:23,465 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:38:52,595 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 07:39:01,609 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:40:28,373 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:40:48,319 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:40:48,690 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:40:49,701 WARNING: Tones Detected
+2023-06-12 07:41:03,522 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:41:40,771 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:41:55,695 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:42:40,382 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:45:42,504 WARNING: Tones Detected
+2023-06-12 07:50:46,316 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:50:56,644 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:52:45,387 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:54:43,792 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:57:45,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:57:57,670 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:10,640 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:14,625 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:21,611 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:34,310 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:42,358 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 07:58:54,377 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:01:51,666 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:05:32,695 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:06:08,545 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:07:37,467 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:10:46,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:11:15,730 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:11:42,721 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:12:00,524 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:12:26,456 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:12:36,695 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:13:07,522 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:13:48,669 WARNING: Tones Detected
+2023-06-12 08:14:41,356 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:14:52,337 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:14:57,323 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:15:47,513 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:17:17,650 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:17:19,472 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:17:58,314 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:18:05,351 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:22:14,492 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:24:36,362 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:24:48,373 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:25:12,516 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:27:20,664 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:27:29,679 WARNING: Tones Detected
+2023-06-12 08:29:44,854 WARNING: Tones Detected
+2023-06-12 08:30:41,771 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:31:48,660 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:32:13,556 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:32:28,680 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:34:47,596 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:35:04,678 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:40:01,501 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:41:58,666 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:42:00,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:42:25,535 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:43:07,491 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:46:41,487 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:47:12,476 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:47:55,437 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:48:12,674 WARNING: Tones Detected
+2023-06-12 08:48:16,613 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:48:21,592 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:48:35,660 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:48:44,469 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:49:31,401 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:50:04,561 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:50:10,416 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:50:29,366 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:52:34,672 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:52:56,602 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:52:58,366 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:53:04,591 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:53:04,653 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:54:22,669 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:54:54,490 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:55:43,381 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:55:53,375 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:56:30,706 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:12,587 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:17,610 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:20,379 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:20,702 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:26,579 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:26,638 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:50,666 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 08:57:58,597 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 08:58:46,664 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:00:29,492 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:03:00,633 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:03:49,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:04:10,717 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:05:52,630 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:10:55,576 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:15:15,455 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:15:29,498 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:19:03,531 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:19:57,677 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:24:13,641 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:24:19,572 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:24:52,666 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:25:37,762 WARNING: Tones Detected
+2023-06-12 09:26:08,756 WARNING: Tones Detected
+2023-06-12 09:26:29,442 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:26:37,762 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:30:32,467 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:31:25,427 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:31:52,425 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:32:06,643 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:32:18,521 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:33:31,491 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:33:52,442 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:34:05,500 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:34:53,666 WARNING: Tones Detected
+2023-06-12 09:37:48,639 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:37:58,351 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:38:16,701 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:40:51,417 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:42:02,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:42:23,652 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:42:40,622 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:42:47,838 WARNING: Tones Detected
+2023-06-12 09:42:48,607 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:42:58,636 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:43:18,783 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:43:53,717 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:44:21,768 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:45:50,729 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:46:00,603 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:46:53,658 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:47:24,506 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:47:46,491 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:14,573 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:15,310 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:19,590 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:27,345 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:28,568 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:49:43,766 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:50:38,771 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:51:28,493 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:52:29,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:53:17,578 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:53:21,365 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:53:21,612 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 09:53:28,480 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:53:37,655 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:53:55,581 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 09:54:02,586 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:55:23,592 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:56:23,595 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:56:30,573 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:57:07,698 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:57:34,675 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:57:41,644 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:57:55,588 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:57:56,329 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:58:07,696 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:58:43,621 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:58:50,585 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 09:59:12,464 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:00:30,369 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:00:53,700 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:04:44,762 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:04:57,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:05:07,652 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:05:18,596 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:05:34,396 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:05:36,712 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:05:43,557 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:06:01,347 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:06:05,647 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:06:53,439 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:08,571 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:11,322 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:11,585 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:16,564 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:20,593 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:23,353 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:23,656 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:30,528 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:07:38,589 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:08:04,641 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:10:23,593 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:10:41,443 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:11:11,576 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:11:36,618 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:11:45,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:00,503 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:04,650 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:11,575 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:12:17,599 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:21,586 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:25,583 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:26,342 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:26,673 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:12:59,562 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:13:03,570 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:13:06,386 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:13:09,576 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:13:12,678 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:13:57,547 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:14:15,485 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:14:20,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:14:26,462 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:14:46,522 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:15:40,464 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:17:02,627 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:18:40,453 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:20:22,350 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:20:22,585 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:20:28,627 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:20:35,565 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:20:37,349 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:20:37,644 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:20:52,460 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:21:05,565 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:21:51,535 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:22:09,611 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:22:16,608 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:22:22,582 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:22:37,593 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:22:43,587 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:22:52,571 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:23:13,560 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:23:23,590 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:23:41,545 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:23:46,668 WARNING: Tones Detected
+2023-06-12 10:24:45,537 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:24:52,403 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:25:01,337 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:25:26,484 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:26:05,591 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:26:18,334 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:26:22,485 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:26:39,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:26:42,422 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:28:29,546 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:30:35,421 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:30:50,418 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:31:42,651 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:32:15,374 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:32:57,426 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:33:23,565 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:34:48,501 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:36:27,710 WARNING: Tones Detected
+2023-06-12 10:37:00,646 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:37:02,493 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:37:09,803 WARNING: Tones Detected
+2023-06-12 10:37:35,675 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:37:35,771 WARNING: Tones Detected
+2023-06-12 10:37:48,435 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:38:02,522 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:38:24,569 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:38:36,580 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:39:01,428 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:39:48,314 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:40:03,607 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:40:18,397 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:40:38,405 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:40:49,798 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:41:28,366 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:41:36,352 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:41:50,357 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:42:00,320 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:42:11,361 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:42:50,374 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:43:13,381 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:45:56,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:47:30,507 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:47:54,679 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:48:15,454 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:48:31,313 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:48:43,365 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:48:49,355 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:49:09,349 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:49:26,352 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:49:32,674 WARNING: Tones Detected
+2023-06-12 10:49:38,327 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:49:51,699 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:49:59,504 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:04,538 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:35,426 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:40,833 WARNING: Tones Detected
+2023-06-12 10:50:43,585 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:45,353 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:48,464 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:52,627 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:50:57,620 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:51:22,584 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:51:27,891 WARNING: Tones Detected
+2023-06-12 10:51:36,317 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:51:46,596 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:19,781 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:21,434 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:21,561 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:27,319 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:29,478 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:39,587 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:40,609 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:52:45,691 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:02,628 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:09,339 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:10,579 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:13,684 WARNING: Tones Detected
+2023-06-12 10:53:16,604 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:19,308 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:24,669 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:53:24,782 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:50,544 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:53:55,802 WARNING: Tones Detected
+2023-06-12 10:54:15,572 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 10:54:16,585 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:54:19,372 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:54:22,412 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:54:49,589 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:55:00,499 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:55:32,480 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:56:20,575 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:56:30,597 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:57:26,347 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:57:36,600 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:57:44,580 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:57:46,329 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:58:09,597 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:58:09,658 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:58:49,463 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:08,369 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:13,560 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:17,316 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:20,577 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:36,624 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:37,656 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 10:59:57,617 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:00:04,586 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:00:05,611 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:00:45,533 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:01:02,545 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:01:18,556 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:01:29,413 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:01:42,588 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:01:50,437 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:02:01,366 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:02:03,624 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:02:03,755 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:02:25,593 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:02:46,722 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:03:49,495 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:04:41,374 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:04:59,718 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:05:21,355 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:05:29,355 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:05:31,684 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:06:11,664 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:06:58,753 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:07:58,788 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:08:21,558 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:08:36,376 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:08:38,545 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:08:43,718 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:08:46,375 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:08:55,316 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:09:17,745 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:09:20,615 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:09:51,393 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:09:52,569 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:10:09,376 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:10:09,558 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:10:22,407 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:10:32,324 WARNING: Tones Detected
+2023-06-12 11:10:41,345 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:10:53,369 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:12:26,691 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:13:56,605 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:14:03,374 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:14:17,653 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:14:36,575 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:14:42,636 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:15:09,753 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:15:10,742 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:16:07,634 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:17:59,656 WARNING: Tones Detected
+2023-06-12 11:18:21,663 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:20:50,485 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:21:21,661 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:22:36,651 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:22:45,574 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:22:58,643 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:24:48,676 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:25:02,585 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:25:19,671 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:25:46,615 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:25:55,637 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:27:34,670 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:27:45,622 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:29:31,633 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:30:14,608 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:30:46,587 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:31:00,619 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:31:03,596 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:31:16,587 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:31:35,590 DEBUG: No tones found in audio. [] None [] []
+2023-06-12 11:32:42,621 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:32:51,620 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:33:54,603 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:35:28,543 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:37:07,377 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:38:23,440 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:39:58,320 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:40:26,451 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:41:13,365 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:41:40,419 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:43:22,544 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:44:02,765 WARNING: Tones Detected
+2023-06-12 11:44:14,525 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:44:21,354 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:48:23,570 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:49:22,432 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:50:09,338 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:50:37,403 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:52:05,779 WARNING: Tones Detected
+2023-06-12 11:54:52,362 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:58:36,550 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 11:59:00,474 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:00:06,589 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:00:12,735 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:00:37,614 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:00:59,701 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:02:54,553 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:05:14,383 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:05:24,638 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:07:49,617 WARNING: Tones Detected
+2023-06-12 12:07:55,468 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:08:04,354 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:08:08,503 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:08:50,375 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:09:05,359 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:09:33,438 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:09:57,334 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:10:02,364 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:10:06,364 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:14:20,624 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:16:37,588 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:16:48,693 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:16:48,693 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-12 12:16:48,693 INFO: SQLite Database connected successfully.
+2023-06-12 12:16:49,639 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:17:01,650 DEBUG: No tones found in audio. [] [] [] []
+2023-06-12 12:18:51,608 INFO: Successfully loaded configuration from config.json
+2023-06-12 12:18:51,608 INFO: Successfully loaded detector configuration from detectors.json
+2023-06-12 12:18:51,608 INFO: SQLite Database connected successfully.

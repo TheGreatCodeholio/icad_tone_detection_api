@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Import Modal -->
+    <div class="modal" tabindex="-1" id="importModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload .cfg File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/ttd_import" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="formFile" class="form-label">Select .cfg file</label>
+                            <input class="form-control" type="file" id="formFile" name="cfgFile" accept=".cfg">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h1>{% block title %} Detector Configuration {% endblock %}</h1>
+    <hr class="mb-4"/>
+    <div class="row">
+        <div class="col">
+            <div id="detector_selection_div" class="d-flex">
+                <select id="detector_selection" class="form-select w-50" aria-label="Detector Selection">
+                    <option name="none" selected>Detector Selection</option>
+                    {% for detector in detector_data %}
+                        <option name="{{ detector }}" value="{{ detector_data[detector] }}">{{ detector }}</option>
+                    {% endfor %}
+                    {% block fdn_detector_selector %} {% endblock %}
+                    <option name="new_detector" value="{{ detector_template }}">Add New Detector</option>
+                </select>
+                <!-- Button to Open the Modal -->
+                <button type="button" class="btn btn-sm btn-primary ms-2" data-bs-toggle="modal" data-bs-target="#importModal">
+                    Import TTD
+                </button>
+            </div>
+            <form id="detector_input_form" action="{{ url_for('save_detector_config') }}" method="post">
+                <div id="detector_input_div" class="detector_input">
+                    <ul class="nav nav-tabs" id="detector_tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="conf-link nav-link active" id="tone-tab" data-bs-toggle="tab"
+                                    data-bs-target="#tone-tab-pane" type="button" role="tab"
+                                    aria-controls="tone-tab-pane" aria-selected="true">Tone
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="conf-link nav-link" id="email-tab" data-bs-toggle="tab"
+                                    data-bs-target="#email-tab-pane" type="button" role="tab"
+                                    aria-controls="email-tab-pane" aria-selected="false">Emails
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="conf-link nav-link" id="mqtt-tab" data-bs-toggle="tab"
+                                    data-bs-target="#mqtt-tab-pane" type="button" role="tab"
+                                    aria-controls="mqtt-tab-pane" aria-selected="false">MQTT
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="conf-link nav-link" id="pushover-tab" data-bs-toggle="tab"
+                                    data-bs-target="#pushover-tab-pane" type="button" role="tab"
+                                    aria-controls="pushover-tab-pane" aria-selected="false">Pushover
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="conf-link nav-link" id="facebook-tab" data-bs-toggle="tab"
+                                    data-bs-target="#facebook-tab-pane" type="button" role="tab"
+                                    aria-controls="facebook-tab-pane" aria-selected="false">Facebook
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="detectorTabContent">
+                        <div class="tab-pane fade show active" id="tone-tab-pane" role="tabpanel"
+                             aria-labelledby="tone-tab" tabindex="0">
+
+                            <input type="hidden" id="detector_id" name="detector_id">
+
+                            <h5 class="mt-3 mb-3">Tone Configuration</h5>
+
+                            <label id="detector_name_label" for="detector_name" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Station Name" class="form-label w-50">Station
+                                Name</label>
+                            <input type="text" id="detector_name" name="detector_name" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Station Name" class="form-control mb-3 w-50" required>
+                            <br>
+                            <label id="detector_number_label" for="detector_number" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Station Number" class="form-label w-50">Station
+                                Number</label>
+                            <input type="text" id="detector_number" name="detector_number" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Station Number" class="form-control mb-3 w-50"
+                                   required>
+                            <br>
+                            <h5 class="mt-3 mb-3">Tone A</h5>
+
+                            <label id="detector_tone_a_label" for="detector_tone_a" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Detector Tone A" class="form-label w-50">Tone A
+                                Frequency</label>
+                            <input type="text" id="detector_tone_a" name="detector_tone_a" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Detector Tone A" class="form-control mb-3 w-50"
+                                   required>
+
+                            <label id="detector_tone_a_length_label" for="detector_tone_a_length"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Detector Tone A length in seconds" class="form-label w-50">Tone A
+                                Length</label>
+                            <input type="text" id="detector_tone_a_length" name="detector_tone_a_length"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Detector Tone A length in seconds." class="form-control mb-3 w-50" required>
+                            <br>
+                            <h5 class="mt-3 mb-3">Tone B</h5>
+
+                            <label id="detector_tone_b_label" for="detector_tone_b" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Detector Tone B" class="form-label w-50">Tone B
+                                Frequency</label>
+                            <input type="text" id="detector_tone_b" name="detector_tone_b" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Detector Tone B" class="form-control mb-3 w-50"
+                                   required>
+
+                            <label id="detector_tone_b_length_label" for="detector_tone_b_length"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Detector Tone B length in seconds" class="form-label w-50">Tone B
+                                Length</label>
+                            <input type="text" id="detector_tone_b_length" name="detector_tone_b_length"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Detector Tone B length in seconds." class="form-control mb-3 w-50" required>
+                            <br>
+
+                            <h5 class="mt-3 mb-3">Matching</h5>
+                            <label id="detector_tolerance_label" for="detector_tolerance" data-bs-toggle="tooltip"
+                                   data-bs-placement="top"
+                                   title="plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%"
+                                   class="form-label w-50">Detector Match Tolerance</label>
+                            <input type="text" id="detector_tolerance" name="detector_tolerance"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%"
+                                   class="form-control mb-3 w-50" required>
+
+                            <label id="detector_ignore_time_label" for="detector_ignore_time" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Ignore time in seconds after a successful match."
+                                   class="form-label w-50">Detector Ignore Time</label>
+                            <input type="text" id="detector_ignore_time" name="detector_ignore_time"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Ignore time in seconds after a successful match."
+                                   class="form-control mb-5 w-50" required>
+                        </div>
+                        <div class="tab-pane fade" id="email-tab-pane" role="tabpanel" aria-labelledby="email-tab"
+                             tabindex="0">
+
+                            <h5 class="mt-3 mb-3">Pre Record Email</h5>
+
+                            <label id="detector_prerecord_emails_label" for="detector_prerecord_emails"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Comma seperated list of Pre Record Alert Emails" class="form-label w-50">Pre
+                                Record Alert Emails</label>
+                            <input type="text" id="detector_prerecord_emails" name="detector_prerecord_emails"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Comma seperated list of Pre Record Alert Emails"
+                                   class="form-control mb-3 w-50">
+
+                            <label id="pre_record_subject_label" for="pre_record_subject" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Pre Recording Email Subject" class="form-label w-50">Pre
+                                Recording Email Subject</label>
+                            <input type="text" id="pre_record_subject" name="pre_record_subject"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Subject"
+                                   class="form-control mb-3 w-50">
+
+                            <label id="pre_record_body_label" for="pre_record_body" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Pre Recording Email Body" class="form-label w-50">Pre
+                                Recording Email Body</label>
+                            <textarea rows="5" cols="50" id="pre_record_body" name="pre_record_body"
+                                      data-bs-toggle="tooltip" data-bs-placement="top" title="Pre Recording Email Body"
+                                      class="form-control mb-3 w-50"></textarea>
+
+                            <h5 class="mt-3 mb-3">Post Record Email</h5>
+
+                            <label id="detector_postrecord_emails_label" for="detector_postrecord_emails"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Comma seperated list of Post Record Alert Emails" class="form-label w-50">Post
+                                Record Alert Emails</label>
+                            <input type="text" id="detector_postrecord_emails" name="detector_postrecord_emails"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Comma seperated list of Post Record Alert Emails"
+                                   class="form-control mb-5 w-50">
+
+                            <label id="post_record_subject_label" for="post_record_subject" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Post Recording Email Subject" class="form-label w-50">Post
+                                Recording Email Subject</label>
+                            <input type="text" id="post_record_subject" name="post_record_subject"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Subject"
+                                   class="form-control mb-3 w-50">
+
+                            <label id="post_record_body_label" for="post_record_body" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Post Recording Email Body" class="form-label w-50">Post
+                                Recording Email Body</label>
+                            <textarea rows="5" cols="50" id="post_record_body" name="post_record_body"
+                                      data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Body"
+                                      class="form-control mb-3 w-50"></textarea>
+
+                        </div>
+                        <div class="tab-pane fade" id="mqtt-tab-pane" role="tabpanel" aria-labelledby="mqtt-tab"
+                             tabindex="0">
+
+                            <h5 class="mt-3 mb-3">MQTT Configuration</h5>
+
+                            <label id="detector_mqtt_topic_label" for="detector_mqtt_topic" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="MQTT topic to public to. Example: dispatch/siren"
+                                   class="form-label w-50">MQTT Topic</label>
+                            <input type="text" id="detector_mqtt_topic" name="detector_mqtt_topic"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="MQTT topic to public to. Example: dispatch/siren"
+                                   class="form-control mb-3 w-50">
+
+                            <label id="detector_mqtt_start_message_label" for="detector_mqtt_start_message"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="First message sent to MQTT topic." class="form-label w-50">MQTT Start
+                                Message</label>
+                            <input type="text" id="detector_mqtt_start_message" name="detector_mqtt_start_message"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="First message sent to MQTT topic." class="form-control mb-3 w-50">
+
+                            <label id="detector_mqtt_stop_message_label" for="detector_mqtt_stop_message"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Second message sent to MQTT topic." class="form-label w-50">MQTT Stop
+                                Message</label>
+                            <input type="text" id="detector_mqtt_stop_message" name="detector_mqtt_stop_message"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Second message sent to MQTT topic." class="form-control mb-3 w-50">
+
+                            <label id="detector_mqtt_interval_time_label" for="detector_mqtt_interval_time"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Interval in seconds between first and second MQTT message."
+                                   class="form-label w-50">MQTT Stop Message</label>
+                            <input type="text" id="detector_mqtt_interval_time" name="detector_mqtt_interval_time"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Interval in seconds between first and second MQTT message."
+                                   class="form-control mb-5 w-50">
+                        </div>
+                        <div class="tab-pane fade" id="pushover-tab-pane" role="tabpanel" aria-labelledby="pushover-tab"
+                             tabindex="0">
+
+                            <h5 class="mt-3 mb-3">Pushover Configuration</h5>
+
+                            <label id="detector_pushover_group_token_label" for="detector_pushover_group_token"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Group token from Pushover group for this detector." class="form-label w-50">Pushover
+                                Group Token</label>
+                            <input type="text" id="detector_pushover_group_token" name="detector_pushover_group_token"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Group token from Pushover group for this detector."
+                                   class="form-control mb-3 w-50">
+
+                            <label id="detector_pushover_app_token_label" for="detector_pushover_app_token"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Token from Pushover application for this detector." class="form-label w-50">Pushover
+                                App Token</label>
+                            <input type="text" id="detector_pushover_app_token" name="detector_pushover_app_token"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Token from Pushover application for this detector."
+                                   class="form-control mb-5 w-50">
+
+                            <label id="detector_pushover_subject_label" for="detector_pushover_subject"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Subject for Pushover Message." class="form-label w-50">Pushover Message
+                                Subject</label>
+                            <input type="text" id="detector_pushover_subject" name="detector_pushover_subject"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Subject for Pushover Message." class="form-control mb-5 w-50">
+
+                            <label id="html_message_label" for="html_message" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Message to be sent with Pushover Notification"
+                                   class="form-label w-50">Pushover Message HTML</label>
+                            <textarea rows="5" cols="50" id="html_message" name="html_message" data-bs-toggle="tooltip"
+                                      data-bs-placement="top" title="Message to be sent with Pushover Notification"
+                                      class="form-control mb-3 w-50"></textarea>
+
+                            <label id="detector_pushover_sound_label" for="detector_pushover_sound"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Alert Sound for Pushover Message." class="form-label w-50">Pushover Alert
+                                Sound</label>
+                            <input type="text" id="detector_pushover_sound" name="detector_pushover_sound"
+                                   data-bs-toggle="tooltip" data-bs-placement="top"
+                                   title="Alert Sound for Pushover Message." class="form-control mb-5 w-50">
+
+                        </div>
+                        <div class="tab-pane fade" id="facebook-tab-pane" role="tabpanel" aria-labelledby="facebook-tab"
+                             tabindex="0">
+                            <h5 class="mt-3 mb-3">Facebook Configuration</h5>
+                            <label id="detector_facebook_status_label" for="detector_facebook_status"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Post Detection To Facebook"
+                                   class="form-label w-50">Posting to Facebook</label>
+                            <select name="det_facebook_status" id="detector_facebook_status"
+                                    class="form-select mb-5 w-50" aria-label="Facebook Post Status">
+                                <option name="1" value="1">Enabled</option>
+                                <option name="0" value="0">Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" name="submit" value="detector_save" class="mb-4 btn btn-outline-success">Save
+                        Detector
+                    </button>
+                    <button type="submit" name="submit" value="detector_delete" class="mb-4 btn btn-outline-danger">
+                        Delete Detector
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        const detector_select = document.getElementById('detector_selection');
+
+        detector_select.addEventListener('change', function handleChange(event) {
+            const name = this.options[this.selectedIndex].getAttribute('name')
+            if (name === "new_detector") {
+                console.log(event.target.value)
+                let detector_data = JSON.parse(event.target.value.replace(/"/g, '\\"').replaceAll("'", '"'))
+                show_detector_input(name, detector_data)
+            } else if (name === "none") {
+                const det_input = document.getElementById('detector_input_div')
+                det_input.style.display = 'none'
+            } else {
+                let detector_data = JSON.parse(event.target.value.replace(/"/g, '\\"').replaceAll("'", '"'))
+                show_detector_input(name, detector_data)
+            }
+
+        });
+
+        function show_detector_input(detector_name, detector_data) {
+            const det_input = document.getElementById('detector_input_div')
+            det_input.style.display = 'block'
+            const det_id = document.getElementById('detector_id')
+            det_id.value = detector_data.detector_id
+            const det_name = document.getElementById('detector_name')
+            det_name.value = detector_name
+            const det_number = document.getElementById('detector_number')
+            det_number.value = detector_data.station_number
+
+            const det_tone_a = document.getElementById('detector_tone_a')
+            det_tone_a.value = detector_data.a_tone
+
+            const det_tone_a_length = document.getElementById('detector_tone_a_length')
+            det_tone_a_length.value = detector_data.a_tone_length
+
+            const det_tone_b = document.getElementById('detector_tone_b')
+            det_tone_b.value = detector_data.b_tone
+
+            const det_tone_b_length = document.getElementById('detector_tone_b_length')
+            det_tone_b_length.value = detector_data.b_tone_length
+
+            const det_tolerance = document.getElementById('detector_tolerance')
+            det_tolerance.value = detector_data.tone_tolerance
+
+            const det_ignore_time = document.getElementById('detector_ignore_time')
+            det_ignore_time.value = detector_data.ignore_time
+
+            const det_pre_record_email = document.getElementById('detector_prerecord_emails')
+            det_pre_record_email.value = detector_data.pre_record_emails.join(', ')
+
+            const det_pre_record_email_subject = document.getElementById('pre_record_subject')
+            det_pre_record_email_subject.value = detector_data.pre_record_email_subject
+
+            const det_pre_record_email_body = document.getElementById('pre_record_body')
+            det_pre_record_email_body.value = detector_data.pre_record_email_body
+            det_pre_record_email_body.innerText = detector_data.pre_record_email_body
+
+            const det_post_record_email = document.getElementById('detector_postrecord_emails')
+            det_post_record_email.value = detector_data.post_record_emails.join(', ')
+
+            const det_post_record_email_subject = document.getElementById('post_record_subject')
+            det_post_record_email_subject.value = detector_data.post_record_email_subject
+
+            const det_post_record_email_body = document.getElementById('post_record_body')
+            det_post_record_email_body.value = detector_data.post_record_email_body
+            det_post_record_email_body.innerText = detector_data.post_record_email_body
+
+            const det_mqtt_topic = document.getElementById('detector_mqtt_topic')
+            det_mqtt_topic.value = detector_data.mqtt_topic
+
+            const det_mqtt_start_message = document.getElementById('detector_mqtt_start_message')
+            det_mqtt_start_message.value = detector_data.mqtt_start_message
+
+            const det_mqtt_stop_message = document.getElementById('detector_mqtt_stop_message')
+            det_mqtt_stop_message.value = detector_data.mqtt_stop_message
+
+            const det_mqtt_message_interval = document.getElementById('detector_mqtt_interval_time')
+            det_mqtt_message_interval.value = detector_data.mqtt_message_interval
+
+            const det_pushover_group_token = document.getElementById('detector_pushover_group_token')
+            det_pushover_group_token.value = detector_data.pushover_group_token
+
+            const det_pushover_app_token = document.getElementById('detector_pushover_app_token')
+            det_pushover_app_token.value = detector_data.pushover_app_token
+
+            const det_pushover_subject = document.getElementById('detector_pushover_subject')
+            det_pushover_subject.value = detector_data.pushover_subject
+
+            const det_pushover_body = document.getElementById('html_message')
+            det_pushover_body.value = detector_data.pushover_body
+            det_pushover_body.innerText = detector_data.pushover_body
+
+            const det_pushover_sound = document.getElementById('detector_pushover_sound')
+            det_pushover_sound.value = detector_data.pushover_sound
+
+            const det_facebook = document.getElementById('detector_facebook_status')
+            if (detector_data.post_to_facebook === 1) {
+                det_facebook.options.selectedIndex = 0;
+            } else {
+                det_facebook.options.selectedIndex = 1;
+            }
+        }
+
+    </script>
+{% endblock %}

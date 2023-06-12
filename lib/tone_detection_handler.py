@@ -1,5 +1,8 @@
 import json
+import logging
 import time
+
+module_logger = logging.getLogger('tr_tone_detection.tone_detection')
 
 
 class ToneDetection:
@@ -28,8 +31,9 @@ class ToneDetection:
                 match_a = detector_ranges[0][0] <= tone[0] <= detector_ranges[0][1]
                 match_b = detector_ranges[1][0] <= tone[1] <= detector_ranges[1][1]
                 if match_a and match_b:
-                    print("Match found")
-                    self.detector_list.append((time.time(), detector_config["ignore_time"], detector_config["detector_id"]))
+                    module_logger.info(f"Match found for {detector}")
+                    self.detector_list.append(
+                        (time.time(), detector_config["ignore_time"], detector_config["detector_id"]))
                     # handle the match here
 
         return self.detector_list

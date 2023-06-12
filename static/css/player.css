@@ -1,0 +1,45 @@
+
+#audio {
+    display: none;
+}
+
+#audioplayer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    height: auto;
+    background-color: #1b1c1d;
+    padding: 4px 12px 6px;
+    color: #e7e7e7;
+}
+
+.progress{
+    --bs-progress-bg: #2d2e2f;
+}
+
+.audio_bar_now {
+    background-color: #878787;
+
+}
+
+.btn_autoplay {
+    color: #878787;
+}
+
+.btn_autoplay:hover {
+    color: #ca161d;
+}
+
+.icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #e7e7e7;
+}
+
+.icon:hover {
+    color: #ca161d;
+}
+
+.clear { clear: both; height: 60px; }

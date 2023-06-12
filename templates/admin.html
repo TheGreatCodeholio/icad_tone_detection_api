@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h6 class="text-center d-none">{% block title %}  Admin{% endblock %}</h6>
+
+    <h4>Welcome {{ session["user"] }}</h4>
+
+{% endblock %}
