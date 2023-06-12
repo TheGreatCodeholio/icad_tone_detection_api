@@ -9,6 +9,5 @@ etc/detectors.json
 /test.cfg
 /etc/secret_key.txt
 /.idea/
-/.idea/*.*
 /log/
 /log/*.log
