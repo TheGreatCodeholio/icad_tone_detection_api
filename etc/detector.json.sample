@@ -1,0 +1,23 @@
+{
+    "Example Department": {
+        "detector_id": 1,
+        "station_number": 0,
+        "a_tone": 726.8,
+        "b_tone": 1122.5,
+        "tone_tolerance": 1,
+        "ignore_time": 120.0,
+        "alert_emails": [],
+        "alert_email_subject": "Dispatch Alert - {detector_name}",
+        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>",
+        "mqtt_topic": "detect/Example Department",
+        "mqtt_start_message": "ON",
+        "mqtt_stop_message": "OFF",
+        "mqtt_message_interval": 5.0,
+        "pushover_group_token": "g9##########w2",
+        "pushover_app_token": "arkj########6i",
+        "pushover_subject": "Alert!",
+        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a>",
+        "pushover_sound": "pager",
+        "post_to_facebook": 0
+    }
+}

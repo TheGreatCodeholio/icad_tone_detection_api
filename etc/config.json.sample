@@ -1,0 +1,75 @@
+{
+    "detection_mode": 2,
+    "tone_extraction": {
+        "threshold_percent": 2,
+        "dtmf": {
+            "enabled": 1
+        },
+        "quick_call": {
+            "enabled": 1
+        },
+        "long_tone": {
+            "enabled": 1
+        },
+        "hi-low_tone": {
+            "enabled": 1
+        }
+    },
+    "transcription_settings": {
+        "transcribe_alert": 0,
+        "transcribe_detection": 0,
+        "transcription_url": "https://example.com/transcribe"
+    },
+    "email_settings": {
+        "send_detection_email": 0,
+        "send_alert_email": 0,
+        "send_as_single_email": 0,
+        "smtp_hostname": "mail.example.com",
+        "smtp_port": 587,
+        "smtp_username": "dispatch@example.com",
+        "smtp_password": "CE3########QM",
+        "smtp_security": "TLS",
+        "email_address_from": "dispatch@example.com",
+        "email_text_from": "iCAD Example County",
+        "alert_email_subject": "Dispatch Alert - {detector_name}",
+        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br> {mp3_url}"
+    },
+    "pushover_settings": {
+        "enabled": 0,
+        "all_detector_group": 0,
+        "all_detector_group_token": "g23#####################ns7",
+        "all_detector_app_token": "aen#######################vuru",
+        "message_html_string": "<font color=\"red\"><b>%detector_name%</b></font><br><br><a href=\"%mp3_url%\">Click for Dispatch Audio</a>",
+        "subject": "Alert!",
+        "sound": "pushover"
+    },
+    "file_storage": {
+        "storage_type": "scp",
+        "remote_path": "/var/www/example.com/detection_audio",
+        "google_cloud": {
+            "project_id": "some-projectname-444521",
+            "bucket_name": "bucket-name",
+            "credentials_path": "etc/google_cloud.json"
+        },
+        "aws_s3": {
+            "access_key_id": "AK###########B",
+            "secret_access_key": "l###################8",
+            "bucket_name": "bucket-name",
+            "region": "us-east-1"
+        },
+        "scp": {
+            "host": "upload.example.com",
+            "port": 22,
+            "user": "sshuser",
+            "password": "",
+            "audio_url_path": "https://example.com/detection_audio",
+            "remote_path": "/var/www/example.com/detection_audio",
+            "keep_audio_days": 0,
+            "private_key": "/home/sshuser/.ssh/id_rsa"
+        }
+    },
+    "sqlite": {
+        "enabled": 1,
+        "database_path": "tr_tone_detect.db"
+    }
+}
