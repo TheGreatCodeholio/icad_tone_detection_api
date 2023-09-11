@@ -21,7 +21,7 @@ default_config = {
     "transcription_settings": {
         "transcribe_alert": 0,
         "transcribe_detection": 0,
-        "transcription_url": "http://localhost/transcribe"
+        "transcription_url": "https://example.com/transcribe"
     },
     "email_settings": {
         "send_detection_email": 0,
@@ -30,21 +30,46 @@ default_config = {
         "smtp_hostname": "mail.example.com",
         "smtp_port": 587,
         "smtp_username": "dispatch@example.com",
-        "smtp_password": "CE3QsT2biDfruQM",
+        "smtp_password": "CE3########QM",
         "smtp_security": "TLS",
         "email_address_from": "dispatch@example.com",
         "email_text_from": "iCAD Example County",
         "alert_email_subject": "Dispatch Alert - {detector_name}",
-        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br> {mp3_url} <br><br>{transcript}"
+        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br> {mp3_url}"
     },
     "pushover_settings": {
         "enabled": 0,
         "all_detector_group": 0,
-        "all_detector_group_token": "secretgrouptokengoeshere",
-        "all_detector_app_token": "secretapptokengoeshere",
-        "message_html_string": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a>",
+        "all_detector_group_token": "g23#####################ns7",
+        "all_detector_app_token": "aen#######################vuru",
+        "message_html_string": "<font color=\"red\"><b>%detector_name%</b></font><br><br><a href=\"%mp3_url%\">Click for Dispatch Audio</a>",
         "subject": "Alert!",
         "sound": "pushover"
+    },
+    "file_storage": {
+        "storage_type": "scp",
+        "remote_path": "/var/www/example.com/detection_audio",
+        "google_cloud": {
+            "project_id": "some-projectname-444521",
+            "bucket_name": "bucket-name",
+            "credentials_path": "etc/google_cloud.json"
+        },
+        "aws_s3": {
+            "access_key_id": "AK###########B",
+            "secret_access_key": "l###################8",
+            "bucket_name": "bucket-name",
+            "region": "us-east-1"
+        },
+        "scp": {
+            "host": "upload.example.com",
+            "port": 22,
+            "user": "sshuser",
+            "password": "",
+            "audio_url_path": "https://example.com/detection_audio",
+            "remote_path": "/var/www/example.com/detection_audio",
+            "keep_audio_days": 0,
+            "private_key": "/home/sshuser/.ssh/id_rsa"
+        }
     },
     "sqlite": {
         "enabled": 1,
@@ -53,27 +78,26 @@ default_config = {
 }
 
 default_detectors = {
-    "Test Department": {
-        "detector_id": 0,
+    "Example Department": {
+        "detector_id": 1,
         "station_number": 0,
-        "a_tone": 0,
-        "b_tone": 0,
+        "a_tone": 726.8,
+        "b_tone": 1122.5,
         "tone_tolerance": 1,
         "ignore_time": 120.0,
         "alert_emails": [],
         "alert_email_subject": "Dispatch Alert - {detector_name}",
         "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>",
-        "mqtt_topic": "dispatch/TestDepartment",
+        "mqtt_topic": "detect/Example Department",
         "mqtt_start_message": "ON",
         "mqtt_stop_message": "OFF",
         "mqtt_message_interval": 5.0,
-        "pushover_group_token": "group_token",
-        "pushover_app_token": "application_token",
+        "pushover_group_token": "g9##########w2",
+        "pushover_app_token": "arkj########6i",
         "pushover_subject": "Alert!",
         "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a>",
         "pushover_sound": "pager",
         "post_to_facebook": 0
-
     }
 }
 
