@@ -142,7 +142,6 @@ except FileNotFoundError:
         f.write(secret_key)
     app.config['SECRET_KEY'] = secret_key
 
-# tell Flask to serve static files from the "static" directory
 app.static_folder = 'static'
 
 
@@ -154,8 +153,7 @@ def clear_old_items():
         current_time = time.time()
         if len(detector_list) < 1:
             continue
-        detector_list = [(timestamp, timeout, id) for timestamp, timeout, id in detector_list if
-                         current_time - timestamp <= int(timeout)]
+        detector_list = [detector for detector in detector_list if current_time < (detector["last_detected"] + detector["ignore_seconds"])]
 
 
 def login_required(f):
@@ -228,51 +226,63 @@ def logout():
 @app.route('/tone_detect', methods=['POST'])
 def tone_upload():
     global detector_list
+    logger.info("Got New HTTP request.")
 
-    if request.method == "POST":
-        if config_data["detection_mode"] == 0:
-            return jsonify({"status": "error", "message": "Detection Disabled"}), 400
+    if request.method != "POST":
+        return jsonify({"status": "error", "message": "Invalid request method"}), 400
 
-        start = time.time()
-        file = request.files.get('file')
-        if not file:
-            return jsonify({"status": "error", "message": "No file uploaded"}), 400
+    call_data = request.form.to_dict()
 
-        allowed_extensions = ['.mp3', '.wav', '.m4a']
-        ext = splitext(file.filename)[1]
-        if ext not in allowed_extensions:
-            return jsonify({"status": "error", "message": "File must be an MP3, WAV or M4A"}), 400
+    if not call_data:
+        return jsonify({"status": "error", "message": "No call data"}), 400
 
-        file_data = file.read()
+    if config_data["detection_mode"] == 0:
+        return jsonify({"status": "error", "message": "Detection Disabled"}), 400
 
-        audio = AudioSegment.from_file(io.BytesIO(file_data))
+    file = request.files.get('file')
+    if not file:
+        return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
-        try:
-            quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio).main()
-        except Exception as e:
-            return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
+    allowed_extensions = ['.mp3', '.wav', '.m4a']
+    ext = splitext(file.filename)[1]
+    if ext not in allowed_extensions:
+        return jsonify({"status": "error", "message": "File must be an MP3, WAV, or M4A"}), 400
 
-        if config_data["detection_mode"] == 1:
-            qc_result = ToneDetection(config_data, detector_data, detector_list).detect_quick_call(quick_call, audio, audio_path)
-            detector_list = qc_result
-        elif config_data["detection_mode"] == 2:
-            # check for detections
-            if not (quick_call or hi_low or long_tone or dtmf_tone):
-                logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
-            else:
-                logger.warning("Tones Detected")
-                detection_json = {"quickcall": quick_call, "hi_low": hi_low, "long": long_tone,
-                                  "dtmf": dtmf_tone, "ts": time.time(),
-                                  "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
-                file_name = f'{round(time.time(), 2)}_detection'
-                audio.export(f'{audio_path}/{file_name}.mp3', format='mp3')
-                with open(f'{audio_path}/{file_name}.json', 'w+') as outjs:
-                    outjs.write(json.dumps(detection_json, indent=4))
-                outjs.close()
+    file_data = file.read()
+    audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
 
-        return jsonify(detector_list), 200
+    try:
+        quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
+        detection_json = {"quickcall": quick_call, "hi_low": hi_low, "long": long_tone,
+                          "dtmf": dtmf_tone, "ts": time.time(),
+                          "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
+
+    if not (quick_call or hi_low or long_tone or dtmf_tone):
+        logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
     else:
-        return 200
+        logger.warning("Tones Detected")
+        file_name = f'{round(float(call_data["start_time"]), -1)}_detection'
+        local_audio_path = os.path.join(root_path, f"{audio_path}/{file_name}.mp3")
+        audio_segment.export(local_audio_path, format='mp3')
+
+
+        if config_data["detection_mode"] in (2, 3):
+            logger.warning("Processing Tones Through Detectors")
+            call_data["local_audio_path"] = local_audio_path
+
+            qc_result, match_data_list = ToneDetection(config_data, detector_data, detector_list, call_data).detect_quick_call(
+                quick_call, audio_segment)
+            detector_list = qc_result
+            detection_json["matches"] = match_data_list
+
+        with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
+            outjs.write(json.dumps(detection_json, indent=4))
+
+    logger.info("HTTP Request Completed")
+    return jsonify(detection_json), 200
 
 
 @app.route('/save_main_config', methods=['POST'])
@@ -338,17 +348,12 @@ def save_detector_config():
         detector_name = request.form.get("detector_name", None)
         detector_number = request.form.get("detector_number", None)
         detector_tone_a = request.form.get("detector_tone_a", None)
-        detector_tone_a_length = request.form.get("detector_tone_a_length", None)
         detector_tone_b = request.form.get("detector_tone_b", None)
-        detector_tone_b_length = request.form.get("detector_tone_b_length", None)
         detector_tolerance = request.form.get("detector_tolerance", None)
         detector_ignore_time = request.form.get("detector_ignore_time", None)
-        detector_prerecord_emails = request.form.get("detector_prerecord_emails", None)
-        detector_prerecord_email_subject = request.form.get("pre_record_subject", None)
-        detector_prerecord_email_body = request.form.get("pre_record_body", None)
-        detector_postrecord_emails = request.form.get("detector_postrecord_emails", None)
-        detector_postrecord_email_subject = request.form.get("post_record_subject", None)
-        detector_postrecord_email_body = request.form.get("post_record_body", None)
+        detector_alert_emails = request.form.get("detector_alert_emails", None)
+        detector_alert_email_subject = request.form.get("alert_subject", None)
+        detector_alert_email_body = request.form.get("alert_body", None)
         detector_mqtt_topic = request.form.get("detector_mqtt_topic", None)
         detector_mqtt_start_message = request.form.get("detector_mqtt_start_message", None)
         detector_mqtt_stop_message = request.form.get("detector_mqtt_stop_message", None)
@@ -378,17 +383,15 @@ def save_detector_config():
 
             if detector_tone_a == 0:
                 detector_data[detector_name]["a_tone"] = 0
-                detector_data[detector_name]["a_tone_length"] = 0
+
             else:
                 detector_data[detector_name]["a_tone"] = float(detector_tone_a)
-                detector_data[detector_name]["a_tone_length"] = float(detector_tone_a_length)
 
             if detector_tone_b == 0:
                 detector_data[detector_name]["b_tone"] = 0
-                detector_data[detector_name]["b_tone_length"] = 0
+
             else:
                 detector_data[detector_name]["b_tone"] = float(detector_tone_b)
-                detector_data[detector_name]["b_tone_length"] = float(detector_tone_b_length)
 
             if not detector_tolerance:
                 detector_data[detector_name]["tone_tolerance"] = 0.02
@@ -400,25 +403,15 @@ def save_detector_config():
             else:
                 detector_data[detector_name]["ignore_time"] = float(detector_ignore_time)
 
-            pre_record_emails = []
-            if len(detector_prerecord_emails) >= 1:
-                temp_pre_emails = detector_prerecord_emails.split(", ")
-                for em in temp_pre_emails:
-                    pre_record_emails.append(em)
-            post_record_emails = []
-            if len(detector_postrecord_emails) >= 1:
-                temp_post_emails = detector_postrecord_emails.split(", ")
+            alert_emails = []
+            if len(detector_alert_emails) >= 1:
+                temp_post_emails = detector_alert_emails.split(", ")
                 for em in temp_post_emails:
-                    post_record_emails.append(em)
+                    alert_emails.append(em)
 
-            detector_data[detector_name]["pre_record_emails"] = pre_record_emails
-
-            detector_data[detector_name]["pre_record_email_subject"] = detector_prerecord_email_subject
-            detector_data[detector_name]["pre_record_email_body"] = detector_prerecord_email_body
-
-            detector_data[detector_name]["post_record_emails"] = post_record_emails
-            detector_data[detector_name]["post_record_email_subject"] = detector_postrecord_email_subject
-            detector_data[detector_name]["post_record_email_body"] = detector_postrecord_email_body
+            detector_data[detector_name]["alert_emails"] = alert_emails
+            detector_data[detector_name]["alert_email_subject"] = detector_alert_email_subject
+            detector_data[detector_name]["alert_email_body"] = detector_alert_email_body
 
             detector_data[detector_name]["mqtt_topic"] = detector_mqtt_topic
             detector_data[detector_name]["mqtt_start_message"] = detector_mqtt_start_message
@@ -512,10 +505,6 @@ def import_ttd():
                     detector_id_all.remove(detector_id)
                     detector_data[ttd_config[section]["description"]]["a_tone"] = float(ttd_config[section]["atone"])
                     detector_data[ttd_config[section]["description"]]["b_tone"] = float(ttd_config[section]["btone"])
-                    detector_data[ttd_config[section]["description"]]["a_tone_length"] = float(
-                        ttd_config[section]["atonelength"])
-                    detector_data[ttd_config[section]["description"]]["a_tone_length"] = float(
-                        ttd_config[section]["btonelength"])
                     detector_data[ttd_config[section]["description"]]["tone_tolerance"] = float(
                         ttd_config[section]["tone_tolerance"]) * 100
                     count += 1

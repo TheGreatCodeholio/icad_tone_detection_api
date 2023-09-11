@@ -66,7 +66,7 @@ class ToneExtraction:
         final_results = []
         result = []
         if not lst:
-            return
+            return []
         current_time = lst[0][0]
         current_group = [(lst[0][0], lst[0][1])]
         for i in range(1, len(lst)):

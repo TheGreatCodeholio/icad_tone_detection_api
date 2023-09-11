@@ -102,13 +102,6 @@
                                    data-bs-placement="top" title="Detector Tone A" class="form-control mb-3 w-50"
                                    required>
 
-                            <label id="detector_tone_a_length_label" for="detector_tone_a_length"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Detector Tone A length in seconds" class="form-label w-50">Tone A
-                                Length</label>
-                            <input type="text" id="detector_tone_a_length" name="detector_tone_a_length"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Detector Tone A length in seconds." class="form-control mb-3 w-50" required>
                             <br>
                             <h5 class="mt-3 mb-3">Tone B</h5>
 
@@ -119,13 +112,6 @@
                                    data-bs-placement="top" title="Detector Tone B" class="form-control mb-3 w-50"
                                    required>
 
-                            <label id="detector_tone_b_length_label" for="detector_tone_b_length"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Detector Tone B length in seconds" class="form-label w-50">Tone B
-                                Length</label>
-                            <input type="text" id="detector_tone_b_length" name="detector_tone_b_length"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Detector Tone B length in seconds." class="form-control mb-3 w-50" required>
                             <br>
 
                             <h5 class="mt-3 mb-3">Matching</h5>
@@ -149,54 +135,26 @@
                         <div class="tab-pane fade" id="email-tab-pane" role="tabpanel" aria-labelledby="email-tab"
                              tabindex="0">
 
-                            <h5 class="mt-3 mb-3">Pre Record Email</h5>
+                            <h5 class="mt-3 mb-3">Alert Emails</h5>
 
-                            <label id="detector_prerecord_emails_label" for="detector_prerecord_emails"
+                            <label id="detector_alert_emails_label" for="detector_alert_emails"
                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Comma seperated list of Pre Record Alert Emails" class="form-label w-50">Pre
-                                Record Alert Emails</label>
-                            <input type="text" id="detector_prerecord_emails" name="detector_prerecord_emails"
+                                   title="Comma seperated list of Alert Emails" class="form-label w-50">Alert Email Addresses</label>
+                            <input type="text" id="detector_alert_emails" name="detector_alert_emails"
                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Comma seperated list of Pre Record Alert Emails"
-                                   class="form-control mb-3 w-50">
-
-                            <label id="pre_record_subject_label" for="pre_record_subject" data-bs-toggle="tooltip"
-                                   data-bs-placement="top" title="Pre Recording Email Subject" class="form-label w-50">Pre
-                                Recording Email Subject</label>
-                            <input type="text" id="pre_record_subject" name="pre_record_subject"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Subject"
-                                   class="form-control mb-3 w-50">
-
-                            <label id="pre_record_body_label" for="pre_record_body" data-bs-toggle="tooltip"
-                                   data-bs-placement="top" title="Pre Recording Email Body" class="form-label w-50">Pre
-                                Recording Email Body</label>
-                            <textarea rows="5" cols="50" id="pre_record_body" name="pre_record_body"
-                                      data-bs-toggle="tooltip" data-bs-placement="top" title="Pre Recording Email Body"
-                                      class="form-control mb-3 w-50"></textarea>
-
-                            <h5 class="mt-3 mb-3">Post Record Email</h5>
-
-                            <label id="detector_postrecord_emails_label" for="detector_postrecord_emails"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Comma seperated list of Post Record Alert Emails" class="form-label w-50">Post
-                                Record Alert Emails</label>
-                            <input type="text" id="detector_postrecord_emails" name="detector_postrecord_emails"
-                                   data-bs-toggle="tooltip" data-bs-placement="top"
-                                   title="Comma seperated list of Post Record Alert Emails"
+                                   title="Comma seperated list of Alert Emails"
                                    class="form-control mb-5 w-50">
 
-                            <label id="post_record_subject_label" for="post_record_subject" data-bs-toggle="tooltip"
-                                   data-bs-placement="top" title="Post Recording Email Subject" class="form-label w-50">Post
-                                Recording Email Subject</label>
-                            <input type="text" id="post_record_subject" name="post_record_subject"
-                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Subject"
+                            <label id="alert_subject_label" for="alert_subject" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Alert Email Subject" class="form-label w-50">Alert Email Subject</label>
+                            <input type="text" id="alert_subject" name="alert_subject"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Alert Email Subject"
                                    class="form-control mb-3 w-50">
 
-                            <label id="post_record_body_label" for="post_record_body" data-bs-toggle="tooltip"
-                                   data-bs-placement="top" title="Post Recording Email Body" class="form-label w-50">Post
-                                Recording Email Body</label>
-                            <textarea rows="5" cols="50" id="post_record_body" name="post_record_body"
-                                      data-bs-toggle="tooltip" data-bs-placement="top" title="Post Recording Email Body"
+                            <label id="alert_body_label" for="alert_body" data-bs-toggle="tooltip"
+                                   data-bs-placement="top" title="Alert Email Body" class="form-label w-50">Alert Email Body</label>
+                            <textarea rows="5" cols="50" id="alert_body" name="alert_body"
+                                      data-bs-toggle="tooltip" data-bs-placement="top" title="Alert Email Body"
                                       class="form-control mb-3 w-50"></textarea>
 
                         </div>
@@ -340,14 +298,8 @@
             const det_tone_a = document.getElementById('detector_tone_a')
             det_tone_a.value = detector_data.a_tone
 
-            const det_tone_a_length = document.getElementById('detector_tone_a_length')
-            det_tone_a_length.value = detector_data.a_tone_length
-
             const det_tone_b = document.getElementById('detector_tone_b')
             det_tone_b.value = detector_data.b_tone
-
-            const det_tone_b_length = document.getElementById('detector_tone_b_length')
-            det_tone_b_length.value = detector_data.b_tone_length
 
             const det_tolerance = document.getElementById('detector_tolerance')
             det_tolerance.value = detector_data.tone_tolerance
@@ -355,25 +307,15 @@
             const det_ignore_time = document.getElementById('detector_ignore_time')
             det_ignore_time.value = detector_data.ignore_time
 
-            const det_pre_record_email = document.getElementById('detector_prerecord_emails')
-            det_pre_record_email.value = detector_data.pre_record_emails.join(', ')
+            const det_alert_email = document.getElementById('detector_alert_emails')
+            det_alert_email.value = detector_data.alert_emails.join(', ')
 
-            const det_pre_record_email_subject = document.getElementById('pre_record_subject')
-            det_pre_record_email_subject.value = detector_data.pre_record_email_subject
+            const det_alert_email_subject = document.getElementById('alert_subject')
+            det_alert_email_subject.value = detector_data.alert_email_subject
 
-            const det_pre_record_email_body = document.getElementById('pre_record_body')
-            det_pre_record_email_body.value = detector_data.pre_record_email_body
-            det_pre_record_email_body.innerText = detector_data.pre_record_email_body
-
-            const det_post_record_email = document.getElementById('detector_postrecord_emails')
-            det_post_record_email.value = detector_data.post_record_emails.join(', ')
-
-            const det_post_record_email_subject = document.getElementById('post_record_subject')
-            det_post_record_email_subject.value = detector_data.post_record_email_subject
-
-            const det_post_record_email_body = document.getElementById('post_record_body')
-            det_post_record_email_body.value = detector_data.post_record_email_body
-            det_post_record_email_body.innerText = detector_data.post_record_email_body
+            const det_alert_email_body = document.getElementById('alert_body')
+            det_alert_email_body.value = detector_data.alert_email_body
+            det_alert_email_body.innerText = detector_data.alert_email_body
 
             const det_mqtt_topic = document.getElementById('detector_mqtt_topic')
             det_mqtt_topic.value = detector_data.mqtt_topic
