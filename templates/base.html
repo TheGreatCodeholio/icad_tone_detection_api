@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Alert Page</title>
+    <title>iCAD Tone Detect</title>
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <!-- Font Awesome -->
     <link href="{{ url_for('static', filename='font_awesome/css/all.css') }}" rel="stylesheet"/>
@@ -15,7 +15,6 @@
     <!-- Bootstrap 5 CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/player.css') }}">
 
 
 </head>
@@ -56,7 +55,7 @@
             <img
                     src="{{ url_for('static', filename='img/logo.png') }}"
                     height="45px"
-                    alt="Alert Page Logo"
+                    alt="iCAD Logo"
                     loading="lazy"
             />
         </a>
@@ -110,52 +109,6 @@
 </div>
 
 <div class="clear"></div>
-
-<audio id="audio" controls>
-    <source src="{{ url_for('static', filename='audio/test.mp3') }}" type="audio/mpeg">
-</audio>
-
-
-<div id="audioplayer" class="container-fluid">
-    <div class="row d-flex flex-row align-items-center g-2">
-        <div class="col-auto">
-            <button id="autoplay" class="btn btn-outline-dark">
-                <i class="fa-solid fa-arrow-turn-up" id="audio_play"></i> Autoplay
-            </button>
-        </div>
-
-        <div class="col-auto">
-            <div class="row g-2">
-                <div class="col-auto">
-                    <i class="fa-solid fa-play play_pause icon" id="audio_play_btn"></i>
-                </div>
-                <div class="col-auto">
-                    <i class="fa-solid fa-pause play_pause icon" id="audio_pause_btn" style="display: none"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-4">
-            <div id="audio_progress" class="progress" style="height: 25px;">
-                <div class="progress-bar audio_bar_now" role="progressbar" style="width: 0%;"></div>
-                <div class="progress-bar audio_bar_loaded" role="progressbar" style="width: 0%;"></div>
-                <span id="audio_current_time" class="ms-2">0 Sec</span>
-            </div>
-        </div>
-
-        <div class="col-2 d-flex align-items-center ms-3">
-            <i class="fas fa-volume-down me-2"></i>
-            <input type="range" class="form-range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-        </div>
-        <div id="download_audio" class="col-auto ms-auto">
-            <a id="audio_download_link" href="" target="_blank"><i class="fas fa-download icon"></i></a>
-        </div>
-    </div>
-</div>
-
-
-<script src="{{ url_for('static', filename='js/player.js') }}"></script>
-
 
 <!-- Bootstrap 5 JS -->
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
