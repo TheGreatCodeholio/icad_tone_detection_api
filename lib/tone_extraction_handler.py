@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from scipy.signal import stft
 
-module_logger = logging.getLogger('tr_tone_detection.tone_extraction')
+module_logger = logging.getLogger('icad_tone_detection.tone_extraction')
 
 class ToneExtraction:
     """Extracts tones from an audio file."""
@@ -32,6 +32,7 @@ class ToneExtraction:
         return samples, audio.frame_rate, audio.duration_seconds
 
     def find_long_tones(self, matches, final_list):
+        tone_id = 0
         long_matches = []
         excluded_frequencies = []
         if not matches:
@@ -55,13 +56,15 @@ class ToneExtraction:
                         continue
 
                     if x[1][0] > 250:
-                        tone_data = {"actual": x[1][0], "occurred": round(x[0], 2)}
+                        tone_data = {"tone_id": f'lg_{tone_id + 1}', "actual": x[1][0], "occurred": round(x[0], 2)}
+                        tone_id += 1
                         long_matches.append(tone_data)
 
         return long_matches
 
     def find_hi_low_matches(self, lst):
         detected = True
+        tone_id = 0
         final_results = []
         result = []
         if not lst:
@@ -91,7 +94,8 @@ class ToneExtraction:
             if detected:
                 # first = ct[0][1][0]
                 # second = ct[1][1][0]
-                tone_data = {"actual": [ct[0][1][0], ct[1][1][0]], "occurred": round(ct[0][0], 2)}
+                tone_data = {"tone_id": f'hl_{tone_id + 1}', "actual": [ct[0][1][0], ct[1][1][0]], "occurred": round(ct[0][0], 2)}
+                tone_id += 1
                 final_results.append(tone_data)
 
         return final_results
@@ -109,6 +113,7 @@ class ToneExtraction:
 
     def normalize_qc2_matches(self, matches, threshold_percent):
         qc2_matches = []
+        tone_id = 0
         last_set = None
         for x in matches:
             if last_set is None:
@@ -127,7 +132,8 @@ class ToneExtraction:
                             b_tone_exact = self.closest_match(x[1][0])
                             a_tone_actual = last_set[1][0]
                             b_tone_actual = x[1][0]
-                            tone_data = {"exact": [a_tone_exact, b_tone_exact], "actual": [a_tone_actual, b_tone_actual], "occured": round(last_set[0], 2)}
+                            tone_data = {"tone_id": f'qc_{tone_id + 1}', "exact": [a_tone_exact, b_tone_exact], "actual": [a_tone_actual, b_tone_actual], "occured": round(last_set[0], 2)}
+                            tone_id += 1
                             # exact = [a_tone_exact, b_tone_exact]
                             # actual = [a_tone_actual, b_tone_actual]
                             # start_time = last_set[0]
@@ -251,6 +257,7 @@ class ToneExtraction:
     def get_positive_key_presses(self, key_presses, threshold=250, min_presses=4):
         positive_key_presses = []
         current_group = []
+        tone_id = 0
 
         for press in key_presses:
             if not current_group or (press['key'] == current_group[-1]['key'] and press['ms_time'] - current_group[0][
@@ -258,12 +265,14 @@ class ToneExtraction:
                 current_group.append(press)
             else:
                 if len(current_group) >= min_presses:
-                    tone_data = {"key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+                    tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+                    tone_id += 1
                     positive_key_presses.append(tone_data)
                 current_group = [press]
 
         if current_group and len(current_group) >= min_presses:
-            tone_data = {"key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+            tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+            tone_id += 1
             positive_key_presses.append(tone_data)
 
         return positive_key_presses

@@ -7,7 +7,7 @@ from sqlite3 import Connection
 from contextlib import contextmanager
 from werkzeug.security import generate_password_hash
 
-module_logger = logging.getLogger('tr_tone_detection.sqlite')
+module_logger = logging.getLogger('icad_tone_detection.sqlite')
 
 
 class SQLiteDatabase:

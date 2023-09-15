@@ -1,3 +1,4 @@
+import ast
 import configparser
 from datetime import datetime
 import io
@@ -20,10 +21,10 @@ from lib.tone_extraction_handler import ToneExtraction
 
 log_level = 1
 
-app_name = "tr_tone_detection"
+app_name = "icad_tone_detection"
 config_data = {}
 detector_data = {}
-detector_list = []
+qc_detector_list = []
 root_path = os.getcwd()
 config_file = 'config.json'
 detector_file = 'detectors.json'
@@ -55,30 +56,32 @@ def load_configuration():
     try:
         with open(config_path, 'r') as f:
             config_data = json.load(f)
-        f.close()
 
-    except FileNotFoundError:
-        logger.warning(f'Configuration file {config_file} not found. Creating default.')
-        try:
-            create_main_config(root_path, config_file)
-            # Load the newly created configuration file
-            load_configuration()
-        except Exception as e:
-            logger.error(f'Error creating default configuration file: {e}')
-            return {'success': False, 'alert': {'type': 'danger',
-                                                'message': f'Error creating default configuration file: {e}'}}
-        logger.info(f'Successfully created and loaded configuration from {config_file}')
-        return {'success': True, 'alert': {'type': 'success',
-                                           'message': f'Successfully created and loaded configuration from {config_file}'}}
-    except json.JSONDecodeError:
-        logger.error(f'Configuration file {config_file} is not in valid JSON format.')
-        return {'success': False, 'alert': {'type': 'danger',
-                                            'message': f'Configuration file {config_file} is not in valid JSON format.'}}
-    else:
+        logger = CustomLogger(config_data["log_level"], f'{app_name}',
+                              os.path.abspath(os.path.join(log_path, log_file_name))).logger
         logger.info(f'Successfully loaded configuration from {config_file}')
         return {'success': True,
                 'alert': {'type': 'danger', 'message': f'Successfully loaded configuration from {config_file}'},
-                'config_data': config_data}
+                'config_data': config_data}, logger
+
+    except FileNotFoundError:
+        print(f'Configuration file {config_file} not found. Creating default.')
+        try:
+            create_main_config(root_path, config_file)
+            # Load the newly created configuration file
+            return load_configuration()
+        except Exception as e:
+            print(f'Error creating default configuration file: {e}')
+            return {'success': False, 'alert': {'type': 'danger',
+                                                'message': f'Error creating default configuration file: {e}'}}, False
+    except json.JSONDecodeError:
+        print(f'Configuration file {config_file} is not in valid JSON format.')
+        return {'success': False, 'alert': {'type': 'danger',
+                                            'message': f'Configuration file {config_file} is not in valid JSON format.'}}, False
+    except Exception as e:
+        print(f'Configuration file {config_file} is not in valid JSON format.')
+        return {'success': False, 'alert': {'type': 'danger',
+                                            'message': f'Unexpected Error Loading Configuration file {config_file}.'}}, False
 
 
 def load_detectors():
@@ -93,15 +96,11 @@ def load_detectors():
         logger.warning(f'Detector configuration file {detector_file} not found.')
         try:
             create_detector_config(root_path, detector_file)
-            load_detectors()
+            return load_detectors()
         except Exception as e:
             logger.error(f'Error creating default detectors file: {e}')
             return {'success': False, 'alert': {'type': 'danger',
                                                 'message': f'Error creating default detectors file: {e}'}}
-        logger.info(f'Successfully created and loaded detectors from {detector_file}')
-        return {'success': True, 'alert': {'type': 'success',
-                                           'message': f'Successfully created and loaded detectors from {detector_file}'}}
-
 
     except json.JSONDecodeError:
         logger.error(f'Detector configuration file {detector_file} is not in valid JSON format.')
@@ -115,12 +114,12 @@ def load_detectors():
                 'detector_data': detector_data}
 
 
-logger = CustomLogger(log_level, f'{app_name}', os.path.abspath(os.path.join(log_path, log_file_name))).logger
-config_loaded = load_configuration()
-detector_loaded = load_detectors()
+config_loaded, logger = load_configuration()
 
 if not config_loaded.get("success", False):
     exit(1)
+
+detector_loaded = load_detectors()
 
 if not detector_loaded.get("success", False):
     exit(1)
@@ -147,13 +146,14 @@ app.static_folder = 'static'
 
 # Loop to run that clears old detections.
 def clear_old_items():
-    global detector_list
+    global qc_detector_list
     while True:
         time.sleep(1)
         current_time = time.time()
-        if len(detector_list) < 1:
+        if len(qc_detector_list) < 1:
             continue
-        detector_list = [detector for detector in detector_list if current_time < (detector["last_detected"] + detector["ignore_seconds"])]
+        qc_detector_list = [detector for detector in qc_detector_list if
+                            current_time < (detector["last_detected"] + detector["ignore_seconds"])]
 
 
 def login_required(f):
@@ -225,15 +225,15 @@ def logout():
 
 @app.route('/tone_detect', methods=['POST'])
 def tone_upload():
-    global detector_list
+    global qc_detector_list
     logger.info("Got New HTTP request.")
 
     if request.method != "POST":
         return jsonify({"status": "error", "message": "Invalid request method"}), 400
 
-    call_data = request.form.to_dict()
+    call_data_post = request.form.to_dict()
 
-    if not call_data:
+    if not call_data_post:
         return jsonify({"status": "error", "message": "No call data"}), 400
 
     if config_data["detection_mode"] == 0:
@@ -253,9 +253,20 @@ def tone_upload():
 
     try:
         quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
-        detection_json = {"quickcall": quick_call, "hi_low": hi_low, "long": long_tone,
-                          "dtmf": dtmf_tone, "ts": time.time(),
-                          "time": datetime.now().strftime("%m/%d/%Y, %H:%M:%S")}
+        detection_data = {
+            "quick_call": quick_call,
+            "hi_low": hi_low,
+            "long": long_tone,
+            "dtmf": dtmf_tone,
+            "timestamp": float(call_data_post.get("start_time")),
+            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime("%m/%d/%Y, %H:%M:%S"),
+            'call_length': float(call_data_post.get('call_length', 0)),
+            'talkgroup_decimal': int(call_data_post.get('talkgroup', 0)),
+            'talkgroup_alpha_tag': str(call_data_post.get('talkgroup_tag')),
+            'talkgroup_name': str(call_data_post.get('talkgroup_description')),
+            'talkgroup_service_type': str(call_data_post.get('talkgroup_group_tag')),
+            'talkgroup_group': str(call_data_post.get('talkgroup_group'))
+        }
 
     except Exception as e:
         return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
@@ -264,25 +275,26 @@ def tone_upload():
         logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
     else:
         logger.warning("Tones Detected")
-        file_name = f'{round(float(call_data["start_time"]), -1)}_detection'
+        file_name = f'{round(detection_data["timestamp"], -1)}_detection'
         local_audio_path = os.path.join(root_path, f"{audio_path}/{file_name}.mp3")
         audio_segment.export(local_audio_path, format='mp3')
-
+        detection_data["local_audio_path"] = local_audio_path
 
         if config_data["detection_mode"] in (2, 3):
             logger.warning("Processing Tones Through Detectors")
-            call_data["local_audio_path"] = local_audio_path
 
-            qc_result, match_data_list = ToneDetection(config_data, detector_data, detector_list, call_data).detect_quick_call(
-                quick_call, audio_segment)
-            detector_list = qc_result
-            detection_json["matches"] = match_data_list
+            logger.debug("Processing QuickCall Tones")
+            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list, detection_data).detect_quick_call()
 
-        with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
-            outjs.write(json.dumps(detection_json, indent=4))
+            qc_detector_list = qc_result
+            detection_data = processed_detection_data
+
+        if config_data["detection_mode"] in (1, 3):
+            with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
+                outjs.write(json.dumps(detection_data, indent=4))
 
     logger.info("HTTP Request Completed")
-    return jsonify(detection_json), 200
+    return jsonify(detection_data), 200
 
 
 @app.route('/save_main_config', methods=['POST'])

@@ -7,7 +7,7 @@ from paramiko import SSHClient, AutoAddPolicy, RSAKey, SSHException
 from paramiko.sftp import SFTPError
 import traceback
 
-module_logger = logging.getLogger('tr_uploader.sftp')
+module_logger = logging.getLogger('icad_tone_detection.remote_storage')
 
 
 def get_storage(storage_type, config_data):
@@ -114,19 +114,27 @@ class SCPStorage:
         self.password = self.scp_config['password']
 
     def upload_file(self, local_audio_path, remote_path, remote_file_name, make_public=True):
+        """Uploads a file to the SCP storage.
 
-        # Create an SSH client
+        :param local_audio_path: The local path to the audio file to upload.
+        :param remote_path: The remote directory to upload the file to.
+        :param remote_file_name: The name of the remote file.
+        :param make_public: Flag indicating whether to make the file public (default is True).
+        :return: Dictionary containing the file URL or False if upload fails.
+        """
         try:
             full_remote_path = os.path.join(remote_path, remote_file_name)
+            ssh_client, sftp = self._create_sftp_session()
 
-            ssh_client = SSHClient()
-            ssh_client.load_system_host_keys()
-            self._connect_ssh_client(ssh_client)
+            if not os.path.exists(local_audio_path):
+                raise FileNotFoundError(f'Local File {local_audio_path} doesn\'t exist')
 
-            sftp = ssh_client.open_sftp()
-            # Upload the file
+            try:
+                sftp.stat(remote_path)
+            except FileNotFoundError:
+                raise FileNotFoundError(f'Remote Path {remote_path} doesn\'t exist')
+
             sftp.put(local_audio_path, full_remote_path)
-
             sftp.close()
             ssh_client.close()
 
@@ -146,53 +154,60 @@ class SCPStorage:
             return False
 
     def download_file(self, remote_path, local_path):
+        """Downloads a file from the SCP storage.
+
+        :param remote_path: The remote file path to download from.
+        :param local_path: The local path to download the file to.
+        :return: Dictionary containing the local file path or False if download fails.
+        """
         try:
-            ssh_client = SSHClient()
-            ssh_client.load_system_host_keys()
-            self._connect_ssh_client(ssh_client)
-
-            sftp = ssh_client.open_sftp()
+            ssh_client, sftp = self._create_sftp_session()
             sftp.get(remote_path, local_path)
-
             sftp.close()
             ssh_client.close()
+
             file_name = os.path.basename(remote_path)
             return {"file_path": os.path.join(local_path, file_name)}
         except SFTPError as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during downloading a file: {error}')
             return False
         except Exception as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during downloading a file: {error}')
             return False
 
     def delete_file(self, remote_path):
+        """Deletes a file from the SCP storage.
+
+        :param remote_path: The remote file path to delete.
+        :return: True if deletion succeeds, False otherwise.
+        """
         try:
-            ssh_client = SSHClient()
-            ssh_client.load_system_host_keys()
-            self._connect_ssh_client(ssh_client)
-
-            sftp = ssh_client.open_sftp()
+            ssh_client, sftp = self._create_sftp_session()
             sftp.remove(remote_path)
-
             sftp.close()
             ssh_client.close()
+
             return True
         except SFTPError as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during deleting a file: {error}')
             return False
         except Exception as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during deleting a file: {error}')
             return False
 
     def list_files(self, remote_path):
+        """Lists files in a directory on the SCP storage.
+
+        :param remote_path: The remote directory path to list files from.
+        :return: List of files in the directory or None if the directory is empty, False if an error occurs.
+        """
         try:
-            ssh_client = SSHClient()
-            ssh_client.load_system_host_keys()
-            self._connect_ssh_client(ssh_client)
-
-            sftp = ssh_client.open_sftp()
+            ssh_client, sftp = self._create_sftp_session()
             files = sftp.listdir(remote_path)
-
             sftp.close()
             ssh_client.close()
 
@@ -201,35 +216,52 @@ class SCPStorage:
 
             return files
         except SFTPError as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during listing files: {error}')
             return False
         except Exception as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during listing files: {error}')
             return False
 
     def clean_remote_files(self):
-        # Create an SSH client
+        """Cleans remote files older than the specified number of days from SCP storage."""
         try:
-            ssh_client = SSHClient()
-            ssh_client.load_system_host_keys()
-            self._connect_ssh_client(ssh_client)
+            ssh_client, _ = self._create_sftp_session()
 
-            command = "find " + self.scp_config["remote_path"] + "* -mtime +" + str(self.scp_config["keep_audio_days"]) + " -exec rm {} \;"
+            command = f"find {self.scp_config['remote_path']}* -mtime +{self.scp_config['keep_audio_days']} -exec rm {{}} \;"
             stdin, stdout, stderr = ssh_client.exec_command(command)
             for line in stdout:
                 module_logger.debug(str(line))
             module_logger.debug("Cleaned Remote Files")
             ssh_client.close()
         except SSHException as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during cleaning remote files: {error}')
         except Exception as error:
+            traceback.print_exc()
             module_logger.critical(f'Error occurred during cleaning remote files: {error}')
 
-    def _connect_ssh_client(self, ssh_client):
-        if self.scp_config["private_key"] != "":
+    def _create_sftp_session(self):
+        """Creates an SFTP session.
+
+        :return: A tuple of SSH client and SFTP session.
+        :raises: FileNotFoundError if private key file doesn't exist.
+                  SSHException for other SSH connection errors.
+        """
+        ssh_client = SSHClient()
+        ssh_client.load_system_host_keys()
+
+        if self.scp_config["private_key"]:
+            if not os.path.exists(self.scp_config["private_key"]):
+                raise FileNotFoundError(f"Private key file not found: {self.scp_config['private_key']}")
+
             private_key = RSAKey.from_private_key_file(self.scp_config["private_key"])
             ssh_client.connect(self.host, port=self.port, username=self.username, look_for_keys=False,
                                allow_agent=False, pkey=private_key)
         else:
             ssh_client.connect(self.host, port=self.port, username=self.username, password=self.password,
                                look_for_keys=False, allow_agent=False)
+
+        sftp = ssh_client.open_sftp()
+        return ssh_client, sftp

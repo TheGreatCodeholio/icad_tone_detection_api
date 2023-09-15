@@ -2,7 +2,8 @@ import json
 import os
 
 default_config = {
-    "detection_mode": 2,
+    "log_level": 1,
+    "detection_mode": 1,
     "tone_extraction": {
         "threshold_percent": 2,
         "dtmf": {
@@ -18,15 +19,21 @@ default_config = {
             "enabled": 1
         }
     },
+    "audio_processing": {
+        "trim_tones": 0,
+        "trim_post_cut": 5.5,
+        "trim_pre_cut": 2.0,
+        "trim_group_tone_gap": 6.5,
+        "normalize": 0,
+        "ffmpeg_filter": ""
+    },
     "transcription_settings": {
         "transcribe_alert": 0,
         "transcribe_detection": 0,
         "transcription_url": "https://example.com/transcribe"
     },
     "email_settings": {
-        "send_detection_email": 0,
-        "send_alert_email": 0,
-        "send_as_single_email": 0,
+        "enabled": 0,
         "smtp_hostname": "mail.example.com",
         "smtp_port": 587,
         "smtp_username": "dispatch@example.com",
@@ -35,18 +42,25 @@ default_config = {
         "email_address_from": "dispatch@example.com",
         "email_text_from": "iCAD Example County",
         "alert_email_subject": "Dispatch Alert - {detector_name}",
-        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br> {mp3_url}"
+        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+        "grouped_alert_emails": [],
+        "grouped_email_subject": "Dispatch Alert",
+        "grouped_email_body": "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>"
     },
     "pushover_settings": {
         "enabled": 0,
         "all_detector_group": 0,
         "all_detector_group_token": "g23#####################ns7",
         "all_detector_app_token": "aen#######################vuru",
-        "message_html_string": "<font color=\"red\"><b>%detector_name%</b></font><br><br><a href=\"%mp3_url%\">Click for Dispatch Audio</a>",
-        "subject": "Alert!",
-        "sound": "pushover"
+        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+        "pushover_subject": "Alert!",
+        "pushover_sound": "pushover"
     },
-    "file_storage": {
+    "stream_settings": {
+        "stream_url": ""
+    },
+    "remote_storage_settings": {
+        "enabled": 0,
         "storage_type": "scp",
         "remote_path": "/var/www/example.com/detection_audio",
         "google_cloud": {
@@ -85,18 +99,19 @@ default_detectors = {
         "b_tone": 1122.5,
         "tone_tolerance": 1,
         "ignore_time": 120.0,
-        "alert_emails": [],
-        "alert_email_subject": "Dispatch Alert - {detector_name}",
-        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>",
+        "alert_emails": ["user@example.com"],
+        "alert_email_subject": "",
+        "alert_email_body": "",
         "mqtt_topic": "detect/Example Department",
         "mqtt_start_message": "ON",
         "mqtt_stop_message": "OFF",
         "mqtt_message_interval": 5.0,
         "pushover_group_token": "g9##########w2",
         "pushover_app_token": "arkj########6i",
-        "pushover_subject": "Alert!",
-        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a>",
-        "pushover_sound": "pager",
+        "pushover_subject": "",
+        "pushover_body": "",
+        "pushover_sound": "",
+        "stream_url": "",
         "post_to_facebook": 0
     }
 }

@@ -12,3 +12,4 @@ etc/detectors.json
 /.idea/*
 /log/
 /log/*.log
+/tests

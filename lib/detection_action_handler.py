@@ -1,71 +1,87 @@
 import logging
+import os
 from threading import Thread
 import traceback
 
 from lib.email_handler import generate_alert_email, EmailSender
-from lib.file_save_handler import get_storage
-from lib.pushover_handler import send_push
-from lib.transcription_handler import get_transcription
+from lib.remote_storage_handler import get_storage
+from lib.pushover_handler import PushoverSender
+from lib.transcribe_handler import get_transcription
 
-module_logger = logging.getLogger('tr_tone_detection.action_handler')
+module_logger = logging.getLogger('icad_tone_detection.action_handler')
 
 threads = []
 
 
-def process_alert_actions(config_data, triggered_detectors, call_data, audio_segment):
+def process_alert_actions(config_data, detection_data):
     module_logger.info("Processing Tone Detection Alerts")
 
-    module_logger.info("Uploading Audio to Remote Server")
-    try:
+    triggered_detectors = detection_data["matches"]
 
-        # Get the appropriate storage class based on the storage_type.
-        storage = get_storage(config_data["file_storage"]["storage_type"], config_data["file_storage"])
 
-        remote_file_name = triggered_detectors[0]["detector_name"].replace(" ", "_").lower() + f'{round(float(call_data["start_time"]), -1)}.mp3'
+    # upload to remote storage
+    if config_data["remote_storage_settings"].get("enabled", 0) == 1:
+        module_logger.info("Uploading Audio to Remote Server")
 
-        # Call the upload_file method to upload the audio file.
-        response = storage.upload_file(call_data["local_audio_path"], config_data["file_storage"]["remote_path"], remote_file_name)
+        try:
+            storage = get_storage(config_data["remote_storage_settings"]["storage_type"], config_data["remote_storage_settings"])
 
-        if response:
-            module_logger.info("Audio uploaded successfully.")
-            call_data["mp3_url"] = response["file_path"]
-        else:
-            module_logger.error("Failed to upload audio.")
+            remote_file_name = os.path.basename(detection_data['local_audio_path'])
+
+            # Call the upload_file method to upload the audio file.
+            response = storage.upload_file(detection_data['local_audio_path'], config_data["remote_storage_settings"]["remote_path"],
+                                           remote_file_name)
+
+            if response:
+                module_logger.info("Audio uploaded successfully.")
+                detection_data["mp3_url"] = response["file_path"]
+            else:
+                module_logger.error("Failed to upload audio.")
+                return
+
+        except Exception as e:
+            traceback.print_exc()
+            module_logger.error(f"Error during audio upload: {e}")
             return
-    except Exception as e:
-        traceback.print_exc()
-        module_logger.error(f"Error during audio upload: {e}")
-        return
+    else:
+        detection_data["mp3_url"] = ""
 
-    if config_data["transcription_settings"]["transcribe_alert"] == 1:
+    if config_data["transcribe_settings"].get("transcribe_detection", 0) == 1:
         module_logger.info("Transcribing Audio")
         try:
-
-            response = get_transcription(config_data, audio_segment)
-            if response is None:
-                module_logger.error("An error occurred and no response was returned.")
-                call_data["transcript"] = ""
+            trans_result = get_transcription(config_data, detection_data['local_audio_path'])
+            if not trans_result:
+                detection_data["transcript"] = ""
             else:
-                # Process the response here
-                call_data["transcript"] = response["transcription"]
+                detection_data["transcript"] = trans_result
         except Exception as e:
             module_logger.error(f"An error occurred while getting Transcript: {e}")
-            call_data["transcript"] = ""
+            detection_data["transcript"] = ""
     else:
-        module_logger.debug("Transcription Disabled")
+        module_logger.debug("Transcribe Detection Disabled")
 
     # Send Alert Emails
-    if config_data["email_settings"]["send_alert_email"] == 1:
+    if config_data["email_settings"].get("enabled", 0) == 1:
+        module_logger.info("Sending Grouped Alert Emails.")
+        if len(config_data["email_settings"].get("grouped_alert_emails", [])) >= 1:
+
+            email_subject, email_body = generate_alert_email(config_data, detection_data, triggered_detectors=triggered_detectors)
+
+            em_list = []
+            for em in config_data["email_settings"]["grouped_alert_emails"]:
+                em_list.append(em)
+            EmailSender(config_data).send_alert_email(em_list, email_subject, email_body)
+
         for detector in triggered_detectors:
-            if len(detector["alert_emails"]) >= 1:
+            if len(detector["detector_config"].get("alert_emails", [])) >= 1:
                 try:
-                    module_logger.debug("Starting Alert Email Sending")
 
-                    email_subject, email_body = generate_alert_email(config_data, detector, call_data)
+                    email_subject, email_body = generate_alert_email(config_data, detection_data, detector_data=detector)
 
-                    for em in detector["alert_emails"]:
-                        em = [em]
-                        EmailSender(config_data).send_alert_email(em, email_subject, email_body)
+                    em_list = []
+                    for em in detector["detector_config"]["alert_emails"]:
+                        em_list.append(em)
+                    EmailSender(config_data).send_alert_email(em_list, email_subject, email_body)
 
                 except Exception as e:
                     module_logger.critical(f"Alert Email Sending Failure: {repr(e)}")
@@ -73,11 +89,19 @@ def process_alert_actions(config_data, triggered_detectors, call_data, audio_seg
     else:
         module_logger.debug("Alert Email Sending Disabled")
 
-    if config_data["pushover_settings"]["enabled"] == 1:
+    if config_data["pushover_settings"].get("enabled", 0) == 1:
         module_logger.debug("Starting Pushover Notifications")
 
         for detector in triggered_detectors:
-            Thread(target=send_push, args=(config_data, detector, call_data)).start()
+            try:
+                # Creating an instance of PushoverSender
+                pushover_sender = PushoverSender(config_data, detector)
+
+                # Starting a new thread to send the push notification
+                Thread(target=pushover_sender.send_push, args=(detection_data)).start()
+            except ValueError as e:
+                # Handling potential initialization errors (like validation failures)
+                module_logger.error(f"Error initializing Pushover: {e}")
 
     else:
         module_logger.debug("Pushover Notifications Disabled")
@@ -92,5 +116,3 @@ def process_alert_actions(config_data, triggered_detectors, call_data, audio_seg
     #     module_logger.debug("Pushover Notifications Disabled")
 
     module_logger.info("Notifications <<Completed>> Successfully!")
-
-
