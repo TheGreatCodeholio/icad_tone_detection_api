@@ -1,9 +1,23 @@
 import json
+import logging
 import os
+import traceback
+
+from lib.agency_handler import get_agencies
+from lib.system_handler import get_systems
+
+module_logger = logging.getLogger('icad_tone_detection.config')
 
 default_config = {
-    "log_level": 1,
-    "detection_mode": 1,
+    "general": {
+        "detection_mode": 1,
+        "test_mode": True,
+        "base_url": "http://localhost",
+        "cookie_domain": "localhost",
+        "cookie_secure": False,
+        "cookie_name": "icad_tone_detect",
+        "cookie_path": "/"
+    },
     "tone_extraction": {
         "threshold_percent": 2,
         "dtmf": {
@@ -21,9 +35,9 @@ default_config = {
     },
     "audio_processing": {
         "trim_tones": 0,
-        "trim_post_cut": 5.5,
-        "trim_pre_cut": 2.0,
-        "trim_group_tone_gap": 6.5,
+        "trim_post_cut": 6.0,
+        "trim_pre_cut": 2.5,
+        "trim_group_tone_gap": 8.5,
         "normalize": 0,
         "ffmpeg_filter": ""
     },
@@ -42,17 +56,16 @@ default_config = {
         "email_address_from": "dispatch@example.com",
         "email_text_from": "iCAD Example County",
         "alert_email_subject": "Dispatch Alert - {detector_name}",
-        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>{transcript}",
         "grouped_alert_emails": [],
         "grouped_email_subject": "Dispatch Alert",
-        "grouped_email_body": "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>"
+        "grouped_email_body": "{detector_list} Alert at {timestamp}<br><br>{transcript}"
     },
     "pushover_settings": {
         "enabled": 0,
-        "all_detector_group": 0,
-        "all_detector_group_token": "g23#####################ns7",
-        "all_detector_app_token": "aen#######################vuru",
-        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+        "all_detector_group_token": "",
+        "all_detector_app_token": "",
+        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font>",
         "pushover_subject": "Alert!",
         "pushover_sound": "pushover"
     },
@@ -85,9 +98,15 @@ default_config = {
             "private_key": "/home/sshuser/.ssh/id_rsa"
         }
     },
-    "sqlite": {
-        "enabled": 1,
-        "database_path": "tr_tone_detect.db"
+    "facebook_settings": {
+        "enabled": 0,
+        "page_id": 0,
+        "page_token": "longtokengoeshere",
+        "group_id": 0,
+        "group_token": "longtokenhere",
+        "post_comment": 0,
+        "post_body": "{timestamp} Departments:\n{detector_list}",
+        "comment_body": "{transcript}{stream_url}"
     }
 }
 
@@ -98,7 +117,7 @@ default_detectors = {
         "a_tone": 726.8,
         "b_tone": 1122.5,
         "tone_tolerance": 1,
-        "ignore_time": 120.0,
+        "ignore_time": 300.0,
         "alert_emails": ["user@example.com"],
         "alert_email_subject": "",
         "alert_email_body": "",
@@ -112,39 +131,111 @@ default_detectors = {
         "pushover_body": "",
         "pushover_sound": "",
         "stream_url": "",
-        "post_to_facebook": 0
+        "post_to_facebook": 0,
+        "post_to_telegram": 0
     }
 }
 
 
-def create_main_config(root_path, config_file):
-    root_path = os.path.join(root_path + "/etc")
-    config_path = os.path.join(root_path, config_file)
-    if not os.path.exists(root_path):
-        os.makedirs(root_path)
-    if not os.path.exists(config_path):
-        with open(config_path, "w+") as outfile:
-            outfile.write(json.dumps(default_config, indent=4))
-        outfile.close()
+def deep_update(source, overrides):
+    for key, value in overrides.items():
+        if isinstance(value, dict):
+            # Get the existing nested dictionary or create a new one
+            node = source.setdefault(key, {})
+            deep_update(node, value)
+        else:
+            source[key] = value
 
 
-def create_detector_config(root_path, detector_file):
-    root_path = os.path.join(root_path + "/etc")
-    detector_path = os.path.join(root_path, detector_file)
-    if not os.path.exists(root_path):
-        os.makedirs(root_path)
-    if not os.path.exists(detector_path):
-        with open(detector_path, "w+") as outfile:
-            outfile.write(json.dumps(default_detectors, indent=4))
-        outfile.close()
+def generate_default_config(config_type):
+    try:
+        if config_type == "config":
+            global default_config
+            default_data = default_config.copy()
+            default_data["general"]["base_url"] = os.getenv('BASE_URL', "http://localhost")
+            default_data["general"]["cookie_domain"] = os.getenv('COOKIE_DOMAIN', "localhost")
+            default_data["general"]["cookie_secure"] = bool(os.getenv('COOKIE_SECURE', False))
+            default_data["general"]["cookie_name"] = os.getenv('COOKIE_NAME', "icad_tone_detect")
+            default_data["general"]["cookie_path"] = os.getenv('COOKIE_PATH', "/")
+            default_data['mysql'] = {}
+            default_data["mysql"]["host"] = os.getenv('MYSQL_HOST', "mysql")
+            default_data["mysql"]["port"] = int(os.getenv('MYSQL_PORT', 3306))
+            default_data["mysql"]["user"] = os.getenv('MYSQL_USER', "icad")
+            default_data["mysql"]["password"] = os.getenv('MYSQL_PASSWORD', "")
+            default_data["mysql"]["database"] = os.getenv('MYSQL_DATABASE', "icad")
+            default_data["redis"] = {}
+            default_data["redis"]["host"] = os.getenv('REDIS_HOST', "redis")
+            default_data["redis"]["port"] = int(os.getenv('REDIS_PORT', 6379))
+            default_data["redis"]["password"] = os.getenv('REDIS_PASSWORD', "")
+            default_data["rabbitmq"] = {}
+            default_data["rabbitmq"]["host"] = os.getenv('RABBITMQ_HOST', "rabbitmq")
+            default_data["rabbitmq"]["port"] = int(os.getenv('RABBITMQ_PORT', 5672))
+            default_data["rabbitmq"]["user"] = os.getenv('RABBITMQ_USER', "icad")
+            default_data["rabbitmq"]["password"] = os.getenv('RABBITMQ_PASSWORD', "")
+
+        elif config_type == "detectors":
+            global default_detectors
+            default_data = default_detectors.copy()
+        else:
+            module_logger.error(f'Invalid config type {config_type}')
+            return None
+
+        return default_data
+
+    except Exception as e:
+        traceback.print_exc()
+        module_logger.error(f'Error generating default configuration for {config_type}: {e}')
+        return None
 
 
-def save_main_config(root_path, config_file, config_data):
-    root_path = os.path.join(root_path + "/etc")
-    config_path = os.path.join(root_path, config_file)
-    if not os.path.exists(root_path):
-        os.makedirs(root_path)
-    if not os.path.exists(config_path):
-        with open(config_path, "w+") as outfile:
-            outfile.write(json.dumps(config_data, indent=4))
-        outfile.close()
+def load_config_file(file_path, config_type):
+    default_data = generate_default_config(config_type)
+    if not default_data:
+        return None
+
+    try:
+
+        with open(file_path, 'r') as f:
+            return json.load(f)
+
+    except FileNotFoundError:
+        module_logger.warning(f'Configuration file {file_path} not found. Creating default.')
+        try:
+            save_config_file(file_path, default_data)
+            return load_config_file(file_path, config_type)
+        except Exception as e:
+            module_logger.error(f'Error creating default configuration file: {e}')
+            return None
+
+    except json.JSONDecodeError:
+        module_logger.error(f'Configuration file {file_path} is not in valid JSON format.')
+        return None
+
+    except Exception as e:
+        module_logger.error(f'Unexpected Exception Loading file {file_path} - {e}')
+        return None
+
+
+def save_config_file(file_path, default_data):
+    """Creates a configuration file with default data if it doesn't exist."""
+    try:
+        with open(file_path, "w") as outfile:
+            outfile.write(json.dumps(default_data, indent=4))
+        return True
+    except Exception as e:
+        module_logger.error(f'Unexpected Exception Saving file {file_path} - {e}')
+        return None
+
+
+def load_systems_agencies_detectors(db, system_id=None):
+    systems_config = {}
+    systems_result = get_systems(db, system_id)
+    if systems_result.get("success") and systems_result.get("result"):
+        for system in systems_result.get("result"):
+            agency_result = get_agencies(db, [system.get("system_id")])
+            if not agency_result.get("success") or not agency_result.get("result"):
+                agency_result = {"result": []}
+            systems_config[system.get("system_id")] = system
+            systems_config["agencies"] = agency_result.get("result", [])
+
+    return systems_config

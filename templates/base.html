@@ -7,11 +7,9 @@
     <title>iCAD Tone Detect</title>
     <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
     <!-- Font Awesome -->
-    <link href="{{ url_for('static', filename='font_awesome/css/all.css') }}" rel="stylesheet"/>
+    <link href="{{ url_for('static', filename='font_awesome/css/all.min.css') }}" rel="stylesheet"/>
     <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet"/>
     <!-- Bootstrap 5 CSS -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -54,7 +52,6 @@
                     src="{{ url_for('static', filename='img/logo.png') }}"
                     height="45px"
                     alt="iCAD Logo"
-                    loading="lazy"
             />
         </a>
         <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarNav"
@@ -68,7 +65,7 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                {% if not session.get('logged_in') %}
+                {% if not session.get('authenticated') %}
                     <!-- Show Log In button if not logged in -->
                     <li class="nav-item">
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">Log

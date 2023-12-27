@@ -1,5 +1,5 @@
-import ast
 import configparser
+import traceback
 from datetime import datetime
 import io
 import json
@@ -8,31 +8,37 @@ import threading
 import time
 from os.path import splitext
 from functools import wraps
-from pydub import AudioSegment
-from werkzeug.security import check_password_hash
 
-from lib.config_handler import create_main_config, create_detector_config, save_main_config
-from lib.database_handler import SQLiteDatabase
+import redis
+from pydub import AudioSegment
+
+from lib.agency_handler import import_agencies_from_detectors, get_agencies
+from lib.config_handler import load_config_file, save_config_file, load_systems_agencies_detectors
 from lib.logging_handler import CustomLogger
 from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
 
-from lib.tone_detection_handler import ToneDetection
-from lib.tone_extraction_handler import ToneExtraction
+from flask_session import Session
 
-log_level = 1
+from lib.mysql_handler import DatabaseFactory
+from lib.redis_handler import RedisCache
+from lib.system_handler import get_systems
+from lib.tone_detection_handler import ToneDetection, get_active_detections_cache, add_active_detections_cache, \
+    delete_active_detections_cache
+from lib.tone_extraction_handler import ToneExtraction
+from lib.user_handler import authenticate_user
 
 app_name = "icad_tone_detection"
-config_data = {}
-detector_data = {}
-qc_detector_list = []
+
+log_level = 2
+
 root_path = os.getcwd()
 config_file = 'config.json'
 detector_file = 'detectors.json'
 log_path = os.path.join(root_path, 'log')
 log_file_name = f"{app_name}.log"
-config_path = os.path.join(root_path + "/etc", config_file)
-detector_path = os.path.join(root_path + "/etc", detector_file)
-audio_path = os.path.join(root_path, "audio")
+config_path = os.path.join(root_path, 'etc')
+
+audio_path = os.path.join(root_path, 'audio')
 
 detector_template = {"detector_id": 0, "station_number": 0, "a_tone": 0, "b_tone": 0,
                      "a_tone_length": 0.6, "b_tone_length": 1,
@@ -50,117 +56,110 @@ if not os.path.exists(log_path):
 if not os.path.exists(audio_path):
     os.makedirs(audio_path)
 
+if not os.path.exists(config_path):
+    os.makedirs(config_path)
 
-def load_configuration():
-    global config_data
-    try:
-        with open(config_path, 'r') as f:
-            config_data = json.load(f)
-
-        logger = CustomLogger(config_data["log_level"], f'{app_name}',
-                              os.path.abspath(os.path.join(log_path, log_file_name))).logger
-        logger.info(f'Successfully loaded configuration from {config_file}')
-        return {'success': True,
-                'alert': {'type': 'danger', 'message': f'Successfully loaded configuration from {config_file}'},
-                'config_data': config_data}, logger
-
-    except FileNotFoundError:
-        print(f'Configuration file {config_file} not found. Creating default.')
-        try:
-            create_main_config(root_path, config_file)
-            # Load the newly created configuration file
-            return load_configuration()
-        except Exception as e:
-            print(f'Error creating default configuration file: {e}')
-            return {'success': False, 'alert': {'type': 'danger',
-                                                'message': f'Error creating default configuration file: {e}'}}, False
-    except json.JSONDecodeError:
-        print(f'Configuration file {config_file} is not in valid JSON format.')
-        return {'success': False, 'alert': {'type': 'danger',
-                                            'message': f'Configuration file {config_file} is not in valid JSON format.'}}, False
-    except Exception as e:
-        print(f'Configuration file {config_file} is not in valid JSON format.')
-        return {'success': False, 'alert': {'type': 'danger',
-                                            'message': f'Unexpected Error Loading Configuration file {config_file}.'}}, False
-
-
-def load_detectors():
-    global detector_data
-
-    try:
-        with open(detector_path, 'r') as f:
-            detector_data = json.load(f)
-        f.close()
-
-    except FileNotFoundError:
-        logger.warning(f'Detector configuration file {detector_file} not found.')
-        try:
-            create_detector_config(root_path, detector_file)
-            return load_detectors()
-        except Exception as e:
-            logger.error(f'Error creating default detectors file: {e}')
-            return {'success': False, 'alert': {'type': 'danger',
-                                                'message': f'Error creating default detectors file: {e}'}}
-
-    except json.JSONDecodeError:
-        logger.error(f'Detector configuration file {detector_file} is not in valid JSON format.')
-        return {'success': False, 'alert': {'type': 'danger',
-                                            'message': f'Detector configuration file {detector_file} is not in valid JSON format.'}}
-    else:
-        logger.info(f'Successfully loaded detector configuration from {detector_file}')
-        return {'success': True,
-                'alert': {'type': 'danger',
-                          'message': f'Successfully loaded detector configuration from {detector_file}'},
-                'detector_data': detector_data}
-
-
-config_loaded, logger = load_configuration()
-
-if not config_loaded.get("success", False):
-    exit(1)
-
-detector_loaded = load_detectors()
-
-if not detector_loaded.get("success", False):
-    exit(1)
-
+logger = CustomLogger(log_level, f'{app_name}', os.path.join(log_path, log_file_name)).logger
 try:
-    db = SQLiteDatabase(db_path=config_data["sqlite"]["database_path"])
-    logger.info("SQLite Database connected successfully.")
+    config_data = load_config_file(os.path.join(config_path, config_file), "config")
 except Exception as e:
-    logger.error(f'Error while <<connecting>> to the <<database:>> {e}')
+    traceback.print_exc()
+    logger.error(f'Error while <<loading>> configuration : {e}')
+    exit(1)
 
-app = Flask(__name__)
+if not config_data:
+    logger.error('Failed to load configuration.')
+    exit(1)
 
 try:
-    with open('etc/secret_key.txt', 'rb') as f:
-        app.config['SECRET_KEY'] = f.read()
-except FileNotFoundError:
-    secret_key = os.urandom(24)
-    with open('etc/secret_key.txt', 'wb') as f:
-        f.write(secret_key)
-    app.config['SECRET_KEY'] = secret_key
+    db_factory = DatabaseFactory(config_data)
+    db = db_factory.get_database()
+    logger.info("Database Initialized successfully.")
+except Exception as e:
+    traceback.print_exc()
+    logger.error(f'Error while <<initializing>> Database : {e}')
+    exit(1)
 
-app.static_folder = 'static'
+try:
+    rd = RedisCache(config_data)
+    logger.info("Redis Pool Connection Pool connected successfully.")
+except Exception as e:
+    traceback.print_exc()
+    logger.error(f'Error while <<connecting>> to the <<Redis Cache:>> {e}')
+    exit(1)
+
+system_data = load_systems_agencies_detectors(db)
+
+app = Flask(__name__, template_folder='templates', static_folder='static')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+# Session Configuration
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_KEY_PREFIX'] = 'session:'
+app.config['SESSION_REDIS'] = redis.StrictRedis(host=config_data["redis"]["host"],
+                                                password=config_data["redis"]["password"],
+                                                port=config_data["redis"]["port"], db=3)
+
+# Cookie Configuration
+app.config['SESSION_COOKIE_SECURE'] = config_data["general"]["cookie_secure"]
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_DOMAIN'] = config_data["general"]["cookie_domain"]
+app.config['SESSION_COOKIE_NAME'] = config_data["general"]["cookie_name"]
+app.config['SESSION_COOKIE_PATH'] = config_data["general"]["cookie_path"]
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+
+# Initializing the session
+sess = Session()
+sess.init_app(app)
 
 
 # Loop to run that clears old detections.
 def clear_old_items():
-    global qc_detector_list
     while True:
-        time.sleep(1)
+        time.sleep(1)  # Sleep to prevent a tight loop that hogs the CPU
+
+        # Fetch the current list of detections
+        qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
         current_time = time.time()
         if len(qc_detector_list) < 1:
-            continue
-        qc_detector_list = [detector for detector in qc_detector_list if
-                            current_time < (detector["last_detected"] + detector["ignore_seconds"])]
+            # logger.warning(f"Empty Detector List")
+            continue  # Skip this iteration if list is empty
+
+        updated_list = []
+        for item in qc_detector_list:
+            # Calculate the expiration time for each item
+            expire_time = item['last_detected'] + item['ignore_seconds']
+            if current_time <= expire_time:
+                # If the item hasn't expired, add it to the updated list
+                updated_list.append(item)
+
+        # If the updated list is shorter, some items were removed
+        if len(updated_list) < len(qc_detector_list):
+            # Clear the old list
+            delete_active_detections_cache(rd, "icad_current_detectors")
+
+            # Add the updated items back, if any
+            if updated_list:
+                # Push all items at once to the list
+                rd.lpush("icad_current_detectors", *updated_list)
+
+                logger.warning(f"Removed {len(qc_detector_list) - len(updated_list)}")
 
 
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if session.get('logged_in') is None:
-            return redirect(url_for('index', next=request.url))
+        authenticated = session.get('authenticated')
+
+        if not authenticated:
+            logger.debug(f"Redirecting User: Current session data: {session.items()}")
+
+            return redirect(url_for('index'))
+        else:
+            logger.debug(f"User Authorized: Current session data: {session.items()}")
+
         return f(*args, **kwargs)
 
     return decorated_function
@@ -206,26 +205,60 @@ def admin_detector_config():
 def login():
     username = request.form['username']
     password = request.form['password']
+    if not username or not password:
+        flash('Username and Password Required', 'danger')
+        return redirect(url_for('index'))
 
-    user = db.execute_query('SELECT password FROM users WHERE username = ?', [username], fetch_mode='one')
+    auth_result = authenticate_user(db, username, password)
 
-    if user and check_password_hash(user['password'], password):
-        session['logged_in'] = True
-        session['user'] = username
-    else:
-        return 'wrong password!'
-    return redirect(url_for('admin'))
+    flash(auth_result["message"], 'success' if auth_result["success"] else 'danger')
+    return redirect(url_for('admin') if auth_result["success"] else url_for('index'))
 
 
 @app.route("/logout")
 def logout():
-    session.pop('logged_in', None)
+    session.clear()
     return redirect(url_for('index'))
+
+
+@app.route("/api/get_systems")
+def api_get_systems():
+    system_id = request.args.get('system_id', None)
+    with_agencies = request.args.get('with_agencies', False)
+
+    # Fetch system data once
+    system_data_result = get_systems(db, system_id)
+
+    # If agencies are requested, enhance the system data with agency information
+    if with_agencies and system_data_result["result"]:
+        # Prepare a list of system IDs to fetch their agencies in one go (if applicable)
+        system_ids = [system.get("system_id") for system in system_data_result["result"]]
+
+        # Fetch all agencies for the systems in one go (modify this function to accept multiple system_ids)
+        all_agencies = get_agencies(db, system_ids)
+
+        # Map agencies back to their respective systems
+        for system in system_data_result["result"]:
+            # Filter agencies for this specific system
+            system["agencies"] = [agency for agency in all_agencies["result"] if agency["system_id"] == system["system_id"]]
+
+    return jsonify(system_data_result)
+
+
+@app.route("/api/get_agency")
+def api_get_agencies():
+    system_id = request.args.get('system_id', None)
+    agency_id = request.args.get('agency_id', None)
+
+    system_data_result = get_agencies(db, system_id, agency_id)
+
+    return jsonify(system_data_result)
 
 
 @app.route('/tone_detect', methods=['POST'])
 def tone_upload():
-    global qc_detector_list
+    return jsonify({"status": "unavailable", "message": f"Development Mode"}), 200
+    tones_with_data = []
     logger.info("Got New HTTP request.")
 
     if request.method != "POST":
@@ -236,7 +269,7 @@ def tone_upload():
     if not call_data_post:
         return jsonify({"status": "error", "message": "No call data"}), 400
 
-    if config_data["detection_mode"] == 0:
+    if config_data["general"].get("detection_mode", 0) == 0:
         return jsonify({"status": "error", "message": "Detection Disabled"}), 400
 
     file = request.files.get('file')
@@ -247,6 +280,9 @@ def tone_upload():
     ext = splitext(file.filename)[1]
     if ext not in allowed_extensions:
         return jsonify({"status": "error", "message": "File must be an MP3, WAV, or M4A"}), 400
+
+    qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
+    logger.warning(f'Active Detector List: {qc_detector_list}')
 
     file_data = file.read()
     audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
@@ -259,7 +295,8 @@ def tone_upload():
             "long": long_tone,
             "dtmf": dtmf_tone,
             "timestamp": float(call_data_post.get("start_time")),
-            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime("%m/%d/%Y, %H:%M:%S"),
+            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime(
+                "%m/%d/%Y, %H:%M:%S"),
             'call_length': float(call_data_post.get('call_length', 0)),
             'talkgroup_decimal': int(call_data_post.get('talkgroup', 0)),
             'talkgroup_alpha_tag': str(call_data_post.get('talkgroup_tag')),
@@ -271,35 +308,67 @@ def tone_upload():
     except Exception as e:
         return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
 
-    if not (quick_call or hi_low or long_tone or dtmf_tone):
+    if quick_call:
+        tones_with_data.append(f"quick_call: {quick_call}")
+    if hi_low:
+        tones_with_data.append(f"hi_low: {hi_low}")
+    if long_tone:
+        tones_with_data.append(f"long_tone: {long_tone}")
+    if dtmf_tone:
+        tones_with_data.append(f"dtmf_tone: {dtmf_tone}")
+
+    if not tones_with_data:
         logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
     else:
-        logger.warning("Tones Detected")
+        data_message = ', '.join(tones_with_data)
+        logger.warning(f"Tones Detected: {data_message}")
         file_name = f'{round(detection_data["timestamp"], -1)}_detection'
-        local_audio_path = os.path.join(root_path, f"{audio_path}/{file_name}.mp3")
+        local_audio_path = os.path.join(audio_path, f"{file_name}.mp3")
+        local_json_path = os.path.join(audio_path, f"{file_name}_metadata.json")
         audio_segment.export(local_audio_path, format='mp3')
         detection_data["local_audio_path"] = local_audio_path
+        logger.info(f"Saving Audio and Metadata: {local_audio_path}")
+        with open(local_json_path, 'w') as outjs:
+            outjs.write(json.dumps(call_data_post, indent=4))
 
-        if config_data["detection_mode"] in (2, 3):
+        if config_data["general"].get("detection_mode", 0) in [2, 3]:
             logger.warning("Processing Tones Through Detectors")
 
             logger.debug("Processing QuickCall Tones")
-            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list, detection_data).detect_quick_call()
-
-            qc_detector_list = qc_result
+            processed_detection_data = ToneDetection(config_data, detector_data, detection_data).detect_quick_call(rd)
             detection_data = processed_detection_data
-
-        if config_data["detection_mode"] in (1, 3):
+        if config_data["general"].get("detection_mode", 0) in [1, 3]:
             with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
                 outjs.write(json.dumps(detection_data, indent=4))
-
+    qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
+    logger.warning(f"Active Detectors List: {qc_detector_list}")
     logger.info("HTTP Request Completed")
     return jsonify(detection_data), 200
+
+
+@app.route('/edit_systems', methods=['POST', 'GET'])
+def edit_systems():
+    if request.method == "GET":
+        return render_template('systems_config.html')
+    elif request.method == "POST":
+        pass
 
 
 @app.route('/save_main_config', methods=['POST'])
 @login_required
 def save_main_config():
+    """
+    Save Main Config
+
+    This method is used to save the main configuration settings. It receives a POST request containing form data and
+    saves the configuration data to a file on disk.
+
+    :return: A JSON response containing the result of the operation.
+
+    Example Usage:
+        response = save_main_config()
+
+    """
     global config_data
 
     try:
@@ -329,11 +398,13 @@ def save_main_config():
             json.dump(config_data, f, indent=4)
 
         # reload config, this may be redundant since we are already setting the values above ^
-        reload_config = load_configuration()
-        if reload_config:
-            reload_config['alert']['message'] = f'Successfully updated configuration.'
+        reload_config = save_config_file(os.path.join(config_path, config_file), config_data)
+        if not reload_config:
+            logger.error('Failed to reload configuration.')
+            response = {'success': False, 'alert': {'type': 'danger', 'message': 'Failed to reload configuration.'}}
+            return jsonify(response)
 
-        response = reload_config
+        response = {'success': True, 'alert': {'type': 'success', 'message': 'Successfully updated configuration.'}}
 
     except KeyError:
         flash('Missing required form field.', 'error')
@@ -443,11 +514,10 @@ def save_detector_config():
             flash("Value Error adjust detector configuration and try again: " + str(e), "danger")
             return redirect(url_for("admin_detector_config"), code=302)
 
-        with open("etc/detectors.json", "w") as outfile:
-            outfile.write(json.dumps(detector_data, indent=4))
-        outfile.close()
-
-        load_detectors()
+        save_result = save_config_file(os.path.join(config_path, detector_file), detector_data)
+        if not save_result:
+            flash("Failed to save detector configuration.", "danger")
+            return redirect(url_for("admin_detector_config"), code=302)
 
         flash(f"Saved Detector: {detector_name}", "success")
 
@@ -458,10 +528,11 @@ def save_detector_config():
             if detector_data[detector_name]["detector_id"] == int(detector_id):
                 del detector_data[detector_name]
 
-                with open("etc/detectors.json", "w") as outfile:
-                    outfile.write(json.dumps(detector_data, indent=4))
-                outfile.close()
-                load_detectors()
+                save_result = save_config_file(os.path.join(config_path, detector_file), detector_data)
+                if not save_result:
+                    flash("Failed to save detector configuration.", "danger")
+                    return redirect(url_for("admin_detector_config"), code=302)
+
                 flash(f"Deleted Detector: {detector_name}", "success")
             else:
                 flash(f"Detector: {detector_name} ID doesn't match.", "danger")
@@ -469,6 +540,30 @@ def save_detector_config():
             flash(f"Detector: {detector_name} not in config.", "danger")
 
     return redirect(url_for("admin_detector_config"), code=302)
+
+
+@app.route('/icad_import', methods=['POST'])
+def import_icad_agencies():
+    system_id = request.args.get("system_id")
+    if not system_id:
+        return jsonify({"success": False, "message": "System ID Required."}), 400
+
+    try:
+        file = request.files['cfgFile']
+        if not file:
+            return jsonify({"success": False, "message": "detector.json file required."}), 400
+
+        import_content = file.read()
+        import_data = json.loads(import_content)
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Unexpected Exception: {e}"}), 400
+
+    import_result = import_agencies_from_detectors(db, import_data, int(system_id))
+
+    if not import_result:
+        return jsonify({"success": False, "message": "Import Error"})
+    else:
+        return jsonify({"success": True, "message": "Import Success"})
 
 
 @app.route('/ttd_import', methods=['POST'])
@@ -528,15 +623,11 @@ def import_ttd():
                 flash(f'Error while processing ttd import {ttd_config[section]["description"]}: {ve}', "danger")
                 return redirect(url_for("admin_detector_config"), code=302)
 
-        try:
-            with open("etc/detectors.json", "w") as outfile:
-                outfile.write(json.dumps(detector_data, indent=4))
-        except IOError:
-            logger.error("IOError occurred while writing to the file.")
-            flash("An error occurred while writing to the file.", "danger")
+        save_result = save_config_file(os.path.join(config_path, detector_file), detector_data)
+        if not save_result:
+            flash("Failed to save detector configuration.", "danger")
             return redirect(url_for("admin_detector_config"), code=302)
 
-        load_detectors()
         flash(f"Imported {count} detectors from TTD", "success")
         return redirect(url_for("admin_detector_config"), code=302)
 
@@ -558,5 +649,5 @@ def import_ttd():
 
 threading.Thread(target=clear_old_items, daemon=True).start()
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8002, debug=False)
+# if __name__ == '__main__':
+#     app.run(host="0.0.0.0", port=8002, debug=False)

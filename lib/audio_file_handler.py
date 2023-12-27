@@ -18,104 +18,165 @@ def get_unique_file_path(temp_dir_path, suffix):
     return f"{temp_dir_path}/{uuid4()}{suffix}"
 
 
-def group_tones_by_time(tone_data: List[dict], time_gap: float) -> List[List[dict]]:
+# def group_tones_by_time(tone_data: List[dict], time_gap: float) -> List[List[dict]]:
+#     """
+#     This function takes a list of tone data dictionaries and groups them based on a specified time gap.
+#     If the difference in the 'occurred' time between two consecutive tones is less than or equal to the
+#     specified time gap, they are considered to be part of the same group. The function returns a list of
+#     such groups.
+#
+#     Args:
+#         tone_data (List[dict]): A list containing dictionaries where each dictionary holds data for a single tone.
+#                                 Each dictionary should have an 'occurred' key holding the time at which the tone occured.
+#         time_gap (float): A float specifying the maximum time gap between two consecutive tones to consider
+#                           them as part of the same group.
+#
+#     Returns:
+#         List[List[dict]]: A list of tone groups where each group is a list of tone data dictionaries that
+#                           occurred within the specified time gap of each other.
+#     """
+#
+#     def are_similar_tones(tone1, tone2):
+#         # Function to check if two tones are similar within a 1% threshold
+#         return all(abs(t1 - t2) / t2 <= 0.01 for t1, t2 in zip(tone1, tone2))
+#
+#     def have_similar_tones(group1, group2):
+#         # Function to check if more than 50% of tones are similar between two groups
+#         similar_count = sum(
+#             any(are_similar_tones(tone1['actual'], tone2['actual']) for tone2 in group2) for tone1 in group1)
+#         return similar_count >= max(len(group1), len(group2)) * 0.5
+#
+#     # Initializing an empty list to hold the grouped tones
+#     grouped_tones = []
+#
+#     # Initializing the first group with the first tone data dictionary
+#     current_group = [tone_data[0]]
+#
+#     # Iterating through the tone data starting from the second item
+#     for i in range(1, len(tone_data)):
+#         # Checking if the time gap between the current and previous tone is less than or equal to the specified time gap
+#         if tone_data[i]['occured'] - tone_data[i - 1]['occured'] <= time_gap:
+#             # If the condition is met, add the current tone data to the current group
+#             current_group.append(tone_data[i])
+#         else:
+#             # If the time gap is larger, add the current group to the list of grouped tones and start a new group with the current tone data
+#             grouped_tones.append(current_group)
+#             current_group = [tone_data[i]]
+#
+#     # Adding the last group to the list of grouped tones if it is not empty
+#     if current_group:
+#         grouped_tones.append(current_group)
+#
+#         # Now we will merge groups that have more than 50% similar tones
+#         merged_groups = []
+#         i = 0
+#         while i < len(grouped_tones):
+#             if i < len(grouped_tones) - 1 and have_similar_tones(grouped_tones[i], grouped_tones[i + 1]):
+#                 grouped_tones[i].extend(grouped_tones[i + 1])
+#                 i += 2
+#             else:
+#                 merged_groups.append(grouped_tones[i])
+#                 i += 1
+#
+#         return merged_groups
+
+def group_tones_by_time(tone_data_sorted, time_gap):
     """
-    This function takes a list of tone data dictionaries and groups them based on a specified time gap.
-    If the difference in the 'occurred' time between two consecutive tones is less than or equal to the
-    specified time gap, they are considered to be part of the same group. The function returns a list of
-    such groups.
+    This function groups tones that are closer to each other in time based on a specified time gap.
 
     Args:
-        tone_data (List[dict]): A list containing dictionaries where each dictionary holds data for a single tone.
-                                Each dictionary should have an 'occurred' key holding the time at which the tone occured.
-        time_gap (float): A float specifying the maximum time gap between two consecutive tones to consider
-                          them as part of the same group.
+        tone_data_sorted (list of dicts): A list containing dictionaries that represent individual tones.
+                                          Each dictionary contains details about a single tone,
+                                          including its 'occurred' time.
+                                          The list is sorted in ascending order based on the 'occurred' time.
+        time_gap (float): A float representing the maximum time gap between two tones to consider
+                          them as belonging to the same group.
+
+    Process:
+        - Initializes the first tone as the starting point of the first group.
+        - Iterates through the sorted tone data starting from the second tone.
+        - If the time gap between the current tone and the last tone in the current group is less than the
+          specified time gap, it adds the current tone to the current group.
+        - If the time gap is equal to or greater than the specified time gap, it considers the current tone
+          as the start of a new group, adds the current group to the list of tone groups, and starts a new group
+          with the current tone.
+        - After iterating through all tones, if the current group contains any tones, it adds it to the list
+          of tone groups.
 
     Returns:
-        List[List[dict]]: A list of tone groups where each group is a list of tone data dictionaries that
-                          occurred within the specified time gap of each other.
+        list of lists: A list where each element is a list of tones representing a group.
+                       Each tone in a group is closer in time to each other than the specified time gap.
     """
+    tone_groups = []
+    current_group = [tone_data_sorted[0]]
 
-    # Initializing an empty list to hold the grouped tones
-    grouped_tones = []
-
-    # Initializing the first group with the first tone data dictionary
-    current_group = [tone_data[0]]
-
-    # Iterating through the tone data starting from the second item
-    for i in range(1, len(tone_data)):
-        # Checking if the time gap between the current and previous tone is less than or equal to the specified time gap
-        if tone_data[i]['occured'] - tone_data[i - 1]['occured'] <= time_gap:
-            # If the condition is met, add the current tone data to the current group
-            current_group.append(tone_data[i])
+    for i in range(1, len(tone_data_sorted)):
+        if tone_data_sorted[i]['occured'] - current_group[-1]['occured'] < time_gap:
+            current_group.append(tone_data_sorted[i])
         else:
-            # If the time gap is larger, add the current group to the list of grouped tones and start a new group with the current tone data
-            grouped_tones.append(current_group)
-            current_group = [tone_data[i]]
+            tone_groups.append(current_group)
+            current_group = [tone_data_sorted[i]]
 
-    # Adding the last group to the list of grouped tones if it is not empty
     if current_group:
-        grouped_tones.append(current_group)
+        tone_groups.append(current_group)
 
-    # Returning the list of grouped tones
-    return grouped_tones
+    return tone_groups
 
 
 def extract_tone_times(detection_data, time_gap, post_cut_duration, pre_cut_duration):
     """
-        This function extracts intervals and tone IDs from the provided tone data and call data based on specified
-        parameters such as time gap, post cut duration, and pre cut duration.
+        Extracts intervals and tone IDs from the tone data and groups them based on the specified time gap, post-cut,
+        and pre-cut durations. The function iterates through the groups, creating intervals using the occurred times
+        in the current and next groups (if exists). If there isn't a next group, it ends the interval at the end
+        of the file. It also ensures that the end time of an interval is always greater than the start time.
 
         Args:
-            detection_data (dict): The dictionary containing the tones and their respective data including occurred times.
+            detection_data (dict): A dictionary containing details of the tones including their occurred times.
             time_gap (float): The time gap parameter used to group tones together.
-            post_cut_duration (float): The duration after which to cut the post tone period.
-            pre_cut_duration (float): The duration before which to cut the pre tone period.
+            post_cut_duration (float): The duration after which to set the cutting start time post tone period.
+            pre_cut_duration (float): The duration before which to set the cutting end time pre tone period.
 
         Returns:
-            list, list: Returns two lists - one with the intervals (start time and end time) and another with the respective
-                        tone IDs present in those intervals.
+            tuple: Two lists, one containing tuples with start and end times of each interval,
+                   and another containing lists of tone IDs present in those intervals.
     """
 
     # Sorting the tone data based on the 'occured' key in each tone data dictionary
     tone_data_sorted = sorted(detection_data["quick_call"], key=lambda x: x['occured'])
 
+
     # Grouping the sorted tones by time using the specified time gap
     tone_groups = group_tones_by_time(tone_data_sorted, time_gap)
+
+    module_logger.warning(tone_groups)
 
     # Initializing empty lists to hold the intervals and tone IDs for each interval
     intervals = []
     tone_ids_for_intervals = []
 
-    # Handling the case where there is only a single group of tones
-    if len(tone_groups) == 1:
-        # Calculating the duration of the single group
-        single_group_duration = (tone_groups[0][-1]['occured'] + post_cut_duration) - tone_groups[0][0]['occured']
-
-        # Adjusting the start time based on the call data's call length and the single group's duration
-        if abs(single_group_duration - detection_data["call_length"]) < 4.5:
-            start_time = 0
-        else:
-            start_time = max(tone['occured'] for tone in tone_groups[0]) + post_cut_duration
-
-        # Setting up the interval and extracting the tone IDs for the single group case
-        end_time = None
-        interval_tone_ids = [tone['tone_id'] for tone in tone_groups[0]]
-        intervals.append((start_time, end_time))
-        tone_ids_for_intervals.append(interval_tone_ids)
-    else:
-        # Handling the case where there are multiple groups of tones
-        for i in range(0, len(tone_groups) - 1, 2):
+    # Check if the list is not empty
+    if tone_groups:
+        i = 0
+        while i < len(tone_groups):
             # Setting the start time and extracting tone IDs for the current group
             start_time = max(tone['occured'] for tone in tone_groups[i]) + post_cut_duration
             interval_tone_ids = [tone['tone_id'] for tone in tone_groups[i]]
 
-            # Trying to set the end time and extract tone IDs for the next group (if exists)
-            try:
+            # Setting the end time to None as a default value (will be used in case this is the last group or a single group)
+            end_time = None
+
+            # If there is a next group, set the end time based on the earliest tone in the next group
+            if i + 1 < len(tone_groups):
                 end_time = min(tone['occured'] for tone in tone_groups[i + 1]) - pre_cut_duration
                 interval_tone_ids.extend([tone['tone_id'] for tone in tone_groups[i + 1]])
-            except IndexError:
-                end_time = None
+
+                # Ensure that end_time is greater than start_time
+                if end_time <= start_time:
+                    end_time = start_time + 0.1  # Adjust end time to be slightly greater than start time
+
+                i += 2  # Move to the group after the next group
+            else:
+                i += 1  # Move to the next group (which does not exist, effectively ending the loop)
 
             # Adding the created interval and tone IDs to their respective lists
             intervals.append((start_time, end_time))
@@ -163,8 +224,10 @@ def extract_audio_segment(input_file: str, start_time: float, end_time: float, o
         result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
     except subprocess.CalledProcessError as e:
+        # Getting the stderr output and decoding it to a string
+        error_message = e.stderr.decode('utf-8') if e.stderr else "No stderr output available"
         # Logging an error message if a CalledProcessError occurs (indicating the command failed)
-        module_logger.error(f"An error occurred while extracting audio segment: {e}")
+        module_logger.error(f"An error occurred while extracting audio segment: {e}\n\n{error_message}")
         return False
     except Exception as e:
         # Logging an error message if any other type of exception occurs
@@ -316,7 +379,7 @@ def process_detection_audio(config_data, detection_data):
         # Retrieve audio processing configurations
         post_cut_time = config_data["audio_processing"].get("trim_post_cut", 5.5)
         pre_cut_time = config_data["audio_processing"].get("trim_pre_cut", 2.2)
-        time_gap = config_data["audio_processing"].get("trim_group_tone_gap", 6.5)
+        time_gap = config_data["audio_processing"].get("trim_group_tone_gap", 7.5)
 
         # Determine intervals and tone IDs for trimming based on configuration
         input_base_dir = input_audio_path.parent
@@ -330,6 +393,13 @@ def process_detection_audio(config_data, detection_data):
         matches_dict = detection_data['matches']
 
         final_data = []
+
+        # If we have more than 4 intervals something isn't correct.
+        if len(intervals) > 4:
+            # Set intervals to one interval grabbing the inital audio before tones start. without precut time
+            intervals = [(0, detection_data["quick_call"][0]["occured"])]
+            # keep the first set of tone_ids so we have a detector name
+            tone_ids_for_intervals = tone_ids_for_intervals[:1]
 
         for interval, tone_ids in zip(intervals, tone_ids_for_intervals):
 

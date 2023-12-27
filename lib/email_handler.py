@@ -64,14 +64,10 @@ class EmailSender:
             (str(Header(self.sender_name, 'utf-8')),
              self.sender_email))
 
-        # Extract the domain from the sender's email address
-        sender_domain = self.sender_email.split('@')[1]
-
         # Determine whether to use 'To' or 'Bcc' field for the recipient addresses based on list size
         if len(to) == 1:
             message['To'] = to[0]
         else:
-            message['To'] = f'Undisclosed Recipients <noreply@{sender_domain}>'
             message['Bcc'] = ", ".join(to)
 
         # Set the subject of the email
@@ -148,7 +144,7 @@ class EmailSender:
             raise ValueError("'smtp_security' should be either 'SSL' or 'TLS'")
 
 
-def generate_alert_email(config_data, detection_data, detector_data=None, triggered_detectors=None):
+def generate_alert_email(config_data, detection_data, test=True, detector_data=None, triggered_detectors=None):
     """
     Generates the subject and body of an alert email by replacing placeholders with actual data.
 
@@ -158,6 +154,9 @@ def generate_alert_email(config_data, detection_data, detector_data=None, trigge
     :param triggered_detectors: List containing all detectors that triggered for this alert (optional)
     :return: Tuple containing the subject and body of the email
     """
+
+
+
     try:
         if detector_data is None and triggered_detectors is None:
             module_logger.error(
@@ -168,22 +167,30 @@ def generate_alert_email(config_data, detection_data, detector_data=None, trigge
             # Case: Grouped alert for many detectors
             email_subject_template = config_data["email_settings"].get("grouped_email_subject", "Dispatch Alert")
             email_body_template = config_data["email_settings"].get("grouped_email_body",
-                                                                    "{detector_list} Alert at {timestamp}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+                                                                    "{detector_list} Alert at {timestamp}")
             detector_list = ", ".join([f'{x["detector_name"]} {x["detector_config"]["station_number"] if x["detector_config"].get("station_number", 0) != 0 else ""}' for x in triggered_detectors])
             detector_name = "Multiple Detectors"  # Default value for grouped detectors
+
+            stream_url = config_data["stream_settings"].get("stream_url") if config_data["stream_settings"].get("stream_url") else "https://openmhz.com/"
+
+
         else:
             # Case: Single alert for one detector
             email_subject_template = detector_data["detector_config"].get("alert_email_subject") or config_data[
                 "email_settings"].get("alert_email_subject", "Dispatch Alert - {detector_name}")
             email_body_template = detector_data["detector_config"].get("alert_email_body") or config_data[
                 "email_settings"].get("alert_email_body",
-                                      "{detector_name} Alert at {timestamp}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+                                      "{detector_name} Alert at {timestamp}")
             detector_name = detector_data.get("detector_name", "Example Detector")
             detector_list = None
+            stream_url = detector_data.get("stream_url") or config_data["stream_settings"].get("stream_url") if config_data["stream_settings"].get("stream_url") else "https://openmhz.com/"
 
         # Convert UNIX timestamp to human-readable format
         timestamp = datetime.fromtimestamp(detection_data.get("timestamp", 0))  # added default value to avoid None
         hr_timestamp = timestamp.strftime("%H:%M:%S %b %d %Y")
+
+        if test:
+            email_body_template = f"<font color=\"red\"><b>TEST TEST TEST TEST</b></font><br><br>{email_body_template}"
 
         # Create a mapping dictionary to replace placeholders in the subject and body templates
         mapping = {
@@ -192,7 +199,7 @@ def generate_alert_email(config_data, detection_data, detector_data=None, trigge
             "timestamp": hr_timestamp,
             "transcript": detection_data["transcript"] if detection_data.get("transcript") else "Empty Transcript",
             "mp3_url": detection_data["mp3_url"] if detection_data.get("mp3_url") else "https://openmhz.com/",
-            "stream_url": config_data["stream_settings"]["stream_url"] if config_data["stream_settings"].get("stream_url") else "https://openmhz.com/"
+            "stream_url": stream_url
         }
 
         # Format the email subject and body using the mapping

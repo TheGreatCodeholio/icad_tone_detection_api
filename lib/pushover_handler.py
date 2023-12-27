@@ -45,15 +45,18 @@ class PushoverSender:
         self.config_data = config_data
         self.detector_data = detector_data
 
-    def send_push(self, detection_data):
+    def send_push(self, detection_data, test=True):
         """Sends a push notification with the given parameters.
 
         Args:
-            call_data (dict): A dictionary containing call data.
+            detection_data (dict): A dictionary containing call data.
+            test (bool): A bool to signify if test mode enabled
 
         Returns:
             None
         """
+
+
         try:
             title = self.detector_data["detector_config"].get("pushover_subject") or self.config_data[
                 "pushover_settings"].get("pushover_subject", "Alert!")
@@ -61,7 +64,11 @@ class PushoverSender:
                 "pushover_settings"].get("pushover_sound", "pushover")
             body = self.detector_data["detector_config"].get("pushover_body") or self.config_data[
                 "pushover_settings"].get("pushover_body",
-                                         "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+                                         "<font color=\"red\"><b>{detector_name}</b></font>")
+
+            if test:
+                body = f"<font color=\"red\"><b>TEST TEST TEST TEST</b></font><br><br>{body}"
+
 
             # Preprocess timestamp
             timestamp = datetime.fromtimestamp(detection_data.get("timestamp", 0))
@@ -73,10 +80,9 @@ class PushoverSender:
             mapping = {
                 "detector_name": detector_name,
                 "timestamp": hr_timestamp,
-                "transcript": detection_data.get("transcript", "Empty Transcript"),
-                "mp3_url": detection_data.get("mp3_url", "https://openmhz.com/"),
-                "stream_url": self.detector_data.get("stream_url") or self.config_data["stream_settings"].get(
-                    "stream_url", "https://openmhz.com/")
+                "transcript": detection_data["transcript"] if detection_data.get("transcript") else "",
+                "mp3_url": detection_data["mp3_url"] if detection_data.get("mp3_url") else "",
+                "stream_url": self.detector_data.get("stream_url") or self.config_data["stream_settings"].get("stream_url") if self.config_data["stream_settings"].get("stream_url") else ""
             }
 
             # Use the mapping to format the strings
@@ -101,16 +107,16 @@ class PushoverSender:
                     if response.status_code == 200:
                         module_logger.debug(f"Pushover Successful: Group {group_name}")
                     else:
-                        module_logger.critical(f"Pushover Unsuccessful: Group {group_name} {response.text}")
+                        module_logger.error(f"Pushover Unsuccessful: Group {group_name} {response.text}")
                 except RequestException as e:
-                    module_logger.critical(f"Pushover Request Error for Group {group_name}: {e}")
+                    module_logger.error(f"Pushover Request Error for Group {group_name}: {e}")
                 except Exception as e:
-                    module_logger.critical(f"Unexpected Pushover Request Error for Group {group_name}: {e}")
+                    module_logger.error(f"Unexpected Pushover Request Error for Group {group_name}: {e}")
 
             self._process_push_notifications(send_request)
 
         except Exception as e:
-            module_logger.critical(f"Pushover Send Failure:\n {repr(e)}")
+            module_logger.error(f"Pushover Send Failure:\n {repr(e)}")
             traceback.print_exc()
 
     def _process_push_notifications(self, send_request):
@@ -122,18 +128,14 @@ class PushoverSender:
         Returns:
             None
         """
-        all_detector_group = self.config_data["pushover_settings"].get("all_detector_group", 0)
-        all_detector_app_token = self.config_data["pushover_settings"].get("all_detector_app_token")
-        all_detector_group_token = self.config_data["pushover_settings"].get("all_detector_group_token")
+        all_detector_app_token = self.config_data["pushover_settings"].get("all_detector_app_token", "")
+        all_detector_group_token = self.config_data["pushover_settings"].get("all_detector_group_token", "")
 
-        if all_detector_group == 1:
+        if all_detector_app_token != "" and all_detector_group_token != "":
             module_logger.debug("Sending Pushover All Detectors Group")
-            if all_detector_app_token and all_detector_group_token:
-                send_request(all_detector_app_token, all_detector_group_token, "All")
-            else:
-                module_logger.error("Missing Pushover APP or Group Token for All group")
+            send_request(all_detector_app_token, all_detector_group_token, "All")
         else:
-            module_logger.debug("Pushover all detector group disabled.")
+            module_logger.debug("Pushover All Detector Group Disabled")
 
         app_token = self.detector_data["detector_config"].get("pushover_app_token")
         group_token = self.detector_data["detector_config"].get("pushover_group_token")

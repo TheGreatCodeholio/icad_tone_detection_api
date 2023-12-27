@@ -1,0 +1,453 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Add Agency Modal -->
+    <div class="modal fade" id="addAgencyModal" tabindex="-1" role="dialog" aria-labelledby="addAgencyModalLabel"
+         aria-hidden="true">
+
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSystemModalLabel">Add Agency</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="agency_input_form" method="post">
+                        <input hidden type="text" class="form-control" id="addAgencySystemId" name="system_id">
+                        <div id="agency_input_div">
+                            <ul class="nav nav-tabs" id="agency_tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link active" id="agency-tab" data-bs-toggle="tab"
+                                            data-bs-target="#agency-tab-pane" type="button" role="tab"
+                                            aria-controls="agency-tab-pane" aria-selected="true">Agency
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="qc_tone-tab" data-bs-toggle="tab"
+                                            data-bs-target="#qc_tone-tab-pane" type="button" role="tab"
+                                            aria-controls="qc_tone-tab-pane" aria-selected="false">QCII Tones
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="email-tab" data-bs-toggle="tab"
+                                            data-bs-target="#email-tab-pane" type="button" role="tab"
+                                            aria-controls="email-tab-pane" aria-selected="false">Emails
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="mqtt-tab" data-bs-toggle="tab"
+                                            data-bs-target="#mqtt-tab-pane" type="button" role="tab"
+                                            aria-controls="mqtt-tab-pane" aria-selected="false">MQTT
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="pushover-tab" data-bs-toggle="tab"
+                                            data-bs-target="#pushover-tab-pane" type="button" role="tab"
+                                            aria-controls="pushover-tab-pane" aria-selected="false">Pushover
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="facebook-tab" data-bs-toggle="tab"
+                                            data-bs-target="#facebook-tab-pane" type="button" role="tab"
+                                            aria-controls="facebook-tab-pane" aria-selected="false">Facebook
+                                    </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="agencyTabContent">
+                                <div class="tab-pane fade show active" id="agency-tab-pane" role="tabpanel"
+                                     aria-labelledby="tone-tab" tabindex="0">
+                                    <h5 class="mt-3 mb-3">Agency Configuration</h5>
+
+                                    <label id="agency_name_label" for="agency_name" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Agency Name" class="form-label w-50">Agency
+                                        Name</label>
+                                    <input type="text" id="agency_name" name="agency_name" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Agency Name" class="form-control mb-3 w-75"
+                                           required>
+                                    <label id="agency_code_label" for="agency_code" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Station Number Or Agency Abbreviation" class="form-label w-50">Agency Code</label>
+                                    <input type="text" id="agency_code" name="agency_code"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Station Number Or Agency Abbreviation" class="form-control mb-3 w-75">
+                                </div>
+                                <div class="tab-pane fade" id="qc_tone-tab-pane" role="tabpanel"
+                                     aria-labelledby="qc_tone-tab" tabindex="0">
+
+                                    <h5 class="mt-3 mb-3">Quick Call Configuration</h5>
+
+                                    <label id="agency_a_tone_label" for="agency_a_tone" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone A" class="form-label w-50">Tone
+                                        A Frequency</label>
+                                    <input type="text" id="agency_a_tone" name="a_tone"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone A"
+                                           class="form-control mb-3 w-75"
+                                           required>
+
+                                    <label id="agency_b_tone_label" for="detector_b_tone" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone B" class="form-label w-50">Tone
+                                        B Frequency</label>
+                                    <input type="text" id="agency_b_tone" name="b_tone"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone B"
+                                           class="form-control mb-3 w-75"
+                                           required>
+
+                                    <label id="tone_tolerance_label" for="tone_tolerance"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%"
+                                           class="form-label w-50">Tone Match Tolerance</label>
+                                    <input type="text" id="tone_tolerance" name="tone_tolerance"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%"
+                                           class="form-control mb-3 w-50" required>
+
+                                    <label id="agency_ignore_time_label" for="agency_ignore_time"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="Ignore time in seconds after a successful match."
+                                           class="form-label w-50">Agency Ignore Time</label>
+                                    <input type="text" id="agency_ignore_time" name="agency_ignore_time"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Ignore time in seconds after a successful match."
+                                           class="form-control mb-5 w-75" required>
+                                </div>
+                                <div class="tab-pane fade" id="email-tab-pane" role="tabpanel"
+                                     aria-labelledby="email-tab"
+                                     tabindex="0">
+
+                                    <h5 class="mt-3 mb-3">Alert Emails</h5>
+
+                                    <label id="agency_alert_emails_label" for="agency_alert_emails"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Comma seperated list of Alert Emails" class="form-label w-50">Alert
+                                        Email Addresses</label>
+                                    <input type="text" id="agency_alert_emails" name="agency_alert_emails"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Comma seperated list of Alert Emails"
+                                           class="form-control mb-5 w-50">
+
+                                    <label id="alert_subject_label" for="alert_subject" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Override Global Alert Email Subject" class="form-label w-50">Alert
+                                        Email Subject Override</label>
+                                    <input type="text" id="alert_subject" name="alert_email_subject"
+                                           data-bs-toggle="tooltip" data-bs-placement="top" title="Override Global Alert Email Subject"
+                                           class="form-control mb-3 w-100">
+
+                                    <label id="alert_body_label" for="alert_body" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Override Global Alert Email Body" class="form-label w-50">Alert
+                                        Email Body</label>
+                                    <textarea rows="7" cols="50" id="alert_body" name="alert_email_body"
+                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Override Global Alert Email Body"
+                                              class="form-control mb-3 w-100"></textarea>
+
+                                </div>
+                                <div class="tab-pane fade" id="mqtt-tab-pane" role="tabpanel" aria-labelledby="mqtt-tab"
+                                     tabindex="0">
+
+                                    <h5 class="mt-3 mb-3">MQTT Configuration</h5>
+
+                                    <label id="agency_mqtt_topic_label" for="agency_mqtt_topic"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top"
+                                           title="MQTT topic to public to. Example: dispatch/siren"
+                                           class="form-label w-50">MQTT Topic</label>
+                                    <input type="text" id="agency_mqtt_topic" name="mqtt_topic"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="MQTT topic to public to. Example: dispatch/siren"
+                                           class="form-control mb-3 w-50">
+
+                                    <label id="agency_mqtt_start_message_label" for="agency_mqtt_start_message"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="First message sent to MQTT topic." class="form-label w-50">MQTT Start
+                                        Message</label>
+                                    <input type="text" id="agency_mqtt_start_message"
+                                           name="mqtt_start_alert_message"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="First message sent to MQTT topic." class="form-control mb-3 w-50">
+
+                                    <label id="agency_mqtt_end_message_label" for="agency_mqtt_end_message"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Second message sent to MQTT topic." class="form-label w-50">MQTT End
+                                        Message</label>
+                                    <input type="text" id="agency_mqtt_end_message" name="mqtt_end_alert_message"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Second message sent to MQTT topic." class="form-control mb-3 w-50">
+
+                                    <label id="agency_mqtt_message_interval_label" for="agency_mqtt_message_interval"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Interval in seconds between start and end MQTT message."
+                                           class="form-label w-50">MQTT Interval Time</label>
+                                    <input type="text" id="agency_mqtt_message_interval"
+                                           name="mqtt_message_interval"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Interval in seconds between start and end MQTT message."
+                                           class="form-control mb-5 w-50">
+                                </div>
+                                <div class="tab-pane fade" id="pushover-tab-pane" role="tabpanel"
+                                     aria-labelledby="pushover-tab"
+                                     tabindex="0">
+
+                                    <h5 class="mt-3 mb-3">Pushover Configuration</h5>
+
+                                    <label id="agency_pushover_group_token_label" for="agency_pushover_group_token"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Group token from Pushover group for this agency."
+                                           class="form-label w-50">Pushover
+                                        Group Token</label>
+                                    <input type="text" id="agency_pushover_group_token"
+                                           name="pushover_group_token"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Group token from Pushover group for this agency."
+                                           class="form-control mb-3 w-50">
+
+                                    <label id="agency_pushover_app_token_label" for="agency_pushover_app_token"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Token from Pushover application for this agency."
+                                           class="form-label w-50">Pushover
+                                        App Token</label>
+                                    <input type="text" id="agency_pushover_app_token"
+                                           name="pushover_app_token"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Token from Pushover application for this detector."
+                                           class="form-control mb-5 w-50">
+
+                                    <label id="agency_pushover_subject_label" for="agency_pushover_subject"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Override Global Subject for Pushover Message." class="form-label w-50">Pushover
+                                        Message Override
+                                        Subject</label>
+                                    <input type="text" id="agency_pushover_subject" name="pushover_subject_override"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Override Global Subject for Pushover Message." class="form-control mb-5 w-50">
+
+                                    <label id="agency_pushover_body_label" for="agency_pushover_body" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Override Global Message Body for Pushover."
+                                           class="form-label w-50">Pushover Message HTML</label>
+                                    <textarea rows="5" cols="50" id="agency_pushover_body" name="pushover_body_override"
+                                              data-bs-toggle="tooltip"
+                                              data-bs-placement="top"
+                                              title="Override Global Message Body for Pushover."
+                                              class="form-control mb-3 w-50"></textarea>
+
+                                    <label id="agency_pushover_sound_label" for="agency_pushover_sound"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Override Global Alert Sound for Pushover Notification." class="form-label w-50">Pushover
+                                        Alert
+                                        Sound</label>
+                                    <input type="text" id="agency_pushover_sound" name="pushover_sound_override"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Override Global Alert Sound for Pushover Notification." class="form-control mb-5 w-50">
+
+                                </div>
+                                <div class="tab-pane fade" id="facebook-tab-pane" role="tabpanel"
+                                     aria-labelledby="facebook-tab"
+                                     tabindex="0">
+                                    <h5 class="mt-3 mb-3">Facebook Configuration</h5>
+                                    <label id="agency_facebook_status_label" for="agency_facebook_status"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Post Detection To Facebook."
+                                           class="form-label w-50">Posting to Facebook</label>
+                                    <select name="enable_facebook_post" id="agency_facebook_status"
+                                            class="form-select mb-5 w-50" aria-label="Facebook Post Status">
+                                        <option name="1" value="1">Enabled</option>
+                                        <option name="0" value="0" selected>Disabled</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="submitAddAgencyForm">Save</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Delete System Modal -->
+    <div class="modal fade" id="deleteSystemModal" tabindex="-1" role="dialog" aria-labelledby="deleteSystemModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteSystemModalLabel">Delete System</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="deletemodal_alert"></div>
+                    <div id="deleteloadingIndicator" class="d-none">
+                        <div class="spinner"></div>
+                    </div>
+                    <h3 id="deletesystemNameTitle"></h3>
+                    <form id="deleteSystemForm" class="d-block">
+                        <input hidden type="text" class="form-control" id="deleteSystemId" name="systemId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="submitDeleteForm">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add System Modal -->
+    <div class="modal fade" id="addSystemModal" tabindex="-1" role="dialog" aria-labelledby="addSystemModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSystemModalLabel">Add New System</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal_alert"></div>
+                    <div id="loadingIndicator" class="d-none">
+                        <div class="spinner"></div>
+                    </div>
+                    <form id="addSystemForm" class="d-block">
+                        <div class="form-group">
+                            <label for="systemName">System Name</label>
+                            <input id="systemName" class="form-control" type="text" name="system_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="systemCounty">System County</label>
+                            <input id="systemCounty" class="form-control" type="text" name="system_county">
+                        </div>
+                        <div class="form-group">
+                            <label for="systemState">State</label>
+                            <select id="systemState" name="system_state" class="form-control" required>
+                                <option value="">Select State</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="DC">District of Columbia</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option>
+                                <option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NY">New York</option>
+                                <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VT">Vermont</option>
+                                <option value="VA">Virginia</option>
+                                <option value="WA">Washington</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="systemFIPS">System FIPS Code</label>
+                            <input id="systemFIPS" class="form-control" type="text" name="system_fips">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="submitAddForm">Add System</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <h6 class="text-center d-none">{% block title %}  Home{% endblock %}</h6>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="accordion" id="filterAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="filterHeading">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#filterCollapse" aria-expanded="true"
+                                    aria-controls="filterCollapse">
+                                Filters
+                            </button>
+                        </h2>
+                        <div id="filterCollapse" class="accordion-collapse collapse show"
+                             aria-labelledby="filterHeading"
+                             data-bs-parent="#filterAccordion">
+                            <div class="accordion-body">
+                                <form>
+                                    <div id="systemDiv" class="form-group">
+                                        <small id="systemHelp" class="form-text text-muted">System Selection</small>
+                                        <select aria-describedby="systemHelp" name="system_selection"
+                                                id="system_selection"
+                                                class="form-select mb-lg-2" aria-label="System Selection"
+                                                onchange="querySystem()">
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-12">
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#addSystemModal">
+                            Add New System
+                        </button>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <h4>System Configuration</h4>
+                        <div class="accordion" id="accordionSystem">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <h4>Agency Configuration</h4>
+                        <div class="accordion" id="accordionAgency">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/system_config.js') }}"></script>
+{% endblock %}
