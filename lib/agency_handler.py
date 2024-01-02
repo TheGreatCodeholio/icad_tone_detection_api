@@ -5,9 +5,29 @@ from lib.quickcall_handler import add_quickcall_detector
 module_logger = logging.getLogger("icad_tone_detection.agency_handler")
 
 
+def get_agency_emails(db, agency_id):
+    if not agency_id:
+        return {"success": False, "message": "agency_id required", "result": []}
+
+    query = f"SELECT * from agency_emails WHERE agency_id = %s"
+    params = (agency_id,)
+    result = db.execute_query(query, params)
+    email_list = []
+    if result["success"] and result["result"]:
+        for res in result:
+            email_list.append(res.get("email_address"))
+
+    return {"success": False if not result.get("success") else True, "message": "Unknown Error" if not result.get("messsage") else result.get("message"), "result": email_list}
+
+
 def get_agencies(db, system_ids=None, agency_id=None):
     # Base query
-    query = "SELECT ag.*, qd.* FROM `agencies` ag LEFT JOIN icad.qc_detectors qd on ag.agency_id = qd.agency_id"
+    query = """
+        SELECT ag.*, qd.*, GROUP_CONCAT(ae.email_address SEPARATOR ',') as agency_emails
+        FROM `agencies` ag
+        LEFT JOIN icad.qc_detectors qd ON ag.agency_id = qd.agency_id
+        LEFT JOIN icad.agency_emails ae ON ag.agency_id = ae.agency_id
+        """
 
     # Conditions and parameters list
     conditions = []
@@ -17,7 +37,7 @@ def get_agencies(db, system_ids=None, agency_id=None):
     if system_ids:
         # Prepare a string with placeholders for system_ids (e.g., %s, %s, ...)
         placeholders = ', '.join(['%s'] * len(system_ids))
-        conditions.append(f"system_id IN ({placeholders})")
+        conditions.append(f"ag.system_id IN ({placeholders})")
         params.extend(system_ids)
 
     # Check if agency_id is provided and append the condition and parameter
@@ -29,11 +49,28 @@ def get_agencies(db, system_ids=None, agency_id=None):
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
 
+    # Add GROUP BY to ensure emails are aggregated per agency
+    query += " GROUP BY ag.agency_id, qd.detector_id"
+
     # Convert params to a tuple
     params = tuple(params)
 
     # Execute the query with the parameters
     result = db.execute_query(query, params)
+
+    # Process the result to convert agency_emails from string to list
+    processed_result = []
+    for row in result["result"]:
+        # Convert the 'agency_emails' field from a comma-separated string to a list
+        row_dict = dict(row)  # Assuming row is a dict-like object
+        if row_dict['agency_emails']:
+            row_dict['agency_emails'] = row_dict['agency_emails'].split(',')
+        else:
+            row_dict['agency_emails'] = []
+        processed_result.append(row_dict)
+
+    result["result"] = processed_result
+
     return result
 
 
