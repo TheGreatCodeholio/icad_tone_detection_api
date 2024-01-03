@@ -154,9 +154,17 @@ def clear_old_items():
         current_time = time.time()
         if len(qc_detector_list) < 1:
             continue
+
+        original_length = len(qc_detector_list)
+
         qc_detector_list = [detector for detector in qc_detector_list if
                             current_time < (detector["last_detected"] + detector["ignore_seconds"])]
 
+        removed_detectors = original_length - len(qc_detector_list)
+        if removed_detectors > 0:
+            logger.warning(f"Ignored expired on {removed_detectors} detectors")
+        else:
+            logger.warning(f"{len(qc_detector_list)} detectors being ignored")
 
 def login_required(f):
     @wraps(f)
@@ -583,5 +591,5 @@ def import_ttd():
 
 threading.Thread(target=clear_old_items, daemon=True).start()
 
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8002, debug=False)
+# if __name__ == '__main__':
+#     app.run(host="0.0.0.0", port=8002, debug=False)
