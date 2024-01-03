@@ -121,6 +121,8 @@ if not config_loaded.get("success", False):
 
 detector_loaded = load_detectors()
 
+pending_audio_files = {}
+
 if not detector_loaded.get("success", False):
     exit(1)
 
@@ -250,6 +252,31 @@ def tone_upload():
 
     file_data = file.read()
     audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
+
+    talkgroup = call_data_post.get('talkgroup')
+    if not talkgroup:
+        return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
+
+    # Check the length of the audio file
+    if audio_segment.duration_seconds < 20:  # less than 20 seconds
+        if talkgroup in pending_audio_files:
+            # Append 2 seconds of silence and then the new audio
+            silence = AudioSegment.silent(duration=2000)
+            pending_audio_files[talkgroup]["audio"] += silence + audio_segment
+            pending_audio_files[talkgroup]["length"] += len(audio_segment) / 1000  # length in seconds
+
+            # Check if the combined length is now over 20 seconds
+            if pending_audio_files[talkgroup]["length"] >= 20:
+                audio_segment = pending_audio_files[talkgroup]["audio"]
+                call_data_post['call_length'] = str(pending_audio_files[talkgroup]["length"])
+                del pending_audio_files[talkgroup]  # Remove the entry as it's no longer pending
+            else:
+                # Still waiting for more audio, return a response indicating this
+                return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
+        else:
+            # This is the first file for this talkgroup, save it and wait for more
+            pending_audio_files[talkgroup] = {"audio": audio_segment, "length": len(audio_segment) / 1000}
+            return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
 
     try:
         quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
