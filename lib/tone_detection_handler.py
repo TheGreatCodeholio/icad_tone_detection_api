@@ -20,10 +20,10 @@ class ToneDetection:
     def detect_quick_call(self):
         matches_found = []
         match_list = [(tone["exact"][0], tone["exact"][1], tone["tone_id"]) for tone in self.detection_data["quick_call"]]
+        excluded_id_list = [t["detector_id"] for t in self.qc_detector_list]
 
         for detector in self.detector_data:
             detector_config = self.detector_data[detector]
-            excluded_id_list = [t["detector_id"] for t in self.qc_detector_list]
             tolerance_a = detector_config["tone_tolerance"] / 100.0 * detector_config["a_tone"]
             tolerance_b = detector_config["tone_tolerance"] / 100.0 * detector_config["b_tone"]
             detector_ranges = [
