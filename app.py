@@ -166,6 +166,7 @@ def clear_old_items():
         else:
             logger.warning(f"{len(qc_detector_list)} detectors being ignored")
 
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -304,7 +305,8 @@ def tone_upload():
 
         # Check the length of the audio file
         if audio_segment.duration_seconds < 30:  # less than 30 seconds
-            pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment, "length": audio_segment.duraton_seconds / 1000}
+            pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment,
+                                              "length": audio_segment.duration_seconds / 1000}
             return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
 
         file_name = f'{round(detection_data["timestamp"], -1)}_detection'
