@@ -4,6 +4,7 @@ from threading import Thread
 import traceback
 
 from lib.email_handler import generate_alert_email, EmailSender
+from lib.facebook_handler import generate_facebook_message, generate_facebook_comment, FacebookAPI
 from lib.remote_storage_handler import get_storage
 from lib.pushover_handler import PushoverSender
 from lib.transcribe_handler import get_transcription
@@ -105,6 +106,27 @@ def process_alert_actions(config_data, detection_data):
 
     else:
         module_logger.debug("Pushover Notifications Disabled")
+
+    if config_data["facebook_settings"]["enabled"] == 1:
+        module_logger.debug("Starting Facebook Post")
+
+        try:
+            if all(match["detector_config"]["post_to_facebook"] == 0 for match in detection_data["matches"]):
+                module_logger.debug("Skipping Facebook post as all matches have 'post_to_facebook' set to 0")
+            else:
+                post_body = generate_facebook_message(config_data, detection_data, config_data.get("test_mode", True))
+                if config_data["facebook_settings"].get("post_comment", 0) == 1:
+                    comment_body = generate_facebook_comment(config_data, detection_data)
+                else:
+                    comment_body = ""
+
+                FacebookAPI(config_data["facebook_settings"]).post_message(post_body, comment_body)
+        except Exception as e:
+            traceback.print_exc()
+            module_logger.error(e)
+
+    else:
+        module_logger.debug("Facebook Posts Disabled")
 
     # if config_data["twitter_settings"]["enabled"] == 1:
     #     module_logger.debug("Starting Twitter Post")
