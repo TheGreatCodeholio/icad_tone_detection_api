@@ -257,26 +257,16 @@ def tone_upload():
     if not talkgroup:
         return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
 
-    # Check the length of the audio file
-    if audio_segment.duration_seconds < 20:  # less than 20 seconds
-        if talkgroup in pending_audio_files:
-            # Append 2 seconds of silence and then the new audio
-            silence = AudioSegment.silent(duration=2000)
-            pending_audio_files[talkgroup]["audio"] += silence + audio_segment
-            pending_audio_files[talkgroup]["length"] += len(audio_segment) / 1000  # length in seconds
+    if talkgroup in pending_audio_files:
+        # Append 2 seconds of silence and then the new audio
+        silence = AudioSegment.silent(duration=2000)
+        pending_audio_files[talkgroup]["audio"] += silence + audio_segment
+        pending_audio_files[talkgroup]["length"] += audio_segment.duration_seconds / 1000  # length in seconds
 
-            # Check if the combined length is now over 20 seconds
-            if pending_audio_files[talkgroup]["length"] >= 20:
-                audio_segment = pending_audio_files[talkgroup]["audio"]
-                call_data_post['call_length'] = str(pending_audio_files[talkgroup]["length"])
-                del pending_audio_files[talkgroup]  # Remove the entry as it's no longer pending
-            else:
-                # Still waiting for more audio, return a response indicating this
-                return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
-        else:
-            # This is the first file for this talkgroup, save it and wait for more
-            pending_audio_files[talkgroup] = {"audio": audio_segment, "length": len(audio_segment) / 1000}
-            return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
+        audio_segment = pending_audio_files[talkgroup]["audio"]
+        call_data_post = pending_audio_files[talkgroup]["call_data"]
+        call_data_post['call_length'] = str(pending_audio_files[talkgroup]["length"])
+        del pending_audio_files[talkgroup]  # Remove the entry as it's no longer pending
 
     try:
         quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
@@ -286,7 +276,8 @@ def tone_upload():
             "long": long_tone,
             "dtmf": dtmf_tone,
             "timestamp": float(call_data_post.get("start_time")),
-            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime("%m/%d/%Y, %H:%M:%S"),
+            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime(
+                "%m/%d/%Y, %H:%M:%S"),
             'call_length': float(call_data_post.get('call_length', 0)),
             'talkgroup_decimal': int(call_data_post.get('talkgroup', 0)),
             'talkgroup_alpha_tag': str(call_data_post.get('talkgroup_tag')),
@@ -302,6 +293,12 @@ def tone_upload():
         logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
     else:
         logger.warning("Tones Detected")
+
+        # Check the length of the audio file
+        if audio_segment.duration_seconds < 30:  # less than 30 seconds
+            pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment, "length": audio_segment.duraton_seconds / 1000}
+            return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
+
         file_name = f'{round(detection_data["timestamp"], -1)}_detection'
         local_audio_path = os.path.join(root_path, f"{audio_path}/{file_name}.mp3")
         audio_segment.export(local_audio_path, format='mp3')
@@ -311,7 +308,8 @@ def tone_upload():
             logger.warning("Processing Tones Through Detectors")
 
             logger.debug("Processing QuickCall Tones")
-            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list, detection_data).detect_quick_call()
+            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list,
+                                                                detection_data).detect_quick_call()
 
             qc_detector_list = qc_result
             detection_data = processed_detection_data
