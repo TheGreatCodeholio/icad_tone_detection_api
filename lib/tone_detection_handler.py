@@ -40,16 +40,15 @@ class ToneDetection:
                                   "already_matched": True if detector_config[
                                                                  "detector_id"] in excluded_id_list else False}
 
-                    matches_found.append(match_data)
-
                     if detector_config["detector_id"] in excluded_id_list:
                         continue
                     else:
+                        matches_found.append(match_data)
                         excluded_id_list.append(detector_config["detector_id"])
 
-                    self.qc_detector_list.append(
-                        {"last_detected": time.time(), "ignore_seconds": detector_config["ignore_time"],
-                         "detector_id": detector_config["detector_id"]})
+                        self.qc_detector_list.append(
+                            {"last_detected": time.time(), "ignore_seconds": detector_config["ignore_time"],
+                             "detector_id": detector_config["detector_id"]})
 
                     detector_config["detector_name"] = detector
 
