@@ -262,6 +262,9 @@ def tone_upload():
     file_data = file.read()
     audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
 
+    if audio_segment.duration_seconds > 5:
+        return jsonify({"status": "error", "message": "Audio too short."}), 200
+
     talkgroup = call_data_post.get('talkgroup')
     if not talkgroup:
         return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
