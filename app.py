@@ -262,7 +262,8 @@ def tone_upload():
     file_data = file.read()
     audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
 
-    if audio_segment.duration_seconds > 5:
+    if audio_segment.duration_seconds < 4.5:
+        logger.warning("Audio Too Short Discarding")
         return jsonify({"status": "error", "message": "Audio too short."}), 200
 
     talkgroup = call_data_post.get('talkgroup')
@@ -270,6 +271,7 @@ def tone_upload():
         return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
 
     if talkgroup in pending_audio_files:
+        logger.warning("Found previous detection, with no dispatch. Appending...")
         # Append 2 seconds of silence and then the new audio
         silence = AudioSegment.silent(duration=2000)
         pending_audio_files[talkgroup]["audio"] += silence + audio_segment
@@ -308,6 +310,7 @@ def tone_upload():
 
         # Check the length of the audio file
         if audio_segment.duration_seconds < 30:  # less than 30 seconds
+            logger.warning("Audio with tones less than 30 seconds. Waiting for next file.")
             pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment,
                                               "length": audio_segment.duration_seconds / 1000}
             return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
