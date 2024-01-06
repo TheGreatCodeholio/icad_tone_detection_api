@@ -65,11 +65,6 @@ class TelegramAPI:
             agencies = "\n".join([f'{x["detector_name"]} {x["detector_config"]["station_number"] if x["detector_config"].get("station_number", 0) != 0 else ""}' for x in detection_data["matches"]])
 
             with open(opus_file, 'rb') as audio_file:
-                headers = {
-                    "accept": "application/json",
-                    "User-Agent": "Telegram Bot SDK - (https://github.com/irazasyed/telegram-bot-sdk)",
-                    "content-type": "application/json"
-                }
                 payload = {
                     'chat_id': self.channel,
                     "caption": f'{hr_timestamp}\n{agencies}\n{transcript}\niCAD Dispatch'
