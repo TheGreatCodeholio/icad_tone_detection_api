@@ -69,7 +69,7 @@ class TelegramAPI:
                     'chat_id': self.channel,
                     "caption": f'{hr_timestamp}\n{agencies}\n{transcript}\niCAD Dispatch'
                 }
-                files = {'voice': audio_file}
+                files = {'voice': audio_file.read()}
                 result = self._send_request('sendAudio', payload, files)
         except IOError as e:
             module_logger.error(f"Failed to open or read the audio file: {e}")
