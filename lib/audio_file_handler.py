@@ -10,6 +10,8 @@ from typing import List
 from uuid import uuid4
 import traceback
 
+from lib.shell_handler import run_command
+
 module_logger = logging.getLogger('icad_tone_detection.audio_file_handler')
 
 
@@ -404,3 +406,13 @@ def process_detection_audio(config_data, detection_data):
         traceback.print_exc()
         module_logger.error(f"An error occurred in process_detection_audio: {e}")
         return []
+
+
+def convert_mp3_opus(local_audio_path):
+    ogg_file = local_audio_path.replace(".mp3", ".ogg")
+
+    command = ['ffmpeg', '-y', '-i', f'"{local_audio_path}"', '-ac', '1', '-map', '0:a', '-strict', '-2', '-codec:a',
+               'opus', '-b:a', '128k', f'"{ogg_file}"']
+
+    ogg_result = run_command(command, timeout=600)
+    return ogg_file

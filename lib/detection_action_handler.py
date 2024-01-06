@@ -7,6 +7,7 @@ from lib.email_handler import generate_alert_email, EmailSender
 from lib.facebook_handler import generate_facebook_message, generate_facebook_comment, FacebookAPI
 from lib.remote_storage_handler import get_storage
 from lib.pushover_handler import PushoverSender
+from lib.telegram_handler import TelegramAPI
 from lib.transcribe_handler import get_transcription
 
 module_logger = logging.getLogger('icad_tone_detection.action_handler')
@@ -125,8 +126,17 @@ def process_alert_actions(config_data, detection_data):
             traceback.print_exc()
             module_logger.error(e)
 
+    if config_data["telegram_settings"]["enabled"] == 1:
+        module_logger.debug("Starting Telegram Post")
+
+        try:
+            TelegramAPI(config_data["telegram_settings"]).post_audio(detection_data, config_data.get("test_mode"))
+        except Exception as e:
+            traceback.print_exc()
+            module_logger.error(e)
+
     else:
-        module_logger.debug("Facebook Posts Disabled")
+        module_logger.debug("Telegram Posts Disabled")
 
     # if config_data["twitter_settings"]["enabled"] == 1:
     #     module_logger.debug("Starting Twitter Post")
