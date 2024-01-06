@@ -23,18 +23,18 @@ class TelegramAPI:
         try:
             resp = requests.post(url, data=payload, files=files)
             resp.raise_for_status()
-            logging.info("Successfully posted to telegram")
+            module_logger.info("Successfully posted to telegram")
             return True
         except requests.exceptions.HTTPError as err:
-            logging.error(f"Telegram Post Failed: {err.response.status_code} {err.response.text}")
+            module_logger.error(f"Telegram Post Failed: {err.response.status_code} {err.response.text}")
             return False
         except requests.exceptions.RequestException as e:
-            logging.error(f"Request failed: {e}")
+            module_logger.error(f"Request failed: {e}")
             return False
 
     def post_text(self, message, chat_id=None):
         if not message:
-            logging.error("Message content is empty.")
+            module_logger.error("Message content is empty.")
             return False
         payload = {
             'chat_id': chat_id or self.channel,
@@ -46,12 +46,12 @@ class TelegramAPI:
     def post_audio(self, detection_data, test_mode=True):
         audio_path = detection_data.get("local_audio_path", None)
         if not os.path.exists(audio_path):
-            logging.error(f"Audio file does not exist: {audio_path}")
+            module_logger.error(f"Audio file does not exist: {audio_path}")
             return False
 
         opus_file = self._convert_to_opus(audio_path)
         if not opus_file:
-            logging.error("Could not post audio to Telegram: no OGG file converted.")
+            module_logger.error("Could not post audio to Telegram: no OGG file converted.")
             return False
 
         try:
@@ -72,7 +72,7 @@ class TelegramAPI:
                 files = {'voice': audio_file}
                 result = self._send_request('sendAudio', payload, files)
         except IOError as e:
-            logging.error(f"Failed to open or read the audio file: {e}")
+            module_logger.error(f"Failed to open or read the audio file: {e}")
             return False
         finally:
             if os.path.exists(opus_file):
@@ -86,8 +86,8 @@ class TelegramAPI:
             if opus_result:
                 return opus_result
             else:
-                logging.error("Conversion to OPUS failed.")
+                module_logger.error("Conversion to OPUS failed.")
                 return None
         except Exception as e:
-            logging.error(f"Error during conversion: {e}")
+            module_logger.error(f"Error during conversion: {e}")
             return None
