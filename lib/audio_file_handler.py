@@ -410,9 +410,12 @@ def process_detection_audio(config_data, detection_data):
 
 def convert_mp3_opus(local_audio_path):
     ogg_file = local_audio_path.replace(".mp3", ".ogg")
+    module_logger.warning(local_audio_path)
+    module_logger.warning(ogg_file)
 
     command = ['ffmpeg', '-y', '-i', f'"{local_audio_path}"', '-ac', '1', '-map', '0:a', '-strict', '-2', '-codec:a',
                'opus', '-b:a', '128k', f'"{ogg_file}"']
 
     ogg_result = run_command(command, timeout=600)
+    module_logger.warning(ogg_result)
     return ogg_file
