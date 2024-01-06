@@ -49,7 +49,7 @@ class PushoverSender:
         """Sends a push notification with the given parameters.
 
         Args:
-            call_data (dict): A dictionary containing call data.
+            detection_data (dict): A dictionary containing call data.
 
         Returns:
             None

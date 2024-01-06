@@ -100,7 +100,7 @@ def process_alert_actions(config_data, detection_data):
                 pushover_sender = PushoverSender(config_data, detector)
 
                 # Starting a new thread to send the push notification
-                Thread(target=pushover_sender.send_push, args=(detection_data)).start()
+                Thread(target=pushover_sender.send_push, args=(detection_data,)).start()
             except ValueError as e:
                 # Handling potential initialization errors (like validation failures)
                 module_logger.error(f"Error initializing Pushover: {e}")
