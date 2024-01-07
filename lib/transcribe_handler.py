@@ -32,7 +32,8 @@ def get_transcription(config_data, mp3_path):
         if response:
             transcribe_result = response.json()
             if response.status_code == 200:
-                return transcribe_result.get("transcription")
+                transcript = do_transcribe_replacements(config_data["transcribe_settings"], transcribe_result.get("transcription"))
+                return transcript
             else:
                 module_logger.error(
                     f'Error Transcribing Audio: {transcribe_result.get("message", "Unknown Exception")}')
