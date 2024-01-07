@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from urllib.parse import urljoin
 from google.cloud import storage
 import boto3
@@ -113,45 +114,53 @@ class SCPStorage:
         self.username = self.scp_config['user']
         self.password = self.scp_config['password']
 
-    def upload_file(self, local_audio_path, remote_path, remote_file_name, make_public=True):
+    def upload_file(self, local_audio_path, remote_path, remote_file_name, make_public=True, max_attempts=3):
         """Uploads a file to the SCP storage.
 
+        :param max_attempts: Maximum times we will try file upload if there is an SCP exception
         :param local_audio_path: The local path to the audio file to upload.
         :param remote_path: The remote directory to upload the file to.
         :param remote_file_name: The name of the remote file.
         :param make_public: Flag indicating whether to make the file public (default is True).
         :return: Dictionary containing the file URL or False if upload fails.
         """
-        try:
-            full_remote_path = os.path.join(remote_path, remote_file_name)
-            ssh_client, sftp = self._create_sftp_session()
-
-            if not os.path.exists(local_audio_path):
-                raise FileNotFoundError(f'Local File {local_audio_path} doesn\'t exist')
-
+        attempt = 0
+        while attempt < max_attempts:
             try:
-                sftp.stat(remote_path)
-            except FileNotFoundError:
-                raise FileNotFoundError(f'Remote Path {remote_path} doesn\'t exist')
+                full_remote_path = os.path.join(remote_path, remote_file_name)
+                ssh_client, sftp = self._create_sftp_session()
 
-            sftp.put(local_audio_path, full_remote_path)
-            sftp.close()
-            ssh_client.close()
+                if not os.path.exists(local_audio_path):
+                    raise FileNotFoundError(f'Local File {local_audio_path} doesn\'t exist')
 
-            file_url = urljoin(self.scp_config["audio_url_path"], remote_file_name)
+                try:
+                    sftp.stat(remote_path)
+                except FileNotFoundError:
+                    raise FileNotFoundError(f'Remote Path {remote_path} doesn\'t exist')
 
-            if self.scp_config["keep_audio_days"] > 0:
-                self.clean_remote_files()
+                sftp.put(local_audio_path, full_remote_path)
+                sftp.close()
+                ssh_client.close()
 
-            return {"file_path": file_url}
-        except SFTPError as error:
-            traceback.print_exc()
-            module_logger.critical(f'Error occurred during uploading a file: {error}')
-            return False
-        except Exception as error:
-            traceback.print_exc()
-            module_logger.critical(f'Error occurred during uploading a file: {error}')
-            return False
+                file_url = urljoin(self.scp_config["audio_url_path"], remote_file_name)
+
+                if self.scp_config["keep_audio_days"] > 0:
+                    self.clean_remote_files()
+
+                return {"file_path": file_url}
+            except SFTPError as error:
+                traceback.print_exc()
+                module_logger.critical(f'Attempt {attempt + 1} failed during uploading a file: {error}')
+                attempt += 1
+                if attempt < max_attempts:
+                    time.sleep(5)
+            except Exception as error:
+                traceback.print_exc()
+                module_logger.critical(f'Error occurred during uploading a file: {error}')
+                return False
+
+        module_logger.critical(f'All {max_attempts} attempts failed.')
+        return False
 
     def download_file(self, remote_path, local_path):
         """Downloads a file from the SCP storage.
