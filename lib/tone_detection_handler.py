@@ -41,7 +41,7 @@ class ToneDetection:
                 match_b = detector_ranges[1][0] <= tone[1] <= detector_ranges[1][1]
                 if match_a and match_b:
                     valid_match = True
-                    tones_matched = [tone[0], tone[1]]
+                    tones_matched = f'{tone[0]}, {tone[1]}'
                     tone_id = f"{tone[2]}"
 
                     if detector_config.get("c_tone", 0) > 0 and detector_config.get("d_tone", 0) > 0:
@@ -51,8 +51,7 @@ class ToneDetection:
                             match_d = detector_ranges[3][0] <= next_tone[1] <= detector_ranges[3][1]
                             if match_c and match_d:
                                 # If C and D tones also match, include them in the tones_matched
-                                tones_matched.append(next_tone[0])
-                                tones_matched.append(next_tone[1])
+                                tones_matched = f', {next_tone[0]}, {next_tone[1]}'
                                 tone_id += f', {next_tone[2]}'
                             else:
                                 # If C and D tones don't match, this isn't a valid match
