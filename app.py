@@ -308,7 +308,9 @@ def tone_upload():
     if not (quick_call or hi_low or long_tone or dtmf_tone):
         logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
     else:
-        logger.warning("Tones Detected")
+        logger.info("Tones Detected")
+
+        logger.debug(detection_data.get("quick_call"))
 
         if config_data["upload_processing"].get("check_for_split") == 1:
             # files less than 30 seconds with tones, get sent to list to wait for second half.

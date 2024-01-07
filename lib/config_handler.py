@@ -84,6 +84,11 @@ default_config = {
         "telegram_bot_token": "57######:AA############ac",
         "telegram_channel_id": 00000000000
     },
+    "webhook_settings": {
+        "enabled": 0,
+        "webhook_url": "",
+        "webhook_headers": ""
+    },
     "stream_settings": {
         "stream_url": ""
     },
@@ -142,6 +147,8 @@ default_detectors = {
         "pushover_body": "",
         "pushover_sound": "",
         "stream_url": "",
+        "webhook_url_override": "",
+        "webhook_headers_override": "",
         "post_to_facebook": 0,
         "post_to_telegram": 0
     }

@@ -1,5 +1,6 @@
 import logging
 import os
+import threading
 from threading import Thread
 import traceback
 
@@ -9,6 +10,7 @@ from lib.remote_storage_handler import get_storage
 from lib.pushover_handler import PushoverSender
 from lib.telegram_handler import TelegramAPI
 from lib.transcribe_handler import get_transcription
+from lib.webhook_handler import WebHook
 
 module_logger = logging.getLogger('icad_tone_detection.action_handler')
 
@@ -61,7 +63,7 @@ def process_alert_actions(config_data, detection_data):
             module_logger.error(f"An error occurred while getting Transcript: {e}")
             detection_data["transcript"] = ""
     else:
-        module_logger.debug("Transcribe Detection Disabled")
+        module_logger.warning("Transcribe Detection Disabled")
 
     # Send Alert Emails
     if config_data["email_settings"].get("enabled", 0) == 1:
@@ -92,10 +94,10 @@ def process_alert_actions(config_data, detection_data):
                     module_logger.critical(f"Alert Email Sending Failure: {repr(e)}")
 
     else:
-        module_logger.debug("Alert Email Sending Disabled")
+        module_logger.warning("Alert Email Sending Disabled")
 
     if config_data["pushover_settings"].get("enabled", 0) == 1:
-        module_logger.debug("Starting Pushover Notifications")
+        module_logger.info("Starting Pushover Notifications")
 
         for detector in triggered_detectors:
             try:
@@ -103,20 +105,21 @@ def process_alert_actions(config_data, detection_data):
                 pushover_sender = PushoverSender(config_data, detector)
 
                 # Starting a new thread to send the push notification
-                Thread(target=pushover_sender.send_push, args=(detection_data,)).start()
+                ps_thread = Thread(target=pushover_sender.send_push, args=(detection_data,)).start()
+                threads.append(ps_thread)
             except ValueError as e:
                 # Handling potential initialization errors (like validation failures)
                 module_logger.error(f"Error initializing Pushover: {e}")
 
     else:
-        module_logger.debug("Pushover Notifications Disabled")
+        module_logger.warning("Pushover Notifications Disabled")
 
     if config_data["facebook_settings"].get("enabled", 0) == 1:
-        module_logger.debug("Starting Facebook Post")
+        module_logger.info("Starting Facebook Post")
 
         try:
             if all(match["detector_config"].get("post_to_facebook", 0) == 0 for match in detection_data["matches"]):
-                module_logger.debug("Skipping Facebook post as all matches have 'post_to_facebook' set to 0")
+                module_logger.warning("Skipping Facebook post as all matches have 'post_to_facebook' set to 0")
             else:
                 post_body = generate_facebook_message(config_data, detection_data, config_data.get("test_mode", True))
                 if config_data["facebook_settings"].get("post_comment", 0) == 1:
@@ -130,7 +133,7 @@ def process_alert_actions(config_data, detection_data):
             module_logger.error(e)
 
     if config_data["telegram_settings"]["enabled"] == 1:
-        module_logger.debug("Starting Telegram Post")
+        module_logger.info("Starting Telegram Post")
 
         try:
             if all(match["detector_config"].get("post_to_telegram", 0) == 0 for match in detection_data["matches"]):
@@ -142,7 +145,21 @@ def process_alert_actions(config_data, detection_data):
             module_logger.error(e)
 
     else:
-        module_logger.debug("Telegram Posts Disabled")
+        module_logger.warning("Telegram Posts Disabled")
+
+    if config_data.get("webhook_settings", {}).get("enabled", 0) == 1:
+        module_logger.info("Starting Webhook Post")
+
+        try:
+            webhook_sender = WebHook(config_data.get("webhook_settings", {}), detection_data)
+            wh_thread = Thread(target=webhook_sender.process_webhook, args=(config_data.get("test_mode"),)).start()
+            threads.append(wh_thread)
+        except Exception as e:
+            traceback.print_exc()
+            module_logger.error(e)
+    else:
+        module_logger.warning("Webhooks Disabled")
+
 
     # if config_data["twitter_settings"]["enabled"] == 1:
     #     module_logger.debug("Starting Twitter Post")
@@ -152,5 +169,8 @@ def process_alert_actions(config_data, detection_data):
     #
     # else:
     #     module_logger.debug("Pushover Notifications Disabled")
+
+    for thread in threads:
+        thread.join()
 
     module_logger.info("Notifications <<Completed>> Successfully!")
