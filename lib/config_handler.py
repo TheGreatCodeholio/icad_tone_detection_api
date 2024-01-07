@@ -41,9 +41,9 @@ default_config = {
         "ffmpeg_filter": ""
     },
     "transcription_settings": {
-        "transcribe_alert": 0,
         "transcribe_detection": 0,
-        "transcription_url": "https://example.com/transcribe"
+        "transcribe_url": "https://example.com/transcribe",
+        "replacements_file": "etc/transcribe_replacements.csv"
     },
     "email_settings": {
         "enabled": 0,
