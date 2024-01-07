@@ -162,9 +162,9 @@ def clear_old_items():
 
         removed_detectors = original_length - len(qc_detector_list)
         if removed_detectors > 0:
-            logger.warning(f"Ignored expired on {removed_detectors} detectors")
+            logger.info(f"Ignored expired on {removed_detectors} detectors")
         else:
-            logger.warning(f"{len(qc_detector_list)} detectors being ignored")
+            logger.debug(f"{len(qc_detector_list)} detectors being ignored")
 
 
 def login_required(f):
@@ -262,25 +262,27 @@ def tone_upload():
     file_data = file.read()
     audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
 
-    if audio_segment.duration_seconds < 4.5:
+    if audio_segment.duration_seconds < config_data["upload_processing"].get("minimum_audio_length", 4.5):
         logger.warning("Audio Too Short Discarding")
         return jsonify({"status": "error", "message": "Audio too short."}), 200
 
-    talkgroup = call_data_post.get('talkgroup')
-    if not talkgroup:
-        return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
+    if config_data["upload_processing"].get("check_for_split", 0) == 1:
+        talkgroup = call_data_post.get('talkgroup')
+        if not talkgroup:
+            return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
+        if talkgroup in pending_audio_files:
+            if pending_audio_files[talkgroup]["call_data"].get("start_time", time.time()) - call_data_post.get("start_time") < config_data["upload_processing"].get("maximum_split_interval", 30):
+                #found a previous segment of audio with tones that happened within 30 seconds of this one.
+                logger.warning("Found previous detection, with no dispatch. Appending...")
+                # Append 2 seconds of silence and then the new audio
+                silence = AudioSegment.silent(duration=2000)
+                pending_audio_files[talkgroup]["audio"] += silence + audio_segment
+                pending_audio_files[talkgroup]["length"] += audio_segment.duration_seconds / 1000  # length in seconds
 
-    if talkgroup in pending_audio_files:
-        logger.warning("Found previous detection, with no dispatch. Appending...")
-        # Append 2 seconds of silence and then the new audio
-        silence = AudioSegment.silent(duration=2000)
-        pending_audio_files[talkgroup]["audio"] += silence + audio_segment
-        pending_audio_files[talkgroup]["length"] += audio_segment.duration_seconds / 1000  # length in seconds
-
-        audio_segment = pending_audio_files[talkgroup]["audio"]
-        call_data_post = pending_audio_files[talkgroup]["call_data"]
-        call_data_post['call_length'] = str(pending_audio_files[talkgroup]["length"])
-        del pending_audio_files[talkgroup]  # Remove the entry as it's no longer pending
+                audio_segment = pending_audio_files[talkgroup]["audio"]
+                call_data_post = pending_audio_files[talkgroup]["call_data"]
+                call_data_post['call_length'] = str(pending_audio_files[talkgroup]["length"])
+            del pending_audio_files[talkgroup]  # Remove the entry as it's no longer pending
 
     try:
         quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
@@ -308,12 +310,13 @@ def tone_upload():
     else:
         logger.warning("Tones Detected")
 
-        # Check the length of the audio file
-        if audio_segment.duration_seconds < 30:  # less than 30 seconds
-            logger.warning("Audio with tones less than 30 seconds. Waiting for next file.")
-            pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment,
-                                              "length": audio_segment.duration_seconds / 1000}
-            return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
+        if config_data["upload_processing"].get("check_for_split") == 1:
+            # files less than 30 seconds with tones, get sent to list to wait for second half.
+            if audio_segment.duration_seconds < config_data["upload_processing"].get("maximum_split_length", 30):
+                logger.warning(f'Audio with tones less than {config_data["upload_processing"].get("maximum_split_length", 30)} seconds. Waiting for next file.')
+                pending_audio_files[talkgroup] = {"call_data": call_data_post, "audio": audio_segment,
+                                                  "length": audio_segment.duration_seconds / 1000, "timestamp": time.time()}
+                return jsonify({"status": "pending", "message": "Waiting for more audio"}), 200
 
         file_name = f'{round(detection_data["timestamp"], -1)}_detection'
         local_audio_path = os.path.join(root_path, f"{audio_path}/{file_name}.mp3")

@@ -1,4 +1,7 @@
+import csv
 import logging
+import os.path
+import re
 
 import requests
 
@@ -50,3 +53,31 @@ def get_transcription(config_data, mp3_path):
         module_logger.error(f"An unexpected error occurred: {err}")
     except FileNotFoundError as err:
         module_logger.error(f"File Not Found: {mp3_path}")
+
+
+def do_transcribe_replacements(transcribe_config, transcript):
+    replacement_file_path = transcribe_config.get("replacements_file")
+    if not os.path.exists(replacement_file_path):
+        return transcript
+
+    with open(replacement_file_path, "r") as rf:
+        csv_reader = csv.DictReader(rf)
+        replace_data = [row for row in csv_reader]
+
+    def replace_func(match):
+        word = match.group(0)
+        for replacement in replace_data:
+            if word.lower() == replacement.get("Word").lower():
+                return replacement.get("Replacement")
+        return word  # return the original word if not found
+
+    # Create a combined regex pattern from all words to be replaced
+    pattern = '|'.join(re.escape(replacement.get("Word")) for replacement in replace_data)
+    # Use re.IGNORECASE to perform case-insensitive matching
+    transcript = re.sub(pattern, replace_func, transcript, flags=re.IGNORECASE)
+
+    return transcript
+
+
+
+

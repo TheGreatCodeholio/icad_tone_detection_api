@@ -20,18 +20,19 @@ def process_alert_actions(config_data, detection_data):
 
     triggered_detectors = detection_data["matches"]
 
-
     # upload to remote storage
     if config_data["remote_storage_settings"].get("enabled", 0) == 1:
         module_logger.info("Uploading Audio to Remote Server")
 
         try:
-            storage = get_storage(config_data["remote_storage_settings"]["storage_type"], config_data["remote_storage_settings"])
+            storage = get_storage(config_data["remote_storage_settings"]["storage_type"],
+                                  config_data["remote_storage_settings"])
 
             remote_file_name = os.path.basename(detection_data['local_audio_path'])
 
             # Call the upload_file method to upload the audio file.
-            response = storage.upload_file(detection_data['local_audio_path'], config_data["remote_storage_settings"]["remote_path"],
+            response = storage.upload_file(detection_data['local_audio_path'],
+                                           config_data["remote_storage_settings"]["remote_path"],
                                            remote_file_name)
 
             if response:
@@ -67,7 +68,8 @@ def process_alert_actions(config_data, detection_data):
         module_logger.info("Sending Grouped Alert Emails.")
         if len(config_data["email_settings"].get("grouped_alert_emails", [])) >= 1:
 
-            email_subject, email_body = generate_alert_email(config_data, detection_data, triggered_detectors=triggered_detectors)
+            email_subject, email_body = generate_alert_email(config_data, detection_data,
+                                                             triggered_detectors=triggered_detectors)
 
             em_list = []
             for em in config_data["email_settings"]["grouped_alert_emails"]:
@@ -78,7 +80,8 @@ def process_alert_actions(config_data, detection_data):
             if len(detector["detector_config"].get("alert_emails", [])) >= 1:
                 try:
 
-                    email_subject, email_body = generate_alert_email(config_data, detection_data, detector_data=detector)
+                    email_subject, email_body = generate_alert_email(config_data, detection_data,
+                                                                     detector_data=detector)
 
                     em_list = []
                     for em in detector["detector_config"]["alert_emails"]:
@@ -108,11 +111,11 @@ def process_alert_actions(config_data, detection_data):
     else:
         module_logger.debug("Pushover Notifications Disabled")
 
-    if config_data["facebook_settings"]["enabled"] == 1:
+    if config_data["facebook_settings"].get("enabled", 0) == 1:
         module_logger.debug("Starting Facebook Post")
 
         try:
-            if all(match["detector_config"]["post_to_facebook"] == 0 for match in detection_data["matches"]):
+            if all(match["detector_config"].get("post_to_facebook", 0) == 0 for match in detection_data["matches"]):
                 module_logger.debug("Skipping Facebook post as all matches have 'post_to_facebook' set to 0")
             else:
                 post_body = generate_facebook_message(config_data, detection_data, config_data.get("test_mode", True))
@@ -130,7 +133,10 @@ def process_alert_actions(config_data, detection_data):
         module_logger.debug("Starting Telegram Post")
 
         try:
-            TelegramAPI(config_data["telegram_settings"]).post_audio(detection_data, config_data.get("test_mode"))
+            if all(match["detector_config"].get("post_to_telegram", 0) == 0 for match in detection_data["matches"]):
+                module_logger.debug("Skipping Telegram post as all matches have 'post_to_telegram' set to 0")
+            else:
+                TelegramAPI(config_data["telegram_settings"]).post_audio(detection_data, config_data.get("test_mode"))
         except Exception as e:
             traceback.print_exc()
             module_logger.error(e)

@@ -2,8 +2,15 @@ import json
 import os
 
 default_config = {
-    "log_level": 1,
-    "detection_mode": 1,
+    "general": {
+        "detection_mode": 3,
+        "test_mode": True,
+        "base_url": "http://localhost",
+        "cookie_domain": "localhost",
+        "cookie_secure": False,
+        "cookie_name": "icad_tone_detect",
+        "cookie_path": "/"
+    },
     "tone_extraction": {
         "threshold_percent": 2,
         "dtmf": {
@@ -18,6 +25,12 @@ default_config = {
         "hi-low_tone": {
             "enabled": 1
         }
+    },
+    "upload_processing": {
+        "check_for_split": 0,
+        "maximum_split_length": 30,
+        "maximum_split_interval": 45,
+        "minimum_audio_length": 4.5
     },
     "audio_processing": {
         "trim_tones": 0,
@@ -55,6 +68,21 @@ default_config = {
         "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
         "pushover_subject": "Alert!",
         "pushover_sound": "pushover"
+    },
+    "facebook_settings": {
+        "enabled": 0,
+        "page_id": 12345678910,
+        "page_token": "EA###########ZDZD",
+        "group_id": 12345678910,
+        "group_token": "EAAW##########g54ZD",
+        "post_comment": 1,
+        "post_body": "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
+        "comment_body": "{transcript}{stream_url}"
+    },
+    "telegram_settings": {
+        "enabled": 0,
+        "telegram_bot_token": "57######:AA############ac",
+        "telegram_channel_id": 00000000000
     },
     "stream_settings": {
         "stream_url": ""
@@ -97,8 +125,10 @@ default_detectors = {
         "station_number": 0,
         "a_tone": 726.8,
         "b_tone": 1122.5,
-        "tone_tolerance": 1,
-        "ignore_time": 120.0,
+        "c_tone": 0,
+        "d_tone": 0,
+        "tone_tolerance": 2,
+        "ignore_time": 300.0,
         "alert_emails": ["user@example.com"],
         "alert_email_subject": "",
         "alert_email_body": "",
@@ -112,7 +142,8 @@ default_detectors = {
         "pushover_body": "",
         "pushover_sound": "",
         "stream_url": "",
-        "post_to_facebook": 0
+        "post_to_facebook": 0,
+        "post_to_telegram": 0
     }
 }
 
