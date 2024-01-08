@@ -2,6 +2,7 @@ import json
 import os
 
 default_config = {
+    "log_level": 1,
     "general": {
         "detection_mode": 3,
         "test_mode": True,

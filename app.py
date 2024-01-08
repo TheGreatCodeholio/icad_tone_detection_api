@@ -19,8 +19,6 @@ from flask import Flask, request, session, redirect, url_for, render_template, f
 from lib.tone_detection_handler import ToneDetection
 from lib.tone_extraction_handler import ToneExtraction
 
-log_level = 1
-
 app_name = "icad_tone_detection"
 config_data = {}
 detector_data = {}
@@ -57,7 +55,7 @@ def load_configuration():
         with open(config_path, 'r') as f:
             config_data = json.load(f)
 
-        logger = CustomLogger(config_data["log_level"], f'{app_name}',
+        logger = CustomLogger(config_data.get("log_level", 1), f'{app_name}',
                               os.path.abspath(os.path.join(log_path, log_file_name))).logger
         logger.info(f'Successfully loaded configuration from {config_file}')
         return {'success': True,
