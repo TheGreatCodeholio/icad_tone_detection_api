@@ -245,7 +245,7 @@ def tone_upload():
     if not call_data_post:
         return jsonify({"status": "error", "message": "No call data"}), 400
 
-    if config_data["detection_mode"] == 0:
+    if config_data["general"].get("detection_mode", 0) == 0:
         return jsonify({"status": "error", "message": "Detection Disabled"}), 400
 
     file = request.files.get('file')
@@ -323,7 +323,7 @@ def tone_upload():
         audio_segment.export(local_audio_path, format='mp3')
         detection_data["local_audio_path"] = local_audio_path
 
-        if config_data["detection_mode"] in (2, 3):
+        if config_data["general"].get("detection_mode", 0) in (2, 3):
             logger.warning("Processing Tones Through Detectors")
 
             logger.debug("Processing QuickCall Tones")
@@ -333,7 +333,7 @@ def tone_upload():
             qc_detector_list = qc_result
             detection_data = processed_detection_data
 
-        if config_data["detection_mode"] in (1, 3):
+        if config_data["general"].get("detection_mode", 0) in (1, 3):
             with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
                 outjs.write(json.dumps(detection_data, indent=4))
 

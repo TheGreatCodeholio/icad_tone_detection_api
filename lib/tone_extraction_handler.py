@@ -5,8 +5,10 @@ from scipy.signal import stft
 
 module_logger = logging.getLogger('icad_tone_detection.tone_extraction')
 
+
 class ToneExtraction:
     """Extracts tones from an audio file."""
+
     def __init__(self, config_data, audio_segment):
         self.qcii = [288.5, 296.5, 304.7, 313.8, 321.7, 330.5, 339.6, 349.0, 358.6, 368.5, 378.6, 389.0, 399.8, 410.8,
                      422.1, 433.7, 445.7, 457.9, 470.5, 483.5, 496.8, 510.5, 524.6, 539.0, 553.9, 569.1, 584.8, 600.9,
@@ -94,7 +96,8 @@ class ToneExtraction:
             if detected:
                 # first = ct[0][1][0]
                 # second = ct[1][1][0]
-                tone_data = {"tone_id": f'hl_{tone_id + 1}', "actual": [ct[0][1][0], ct[1][1][0]], "occurred": round(ct[0][0], 2)}
+                tone_data = {"tone_id": f'hl_{tone_id + 1}', "actual": [ct[0][1][0], ct[1][1][0]],
+                             "occurred": round(ct[0][0], 2)}
                 tone_id += 1
                 final_results.append(tone_data)
 
@@ -132,7 +135,8 @@ class ToneExtraction:
                             b_tone_exact = self.closest_match(x[1][0])
                             a_tone_actual = last_set[1][0]
                             b_tone_actual = x[1][0]
-                            tone_data = {"tone_id": f'qc_{tone_id + 1}', "exact": [a_tone_exact, b_tone_exact], "actual": [a_tone_actual, b_tone_actual], "occured": round(last_set[0], 2)}
+                            tone_data = {"tone_id": f'qc_{tone_id + 1}', "exact": [a_tone_exact, b_tone_exact],
+                                         "actual": [a_tone_actual, b_tone_actual], "occured": round(last_set[0], 2)}
                             tone_id += 1
                             # exact = [a_tone_exact, b_tone_exact]
                             # actual = [a_tone_actual, b_tone_actual]
@@ -265,13 +269,15 @@ class ToneExtraction:
                 current_group.append(press)
             else:
                 if len(current_group) >= min_presses:
-                    tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+                    tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'],
+                                 "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
                     tone_id += 1
                     positive_key_presses.append(tone_data)
                 current_group = [press]
 
         if current_group and len(current_group) >= min_presses:
-            tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'], "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
+            tone_data = {"tone_id": f'{tone_id + 1}', "key": current_group[0]['key'],
+                         "occurred": round(current_group[0]['ms_time'] / 1000, 2)}
             tone_id += 1
             positive_key_presses.append(tone_data)
 
@@ -306,7 +312,6 @@ class ToneExtraction:
             hi_low_tones = self.find_hi_low_matches(matched_frequencies)
         else:
             hi_low_tones = []
-
 
         # Find DTMF Key Presses must detect a key press for 250ms minimum and last for 1000ms. Considers 1000ms length one key press.
         if self.config_data["tone_extraction"]["dtmf"]["enabled"]:
