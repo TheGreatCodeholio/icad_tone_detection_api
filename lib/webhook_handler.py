@@ -35,6 +35,7 @@ class WebHook:
                 result = requests.post(self.url, headers=self.headers, json=webhook_json)
                 if result.status_code == 200:
                     module_logger.info("Global webhook posted successfully.")
+                    return
                 else:
                     module_logger.error(
                         f"Attempt {attempts + 1} failed with status code {result.status_code} {result.text}. Retrying...")
