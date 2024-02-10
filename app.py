@@ -21,7 +21,7 @@ from flask_session import Session
 
 from lib.mysql_handler import DatabaseFactory
 from lib.redis_handler import RedisCache
-from lib.system_handler import get_systems
+from lib.system_handler import get_systems, add_system, delete_radio_system, update_system_settings
 from lib.tone_detection_handler import ToneDetection, get_active_detections_cache, add_active_detections_cache, \
     delete_active_detections_cache
 from lib.tone_extraction_handler import ToneExtraction
@@ -59,12 +59,17 @@ if not os.path.exists(audio_path):
 if not os.path.exists(config_path):
     os.makedirs(config_path)
 
-logger = CustomLogger(log_level, f'{app_name}', os.path.join(log_path, log_file_name)).logger
+logging_instance = CustomLogger(1, f'{app_name}',
+                                os.path.join(log_path, log_file_name))
+
 try:
     config_data = load_config_file(os.path.join(config_path, config_file), "config")
+    logging_instance.set_log_level(config_data["log_level"])
+    logger = logging_instance.logger
+    logger.info("Loaded Config File")
 except Exception as e:
     traceback.print_exc()
-    logger.error(f'Error while <<loading>> configuration : {e}')
+    print(f'Error while <<loading>> configuration : {e}')
     exit(1)
 
 if not config_data:
@@ -74,6 +79,7 @@ if not config_data:
 try:
     db_factory = DatabaseFactory(config_data)
     db = db_factory.get_database()
+
     logger.info("Database Initialized successfully.")
 except Exception as e:
     traceback.print_exc()
@@ -167,6 +173,7 @@ def login_required(f):
 
 @app.route('/', methods=['GET'])
 def index():
+    logger.debug(session)
     return render_template("index.html")
 
 
@@ -210,7 +217,6 @@ def login():
         return redirect(url_for('index'))
 
     auth_result = authenticate_user(db, username, password)
-
     flash(auth_result["message"], 'success' if auth_result["success"] else 'danger')
     return redirect(url_for('admin') if auth_result["success"] else url_for('index'))
 
@@ -240,7 +246,8 @@ def api_get_systems():
         # Map agencies back to their respective systems
         for system in system_data_result["result"]:
             # Filter agencies for this specific system
-            system["agencies"] = [agency for agency in all_agencies["result"] if agency["system_id"] == system["system_id"]]
+            system["agencies"] = [agency for agency in all_agencies["result"] if
+                                  agency["system_id"] == system["system_id"]]
 
     return jsonify(system_data_result)
 
@@ -257,7 +264,6 @@ def api_get_agencies():
 
 @app.route('/tone_detect', methods=['POST'])
 def tone_upload():
-    return jsonify({"status": "unavailable", "message": f"Development Mode"}), 200
     tones_with_data = []
     logger.info("Got New HTTP request.")
 
@@ -346,12 +352,44 @@ def tone_upload():
     return jsonify(detection_data), 200
 
 
-@app.route('/edit_systems', methods=['POST', 'GET'])
+@app.route('/admin/edit_systems', methods=['POST', 'GET'])
+@login_required
 def edit_systems():
     if request.method == "GET":
         return render_template('systems_config.html')
     elif request.method == "POST":
         pass
+
+
+@app.route('/admin/save_system', methods=['POST'])
+@login_required
+def save_system_config():
+    new_system = request.args.get("new_system", False)
+    delete_system = request.args.get("delete_system", False)
+    try:
+        # Get Form Data
+        form_data = request.form
+
+        if delete_system:
+            result = delete_radio_system(db, form_data.get("system_id"))
+            response = {'success': result.get("success", False), 'message': f'Successfully Removed System' if result.get("success", False) else result.get("message")}
+        elif new_system:
+            add_system(db, form_data)
+            response = {'success': True, 'message': f'Successfully added system.'}
+        else:
+            update_system_settings(db, form_data, config_data)
+            response = {'success': True, 'message': f'Successfully updated system.'}
+
+    except KeyError:
+        flash('Missing required form field.', 'error')
+        response = {'success': False, 'message': 'Missing required form field.'}
+    except (ValueError, TypeError):
+        flash('Invalid form field value.', 'error')
+        response = {'success': False, 'message': 'Invalid form field value.'}
+    except Exception as e:
+        flash(f'An unexpected error occurred: {e}', 'error')
+        response = {'success': False, 'message': f'An unexpected error occurred: {e}'}
+    return jsonify(response)
 
 
 @app.route('/save_main_config', methods=['POST'])

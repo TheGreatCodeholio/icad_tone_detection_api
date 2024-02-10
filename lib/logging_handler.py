@@ -48,15 +48,29 @@ class ColoredFormatter(logging.Formatter):
 
 
 class CustomLogger:
+    _loggers = {}
+
+    def __new__(cls, log_level, logger_name, log_path):
+        if logger_name not in cls._loggers:
+            new_logger = super(CustomLogger, cls).__new__(cls)
+            cls._loggers[logger_name] = new_logger
+            return new_logger
+        else:
+            return cls._loggers[logger_name]
+
     def __init__(self, log_level, logger_name, log_path):
+        if hasattr(self, 'is_initialized'):
+            # Logger already initialized, just update the log level
+            self.set_log_level(log_level)
+            return
+
         self.logger = logging.getLogger(logger_name)
-        self.logger.setLevel({1: logging.DEBUG, 2: logging.INFO, 3: logging.WARNING, 4: logging.ERROR, 5: logging.CRITICAL}.get(log_level, logging.INFO))
+        self.logger.setLevel(
+            {1: logging.DEBUG, 2: logging.INFO, 3: logging.WARNING, 4: logging.ERROR, 5: logging.CRITICAL}.get(
+                log_level, logging.INFO))
 
         console_handler = logging.StreamHandler()
-        console_handler.setLevel({1: logging.DEBUG, 2: logging.INFO, 3: logging.WARNING, 4: logging.ERROR, 5: logging.CRITICAL}.get(log_level, logging.INFO))
-
         file_handler = logging.FileHandler(log_path)
-        file_handler.setLevel({1: logging.DEBUG, 2: logging.INFO, 3: logging.WARNING, 4: logging.ERROR, 5: logging.CRITICAL}.get(log_level, logging.INFO))
 
         formatter = ColoredFormatter('%(message)s')
         console_handler.setFormatter(formatter)
@@ -64,3 +78,12 @@ class CustomLogger:
 
         self.logger.addHandler(console_handler)
         self.logger.addHandler(file_handler)
+
+        self.is_initialized = True
+
+    def set_log_level(self, log_level):
+        level = {1: logging.DEBUG, 2: logging.INFO, 3: logging.WARNING, 4: logging.ERROR, 5: logging.CRITICAL}.get(
+            log_level, logging.INFO)
+        self.logger.setLevel(level)
+        for handler in self.logger.handlers:
+            handler.setLevel(level)

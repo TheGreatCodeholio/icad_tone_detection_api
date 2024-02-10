@@ -80,8 +80,7 @@
                             Admin Menu
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ url_for('admin_global_config') }}">Global Config</a>
-                            <a class="dropdown-item" href="{{ url_for('admin_detector_config') }}">Detector Config</a>
+                            <a class="dropdown-item" href="{{ url_for('edit_systems') }}">System Config</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
                         </div>
@@ -103,7 +102,12 @@
     {% block content %} {% endblock %}
 </div>
 
-<div class="clear"></div>
+<!-- Footer -->
+<footer class="bg-light fixed-bottom text-center py-3" style="height: 50px" >
+    <div class="container">
+        <span>&copy; 2023 iCarey Software Solutions</span>
+    </div>
+</footer>
 
 <!-- Bootstrap 5 JS -->
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

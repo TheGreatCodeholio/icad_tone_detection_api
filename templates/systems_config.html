@@ -12,6 +12,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div id="add_agency_modal_alert"></div>
+                    <div id="addAgencyLoadingIndicator" class="d-none">
+                        <div class="spinner"></div>
+                    </div>
                     <form id="agency_input_form" method="post">
                         <input hidden type="text" class="form-control" id="addAgencySystemId" name="system_id">
                         <div id="agency_input_div">
@@ -285,7 +289,7 @@
                     </div>
                     <h3 id="deletesystemNameTitle"></h3>
                     <form id="deleteSystemForm" class="d-block">
-                        <input hidden type="text" class="form-control" id="deleteSystemId" name="systemId">
+                        <input hidden type="text" class="form-control" id="deleteSystemId" name="system_id">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -295,6 +299,7 @@
             </div>
         </div>
     </div>
+
     <!-- Add System Modal -->
     <div class="modal fade" id="addSystemModal" tabindex="-1" role="dialog" aria-labelledby="addSystemModalLabel"
          aria-hidden="true">
@@ -306,8 +311,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div id="modal_alert"></div>
-                    <div id="loadingIndicator" class="d-none">
+                    <div id="add_modal_alert"></div>
+                    <div id="addloadingIndicator" class="d-none">
                         <div class="spinner"></div>
                     </div>
                     <form id="addSystemForm" class="d-block">

@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import traceback
+from cryptography.fernet import Fernet
 
 from lib.agency_handler import get_agencies
 from lib.system_handler import get_systems
@@ -9,6 +10,7 @@ from lib.system_handler import get_systems
 module_logger = logging.getLogger('icad_tone_detection.config')
 
 default_config = {
+    "log_level": 1,
     "general": {
         "detection_mode": 1,
         "test_mode": True,
@@ -33,18 +35,24 @@ default_config = {
             "enabled": 1
         }
     },
+    "upload_processing": {
+        "check_for_split": 0,
+        "maximum_split_length": 30,
+        "maximum_split_interval": 45,
+        "minimum_audio_length": 4.5
+    },
     "audio_processing": {
         "trim_tones": 0,
-        "trim_post_cut": 6.0,
-        "trim_pre_cut": 2.5,
-        "trim_group_tone_gap": 8.5,
+        "trim_post_cut": 5.5,
+        "trim_pre_cut": 2.0,
+        "trim_group_tone_gap": 6.5,
         "normalize": 0,
         "ffmpeg_filter": ""
     },
     "transcription_settings": {
-        "transcribe_alert": 0,
-        "transcribe_detection": 0,
-        "transcription_url": "https://example.com/transcribe"
+        "enabled": 0,
+        "transcribe_url": "https://example.com/transcribe",
+        "replacements_file": "etc/transcribe_replacements.csv"
     },
     "email_settings": {
         "enabled": 0,
@@ -68,6 +76,26 @@ default_config = {
         "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font>",
         "pushover_subject": "Alert!",
         "pushover_sound": "pushover"
+    },
+    "facebook_settings": {
+        "enabled": 0,
+        "page_id": 12345678910,
+        "page_token": "EA###########ZDZD",
+        "group_id": 12345678910,
+        "group_token": "EAAW##########g54ZD",
+        "post_comment": 1,
+        "post_body": "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
+        "comment_body": "{transcript}{stream_url}"
+    },
+    "telegram_settings": {
+        "enabled": 0,
+        "telegram_bot_token": "57######:AA############ac",
+        "telegram_channel_id": 00000000000
+    },
+    "webhook_settings": {
+        "enabled": 0,
+        "webhook_url": "",
+        "webhook_headers": ""
     },
     "stream_settings": {
         "stream_url": ""
@@ -97,16 +125,6 @@ default_config = {
             "keep_audio_days": 0,
             "private_key": "/home/sshuser/.ssh/id_rsa"
         }
-    },
-    "facebook_settings": {
-        "enabled": 0,
-        "page_id": 0,
-        "page_token": "longtokengoeshere",
-        "group_id": 0,
-        "group_token": "longtokenhere",
-        "post_comment": 0,
-        "post_body": "{timestamp} Departments:\n{detector_list}",
-        "comment_body": "{transcript}{stream_url}"
     }
 }
 
@@ -116,7 +134,9 @@ default_detectors = {
         "station_number": 0,
         "a_tone": 726.8,
         "b_tone": 1122.5,
-        "tone_tolerance": 1,
+        "c_tone": 0,
+        "d_tone": 0,
+        "tone_tolerance": 2,
         "ignore_time": 300.0,
         "alert_emails": ["user@example.com"],
         "alert_email_subject": "",
@@ -131,6 +151,8 @@ default_detectors = {
         "pushover_body": "",
         "pushover_sound": "",
         "stream_url": "",
+        "webhook_url": "",
+        "webhook_headers": "",
         "post_to_facebook": 0,
         "post_to_telegram": 0
     }
@@ -188,32 +210,62 @@ def generate_default_config(config_type):
         return None
 
 
-def load_config_file(file_path, config_type):
-    default_data = generate_default_config(config_type)
-    if not default_data:
-        return None
+def generate_key_and_save_to_file(key_path):
+    """
+    Generates a new Fernet key and saves it to a file.
+    """
+    key = Fernet.generate_key()
+    with open(key_path, 'wb') as key_file:
+        key_file.write(key)
+    module_logger.info(f"Encryption Key generated and saved to {key_path}")
 
+
+def load_key_from_file(key_path):
+    """
+    Loads the Fernet key from a file or generates a new one if the file doesn't exist.
+    """
     try:
+        with open(key_path, 'rb') as key_file:
+            key = key_file.read()
+    except FileNotFoundError:
+        module_logger.info(f"Encryption Key file {key_path} not found. Generating a new one.")
+        generate_key_and_save_to_file(key_path)
+        with open(key_path, 'rb') as key_file:
+            key = key_file.read()
+    return key
 
+
+def load_config_file(file_path, config_type):
+    """
+    Loads the configuration file and encryption key.
+    """
+    key_path = file_path.replace("config.json", "secret.key")
+
+    # Load or generate the encryption key
+    encryption_key = load_key_from_file(key_path)
+
+    # Attempt to load the configuration file
+    try:
         with open(file_path, 'r') as f:
-            return json.load(f)
-
+            config_data = json.load(f)
     except FileNotFoundError:
         module_logger.warning(f'Configuration file {file_path} not found. Creating default.')
-        try:
-            save_config_file(file_path, default_data)
-            return load_config_file(file_path, config_type)
-        except Exception as e:
-            module_logger.error(f'Error creating default configuration file: {e}')
-            return None
-
+        config_data = generate_default_config(config_type)  # Assuming this function is defined elsewhere
+        if config_data:
+            save_config_file(file_path, config_data)  # Assuming this function is defined elsewhere
     except json.JSONDecodeError:
         module_logger.error(f'Configuration file {file_path} is not in valid JSON format.')
         return None
-
     except Exception as e:
         module_logger.error(f'Unexpected Exception Loading file {file_path} - {e}')
         return None
+
+    # Add the encryption key to the configuration data
+    if not config_data:
+        config_data = {}
+    config_data["fernet_key"] = encryption_key
+
+    return config_data
 
 
 def save_config_file(file_path, default_data):

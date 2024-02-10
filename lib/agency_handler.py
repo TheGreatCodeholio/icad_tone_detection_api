@@ -73,20 +73,43 @@ def get_agencies(db, system_ids=None, agency_id=None):
 
     return result
 
+(
+    `agency_id`                int(11) AUTO_INCREMENT PRIMARY KEY,
+    `system_id`                int(11)       NOT NULL,
+    `agency_code`              varchar(128)           DEFAULT NULL,
+    `agency_name`              varchar(255)  NOT NULL,
+    `alert_email_subject`      varchar(512)  NOT NULL DEFAULT 'Dispatch Alert - {detector_name}',
+    `alert_email_body`         text,
+    `mqtt_topic`               varchar(255)  DEFAULT NULL,
+    `mqtt_start_alert_message` varchar(255)  NOT NULL DEFAULT 'on',
+    `mqtt_end_alert_message`   varchar(255)  NOT NULL DEFAULT 'off',
+    `mqtt_message_interval`    decimal(6, 1) NOT NULL DEFAULT 5.0,
+    `pushover_group_token`     varchar(255)           DEFAULT NULL,
+    `pushover_app_token`       varchar(255)           DEFAULT NULL,
+    `pushover_subject`         varchar(512)           DEFAULT NULL,
+    `pushover_body`            TEXT,
+    `pushover_sound`           varchar(128)           DEFAULT NULL,
+    `stream_url`               varchar(512)           DEFAULT NULL,
+    `webhook_url`              varchar(512)           DEFAULT NULL,
+    `webhook_headers`          TEXT,
+    `enable_facebook_post`     tinyint(1)    NOT NULL DEFAULT 0,
+    `enable_telegram_post`     tinyint(1)    NOT NULL DEFAULT 0,
+    FOREIGN KEY (`system_id`) REFERENCES `radio_systems` (`system_id`) ON DELETE CASCADE
+)
 
 def add_agency(db, agency_data):
     if not agency_data:
         module_logger.warning(f"Agency Data Empty")
         return
-    query = f"INSERT INTO `agencies` (system_id, agency_code, agency_name, alert_email_subject, alert_email_body, mqtt_topic, mqtt_start_alert_message, mqtt_end_alert_message, mqtt_message_interval, pushover_group_token, pushover_app_token, pushover_subject_override, pushover_body_override, pushover_sound_override, agency_stream_url, enable_facebook_post) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    query = f"INSERT INTO `agencies` (system_id, agency_code, agency_name, alert_email_subject, alert_email_body, mqtt_topic, mqtt_start_alert_message, mqtt_end_alert_message, mqtt_message_interval, pushover_group_token, pushover_app_token, pushover_subject, pushover_body, pushover_sound, stream_url, enable_facebook_post, enable_telegram_post) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     params = (agency_data.get("system_id"), agency_data.get("agency_code", None), agency_data.get("agency_name", None),
               agency_data.get("alert_email_subject", None), agency_data.get("alert_email_body", None),
               agency_data.get("mqtt_topic", None), agency_data.get("mqtt_start_alert_message", None),
               agency_data.get("mqtt_end_alert_message", None), agency_data.get("mqtt_message_interval", 5.0),
               agency_data.get("pushover_group_token", None), agency_data.get("pushover_app_token", None),
-              agency_data.get("pushover_subject_override", None), agency_data.get("pushover_body_override", None),
-              agency_data.get("pushover_sound_override", None), agency_data.get("agency_stream_url", None),
-              agency_data.get("enable_facebook_post", 0))
+              agency_data.get("pushover_subject", None), agency_data.get("pushover_body", None),
+              agency_data.get("pushover_sound", None), agency_data.get("stream_url", None),
+              agency_data.get("enable_facebook_post", 0), agency_data.get("enable_telegram_post", 0))
     result = db.execute_commit(query, params, return_row=True)
     return result
 
