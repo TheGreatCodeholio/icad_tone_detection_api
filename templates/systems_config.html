@@ -7,7 +7,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteSystemModalLabel">Add Agency</h5>
+                    <h5 class="modal-title" id="addAgencyModalLabel">Add Agency</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     </button>
                 </div>
@@ -51,9 +51,27 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="stream-tab" data-bs-toggle="tab"
+                                            data-bs-target="#stream-tab-pane" type="button" role="tab"
+                                            aria-controls="stream-tab-pane" aria-selected="false">Streaming
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="webhook-tab" data-bs-toggle="tab"
+                                            data-bs-target="#webhook-tab-pane" type="button" role="tab"
+                                            aria-controls="webhook-tab-pane" aria-selected="false">Webhook
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
                                     <button class="conf-link nav-link" id="facebook-tab" data-bs-toggle="tab"
                                             data-bs-target="#facebook-tab-pane" type="button" role="tab"
                                             aria-controls="facebook-tab-pane" aria-selected="false">Facebook
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="conf-link nav-link" id="telegram-tab" data-bs-toggle="tab"
+                                            data-bs-target="#telegram-tab-pane" type="button" role="tab"
+                                            aria-controls="telegram-tab-pane" aria-selected="false">Telegram
                                     </button>
                                 </li>
                             </ul>
@@ -97,6 +115,22 @@
                                            class="form-control mb-3 w-75"
                                            required>
 
+                                    <label id="agency_c_tone_label" for="detector_c_tone" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone C" class="form-label w-50">Tone
+                                        C Frequency</label>
+                                    <input type="text" id="agency_c_tone" name="c_tone"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone C"
+                                           class="form-control mb-3 w-75">
+
+                                    <label id="agency_d_tone_label" for="detector_d_tone" data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone D" class="form-label w-50">Tone
+                                        D Frequency</label>
+                                    <input type="text" id="agency_d_tone" name="d_tone"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-placement="top" title="Quick Call II Tone D"
+                                           class="form-control mb-3 w-75">
+
                                     <label id="tone_tolerance_label" for="tone_tolerance"
                                            data-bs-toggle="tooltip"
                                            data-bs-placement="top"
@@ -112,7 +146,7 @@
                                            data-bs-placement="top"
                                            title="Ignore time in seconds after a successful match."
                                            class="form-label w-50">Agency Ignore Time</label>
-                                    <input type="text" id="agency_ignore_time" name="agency_ignore_time"
+                                    <input type="text" id="agency_ignore_time" name="ignore_time"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
                                            title="Ignore time in seconds after a successful match."
                                            class="form-control mb-5 w-75" required>
@@ -121,30 +155,15 @@
                                      aria-labelledby="email-tab"
                                      tabindex="0">
 
-                                    <h5 class="mt-3 mb-3">Alert Emails</h5>
+                                    <h5 class="mt-3 mb-3">Agency Alert Emails</h5>
 
                                     <label id="agency_alert_emails_label" for="agency_alert_emails"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Comma seperated list of Alert Emails" class="form-label w-50">Alert
-                                        Email Addresses</label>
+                                           title="Comma seperated list of Email Addresses" class="form-label w-50">Subscriber Email Addresses</label>
                                     <input type="text" id="agency_alert_emails" name="agency_alert_emails"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Comma seperated list of Alert Emails"
+                                           title="Comma seperated list of Email Addresses"
                                            class="form-control mb-5 w-50">
-
-                                    <label id="alert_subject_label" for="alert_subject" data-bs-toggle="tooltip"
-                                           data-bs-placement="top" title="Override Global Alert Email Subject" class="form-label w-50">Alert
-                                        Email Subject Override</label>
-                                    <input type="text" id="alert_subject" name="alert_email_subject"
-                                           data-bs-toggle="tooltip" data-bs-placement="top" title="Override Global Alert Email Subject"
-                                           class="form-control mb-3 w-100">
-
-                                    <label id="alert_body_label" for="alert_body" data-bs-toggle="tooltip"
-                                           data-bs-placement="top" title="Override Global Alert Email Body" class="form-label w-50">Alert
-                                        Email Body</label>
-                                    <textarea rows="7" cols="50" id="alert_body" name="alert_email_body"
-                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Override Global Alert Email Body"
-                                              class="form-control mb-3 w-100"></textarea>
 
                                 </div>
                                 <div class="tab-pane fade" id="mqtt-tab-pane" role="tabpanel" aria-labelledby="mqtt-tab"
@@ -222,28 +241,48 @@
                                            title="Override Global Subject for Pushover Message." class="form-label w-50">Pushover
                                         Message Override
                                         Subject</label>
-                                    <input type="text" id="agency_pushover_subject" name="pushover_subject_override"
+                                    <input type="text" id="agency_pushover_subject" name="pushover_subject"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Override Global Subject for Pushover Message." class="form-control mb-5 w-50">
+                                           title="Agency Subject for Pushover Message." class="form-control mb-5 w-50">
 
                                     <label id="agency_pushover_body_label" for="agency_pushover_body" data-bs-toggle="tooltip"
-                                           data-bs-placement="top" title="Override Global Message Body for Pushover."
+                                           data-bs-placement="top" title="Agency Message Body for Pushover."
                                            class="form-label w-50">Pushover Message HTML</label>
-                                    <textarea rows="5" cols="50" id="agency_pushover_body" name="pushover_body_override"
+                                    <textarea rows="5" cols="50" id="agency_pushover_body" name="pushover_body"
                                               data-bs-toggle="tooltip"
                                               data-bs-placement="top"
-                                              title="Override Global Message Body for Pushover."
+                                              title="Agency Message Body for Pushover."
                                               class="form-control mb-3 w-50"></textarea>
 
                                     <label id="agency_pushover_sound_label" for="agency_pushover_sound"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Override Global Alert Sound for Pushover Notification." class="form-label w-50">Pushover
+                                           title="Agency Alert Sound for Pushover Notification." class="form-label w-50">Pushover
                                         Alert
                                         Sound</label>
-                                    <input type="text" id="agency_pushover_sound" name="pushover_sound_override"
+                                    <input type="text" id="agency_pushover_sound" name="pushover_sound"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Override Global Alert Sound for Pushover Notification." class="form-control mb-5 w-50">
+                                           title="Agency Alert Sound for Pushover Notification." class="form-control mb-5 w-50">
 
+                                </div>
+                                <div class="tab-pane fade" id="webhook-tab-pane" role="tabpanel"
+                                     aria-labelledby="webhook-tab"
+                                     tabindex="0">
+                                    <h5 class="mt-3 mb-3">Webhook Configuration</h5>
+                                    <label id="agency_webhook_url_label" for="agency_webhook_url"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Agency Alert Webhook URL." class="form-label w-50">Webhook URL
+                                    </label>
+                                    <input type="text" id="agency_webhook_url" name="webhook_url"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Agency Alert Webhook URL." class="form-control mb-5 w-50">
+
+                                    <label id="agency_webhook_headers_label" for="agency_webhook_headers"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Agency Alert Webhook Headers JSON." class="form-label w-50">Webhook Headers
+                                    </label>
+                                    <input type="text" id="agency_webhook_headers" name="webhook_headers"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Agency Alert Webhook Headers JSON." class="form-control mb-5 w-50">
                                 </div>
                                 <div class="tab-pane fade" id="facebook-tab-pane" role="tabpanel"
                                      aria-labelledby="facebook-tab"
@@ -251,10 +290,24 @@
                                     <h5 class="mt-3 mb-3">Facebook Configuration</h5>
                                     <label id="agency_facebook_status_label" for="agency_facebook_status"
                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                           title="Post Detection To Facebook."
+                                           title="Post Agency Detection To Facebook."
                                            class="form-label w-50">Posting to Facebook</label>
-                                    <select name="enable_facebook_post" id="agency_facebook_status"
+                                    <select name="enable_facebook_post" id="enable_facebook_post"
                                             class="form-select mb-5 w-50" aria-label="Facebook Post Status">
+                                        <option name="1" value="1">Enabled</option>
+                                        <option name="0" value="0" selected>Disabled</option>
+                                    </select>
+                                </div>
+                                <div class="tab-pane fade" id="facebook-tab-pane" role="tabpanel"
+                                     aria-labelledby="telegram-tab"
+                                     tabindex="0">
+                                    <h5 class="mt-3 mb-3">Telegram Configuration</h5>
+                                    <label id="agency_telegram_status_label" for="agency_telegram_status"
+                                           data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Post Agency Detection To Telegram."
+                                           class="form-label w-50">Posting to Telegram</label>
+                                    <select name="enable_telegram_post" id="enable_telegram_post"
+                                            class="form-select mb-5 w-50" aria-label="Telegram Post Status">
                                         <option name="1" value="1">Enabled</option>
                                         <option name="0" value="0" selected>Disabled</option>
                                     </select>
@@ -454,5 +507,6 @@
             </div>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/helpers.js') }}"></script>
     <script src="{{ url_for('static', filename='js/system_config.js') }}"></script>
 {% endblock %}

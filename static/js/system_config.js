@@ -27,32 +27,6 @@ function generateUUIDv4() {
     );
 }
 
-
-function createElementWithAttributes(tag, attributes) {
-    let element = document.createElement(tag);
-    for (let key in attributes) {
-        if (key === 'innerHTML') {
-            element.innerHTML = attributes[key];
-        } else {
-            element.setAttribute(key, attributes[key]);
-        }
-    }
-    return element;
-}
-
-function createInputFormGroup(labelText, inputType, name, value, readOnly = false) {
-    let label = createElementWithAttributes('label', {className: 'col-md-6 form-label', innerHTML: labelText});
-    let input = createElementWithAttributes('input', {
-        className: 'col-md-6 form-control',
-        type: inputType,
-        name: name,
-        value: value,
-        readOnly: readOnly
-    });
-    label.appendChild(input);
-    return label;
-}
-
 function updateSystemSelection(system_id = 0) {
     fetch('/api/get_systems')
         .then(response => response.json())
@@ -93,6 +67,14 @@ function updateSystemSelection(system_id = 0) {
 function querySystem() {
     const systemId = systemSelect.value;
 
+    if (systemId === "") {
+        const systemConfig = document.getElementById('accordionSystem');
+        systemConfig.innerHTML = '';
+        const agencyConfig = document.getElementById('accordionAgency');
+        agencyConfig.innerHTML = '';
+        return;
+    }
+
     const params = new URLSearchParams({
         system_id: systemId,
         with_agencies: true
@@ -123,6 +105,666 @@ function queryAgency() {
 }
 
 function showSystem(system_data) {
+    const systemConfig = document.getElementById('accordionSystem');
+    systemConfig.innerHTML = '';
+    const agencyConfig = document.getElementById('accordionAgency');
+    agencyConfig.innerHTML = '';
+
+    if (!system_data.length) return;
+
+    const system = system_data[0];
+
+    // Accordion item container
+    const accordionItem = createElement('div', {className: 'accordion-item', parent: systemConfig});
+
+    // Accordion header
+    const accordionHeader = createElement('h2', {
+        className: 'accordion-header',
+        id: `heading_${system.system_id}`,
+        parent: accordionItem
+    });
+
+    // Accordion button
+    createElement('button', {
+        className: 'accordion-button',
+        attributes: {
+            'data-bs-toggle': 'collapse',
+            'data-bs-target': `#collapse_${system.system_id}`,
+            'aria-expanded': 'false',
+            'aria-controls': `collapse_${system.system_id}`
+        },
+        textContent: system.system_name,
+        parent: accordionHeader,
+        type: 'button'
+    });
+
+    // Accordion collapse container
+    const accordionCollapse = createElement('div', {
+        className: 'accordion-collapse collapse',
+        id: `collapse_${system.system_id}`,
+        attributes: {
+            'aria-labelledby': `heading_${system.system_id}`,
+            'data-bs-parent': '#accordionSystem'
+        },
+        parent: accordionItem
+    });
+
+    // Accordion body
+    const accordionBody = createElement('div', {className: 'accordion-body', parent: accordionCollapse});
+
+    //System Delete
+    const sysDeleteButton = createElement('button', {
+        parent: accordionBody,
+        id: 'deleteSystemButton',
+        className: 'btn btn-danger mb-3',
+        attributes: {
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#deleteSystemModal',
+            'data-system-id': system.system_id,
+            'data-system-name': system.system_name
+        },
+        innerHTML: 'Delete System'
+    })
+
+    const agencyAddButton = createElement('button', {
+        parent: accordionBody,
+        id: 'addAgencyButton',
+        className: 'btn btn-primary mb-3 ms-2',
+        attributes: {
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#addAgencyModal',
+            'data-system-id': system.system_id
+        },
+        innerHTML: 'Add Agency'
+    })
+
+    // Form
+    const form = createElement('form', {
+        className: 'row g-3',
+        id: `system_edit_form_${system.system_id}`,
+        parent: accordionBody
+    });
+
+    // Dynamically create input fields based on system data
+    const inputFields = [
+        {
+            label: 'System ID:',
+            id: 'system_id',
+            type: 'text',
+            value: system.system_id,
+            readOnly: true,
+            tooltip: 'System Identifier'
+        },
+        {
+            label: 'System Name:',
+            id: 'system_name',
+            type: 'text',
+            value: system.system_name,
+            tooltip: 'Name of the System'
+        },
+        {
+            label: 'System County:',
+            id: 'system_county',
+            type: 'text',
+            value: system.system_county,
+            tooltip: 'County of the System'
+        },
+        {
+            label: 'System State:',
+            id: 'system_state',
+            type: 'text',
+            value: system.system_state,
+            tooltip: 'State of the System'
+        },
+        {
+            label: 'System FIPS:',
+            id: 'system_fips',
+            type: 'text',
+            value: system.system_fips,
+            tooltip: 'FIPS Code for the System'
+        },
+        {
+            label: 'System API Key:',
+            id: 'system_api_key',
+            type: 'text',
+            value: system.system_api_key,
+            readOnly: true,
+            tooltip: 'Your API Key',
+            regenerate: true
+        }
+    ];
+
+    inputFields.forEach(field => {
+        if (field.regenerate) {
+            // Handle API Key with regenerate button
+            createFormField(form, field, system.system_id, field.value, true); // Assuming true indicates the presence of a regenerate button
+        } else {
+            // Regular input fields
+            createFormField(form, field, system.system_id, field.value);
+        }
+    });
+
+    const detailsAccordian = createElement('div', {id: "detailsAccordian", className: 'accordian', parent: form})
+
+    // Accordion item container
+    const accordionDetailsItem = createElement('div', {className: 'accordion-item', parent: detailsAccordian});
+
+    // Accordion header
+    const accordionDetailsHeader = createElement('h2', {
+        className: 'accordion-header',
+        id: `heading_details_${system.system_id}`,
+        parent: accordionDetailsItem
+    });
+
+    // Accordion button
+    createElement('button', {
+        className: 'accordion-button',
+        attributes: {
+            'data-bs-toggle': 'collapse',
+            'data-bs-target': `#collapse_details_${system.system_id}`,
+            'aria-expanded': 'false',
+            'aria-controls': `collapse_details_${system.system_id}`
+        },
+        textContent: `${system.system_name} Configuration`,
+        parent: accordionDetailsHeader,
+        type: 'button'
+    });
+
+    // Accordion collapse container
+    const accordionDetailsCollapse = createElement('div', {
+        className: 'accordion-collapse collapse',
+        id: `collapse_details_${system.system_id}`,
+        attributes: {
+            'aria-labelledby': `heading_details_${system.system_id}`,
+            'data-bs-parent': '#detailsAccordian'
+        },
+        parent: accordionDetailsItem
+    });
+
+    // Accordion body
+    const accordionDetailsBody = createElement('div', {className: 'accordion-body', parent: accordionDetailsCollapse});
+
+    // Dynamically create tabs and their content
+    const tabsUl = createElement('ul', {
+        className: 'nav nav-tabs',
+        id: `system_tabs_${system.system_id}`,
+        attributes: {'role': 'tablist'},
+        parent: accordionDetailsBody // Assuming you want the tabs within the form, adjust if necessary
+    });
+
+    let tabNames = ['Emails', 'MQTT', 'Pushover', 'Facebook', 'Telegram', 'Streaming', 'Upload', 'Webhooks'];
+
+    tabNames.forEach((tabName, index) => {
+        const tabId = `${tabName.toLowerCase().replace(/\s+/g, '')}-tab_${system.system_id}`;
+        const paneId = `${tabName.toLowerCase().replace(/\s+/g, '')}-tab-pane_${system.system_id}`;
+
+        // Tab list item
+        const li = createElement('li', {
+            className: 'nav-item',
+            attributes: {'role': 'presentation'},
+            parent: tabsUl
+        });
+
+        // Tab button
+        createElement('button', {
+            className: `conf-link nav-link ${index === 0 ? 'active' : ''}`,
+            id: tabId,
+            attributes: {
+                'data-bs-toggle': 'tab',
+                'data-bs-target': `#${paneId}`,
+                'type': 'button',
+                'role': 'tab',
+                'aria-controls': paneId,
+                'aria-selected': index === 0 ? 'true' : 'false'
+            },
+            textContent: tabName,
+            parent: li
+        });
+    });
+
+    // Tab content container
+    const tabContentDiv = createElement('div', {
+        className: 'tab-content',
+        id: `systemTabContent_${system.system_id}`,
+        parent: accordionDetailsBody // Adjust the parent as needed
+    });
+
+    let tabPanes = [
+        {
+            id: 'emails-tab-pane',
+            label: 'Alert Emails',
+            fields: [
+                {
+                    label: 'Enable Emails',
+                    id: 'email_enabled',
+                    tooltip: 'Enable/Disable sending alerts via Email.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'SMTP Host',
+                    id: 'smtp_hostname',
+                    tooltip: 'Hostname for SMTP Server',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SMTP Port',
+                    id: 'smtp_port',
+                    tooltip: 'SMTP Server Port',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SMTP Username',
+                    id: 'smtp_username',
+                    tooltip: 'Username for SMTP Server',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SMTP Password',
+                    id: 'smtp_password',
+                    tooltip: 'SMTP User\'s Password',
+                    type: 'password',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SMTP Server Security',
+                    id: 'smtp_security',
+                    tooltip: 'Security Type For SMTP TLS or SSL',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'SSL'}, {value: '2', text: 'TLS', selected: true}]
+                },
+                {
+                    label: 'Email Address',
+                    id: 'email_address_from',
+                    tooltip: 'Email Address To Send Email From: icad@example.com',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Email Name',
+                    id: 'email_text_from',
+                    tooltip: 'Name To Use When Sending Email: iCAD Dispatch',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'System Alert Email Addresses',
+                    id: 'system_alert_emails',
+                    tooltip: 'Comma separated list of subscribed email addresses.',
+                    type: 'textarea',
+                    class: 'w-100'
+                },
+                {
+                    label: 'Alert Email Subject',
+                    id: 'email_alert_subject',
+                    tooltip: 'Alert Email Subject',
+                    type: 'text',
+                    class: 'w-100'
+                },
+                {
+                    label: 'Alert Email Body',
+                    id: 'email_alert_body',
+                    tooltip: 'Alert Email Body',
+                    type: 'textarea',
+                    class: 'w-100'
+                }
+            ]
+        },
+        {
+            id: 'mqtt-tab-pane',
+            label: 'MQTT Configuration',
+            fields: [
+                {
+                    label: 'Enable MQTT',
+                    id: 'mqtt_enabled',
+                    tooltip: 'Enable/Disable sending alerts via MQTT.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'MQTT Host',
+                    id: 'mqtt_hostname',
+                    tooltip: 'MQTT Hostname.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Port',
+                    id: 'mqtt_port',
+                    tooltip: 'MQTT Port.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Username',
+                    id: 'mqtt_username',
+                    tooltip: 'MQTT Username.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Password',
+                    id: 'mqtt_password',
+                    tooltip: 'MQTT Password.',
+                    type: 'password',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
+            id: 'pushover-tab-pane',
+            label: 'Pushover Configuration',
+            fields: [
+                {
+                    label: 'Enable Pushover',
+                    id: 'pushover_enabled',
+                    tooltip: 'Enable/Disable sending alerts via Pushover.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'All Agency Group Token',
+                    id: 'pushover_all_group_token',
+                    tooltip: 'Group token from Pushover For All Agencies.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'All Agency App Token',
+                    id: 'pushover_all_app_token',
+                    tooltip: 'App Token from Pushover App for All Agencies.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Pushover Message Subject',
+                    id: 'pushover_subject',
+                    tooltip: 'Subject for Pushover Message.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Pushover Message HTML',
+                    id: 'pushover_body',
+                    tooltip: 'Message Body for Pushover.',
+                    type: 'textarea',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Pushover Alert Sound',
+                    id: 'pushover_sound',
+                    tooltip: 'Alert Sound for Pushover Notification.',
+                    type: 'text',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
+            id: 'facebook-tab-pane',
+            label: 'Facebook Configuration',
+            fields: [
+                {
+                    label: 'Enable Facebook Posting',
+                    id: 'facebook_enabled',
+                    tooltip: 'Enable/Disable posting to Facebook.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'Facebook Page ID',
+                    id: 'facebook_page_id',
+                    tooltip: 'Facebook Page ID.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Facebook Page Token',
+                    id: 'facebook_page_token',
+                    tooltip: 'Facebook Page Token',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Facebook Group ID',
+                    id: 'facebook_group_id',
+                    tooltip: 'Facebook Group ID.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Facebook Group Token',
+                    id: 'facebook_group_token',
+                    tooltip: 'Facebook Group Token',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Facebook Post Body',
+                    id: 'facebook_post_body',
+                    tooltip: 'Post Body For Facebook.',
+                    type: 'textarea',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Post Comment',
+                    id: 'facebook_comment_enabled',
+                    tooltip: 'Post Comment to Post With Additional Information.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'Facebook Comment Message',
+                    id: 'facebook_comment_body',
+                    tooltip: 'Post Comment Body',
+                    type: 'textarea',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
+            id: 'telegram-tab-pane',
+            label: 'Telegram Configuration',
+            fields: [
+                {
+                    label: 'Enable Telegram Channel Posting',
+                    id: 'telegram_enabled',
+                    tooltip: 'Enable/Disable posting to Telegram.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'Telegram Channel ID',
+                    id: 'telegram_channel_id',
+                    tooltip: 'Telegram Channel ID.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Telegram Bot Token',
+                    id: 'telegram_bot_token',
+                    tooltip: 'Telegram Bot Token issued by Bot Father',
+                    type: 'text',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
+            id: 'streaming-tab-pane',
+            label: 'Streaming Configuration',
+            fields: [
+                {
+                    label: 'Stream URL',
+                    id: 'stream_url',
+                    tooltip: 'URL Users Can Access Audio Stream: Icecast, RDIO, Broadcastify, OpenMHZ',
+                    type: 'text',
+                    class: 'w-50'
+                },
+
+            ]
+        },
+        {
+            id: 'upload-tab-pane',
+            label: 'SCP Configuration',
+            fields: [
+                {
+                    label: 'Enable SCP File Storage',
+                    id: 'scp_enabled',
+                    tooltip: 'Enable/Disable SCP File Storage',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'SCP Host',
+                    id: 'scp_host',
+                    tooltip: 'Hostname for SCP Server',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Port',
+                    id: 'scp_port',
+                    tooltip: 'SCP Server Port',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Username',
+                    id: 'scp_username',
+                    tooltip: 'Username for SCP Server',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Password',
+                    id: 'scp_password',
+                    tooltip: 'SCP User\'s Password',
+                    type: 'password',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Private Key',
+                    id: 'scp_private_key',
+                    tooltip: 'SCP User\'s Private Key. Leave empty to use password auth.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Remote Folder',
+                    id: 'scp_remote_folder',
+                    tooltip: 'SCP Remote Folder Path.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Audio URL Path',
+                    id: 'web_url_path',
+                    tooltip: 'URL For Audio Path: https://example.com/detection_audio',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'SCP Archive',
+                    id: 'scp_archive_days',
+                    tooltip: 'Number of Days to Keep Uploaded Audio: 0 Keeps forever.',
+                    type: 'text',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
+            id: 'webhooks-tab-pane',
+            label: 'Webhooks Configuration',
+            fields: [
+                {
+                    label: ' Enable Webhook',
+                    id: 'webhook_enabled',
+                    tooltip: 'Enable/Disable Posting Webhook',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'Webhook URL',
+                    id: 'webhook_url',
+                    tooltip: 'URL to Make Webhook Post To.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'Webhook Headers',
+                    id: 'webhook_headers',
+                    tooltip: 'Header to Send with the Webhook Post: JSON Format',
+                    type: 'textarea',
+                    class: 'w-100'
+                }
+
+            ]
+        }
+    ];
+
+    // Dynamically create content for each tab
+    tabPanes.forEach(pane => {
+        const paneId = `${pane.id}_${system.system_id}`;
+        const tabPane = createElement('div', {
+            className: `tab-pane fade ${pane.id === 'emails-tab-pane' ? 'show active' : ''}`,
+            id: paneId,
+            attributes: {
+                'role': 'tabpanel',
+                'aria-labelledby': pane.id
+            },
+            parent: tabContentDiv
+        });
+
+        // Heading for each tab pane
+        createElement('h5', {
+            className: 'mt-3 mb-3',
+            textContent: pane.label,
+            parent: tabPane
+        });
+
+        const tabPaneDiv = createElement('div', {
+            className: 'row g-3',
+            id: `system_details_form_${system.system_id}`,
+            parent: tabPane
+        });
+
+        // Fields for each tab pane
+        pane.fields.forEach(field => {
+            const fieldValue = system[field.id];
+            createFormField(tabPaneDiv, field, system.system_id, fieldValue)
+        });
+    });
+
+    // Submit button
+    createElement('button', {
+        className: 'btn btn-success',
+        type: 'submit',
+        textContent: 'Save',
+        parent: form
+    });
+
+    // Form submission event
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        handleSystemFormSubmit(system.system_id, form);
+    });
+
+    // Assuming showAgencies function is defined and works with the refactored system data
+    showAgencies(system);
+}
+
+function showSystem_old(system_data) {
     let systemConfig = document.getElementById('accordionSystem');
     systemConfig.innerHTML = ''
 
@@ -303,7 +945,7 @@ function showSystem(system_data) {
     systemInputDiv.appendChild(tabsUl);
 
     // Array of tab names
-    let tabNames = ['Emails', 'Pushover', 'Facebook', 'Telegram', 'Streaming', 'Upload', 'Webhooks'];
+    let tabNames = ['Emails', 'MQTT', 'Pushover', 'Facebook', 'Telegram', 'Streaming', 'Upload', 'Webhooks'];
 
     tabNames.forEach((tabName, index) => {
         let li = document.createElement('li');
@@ -339,7 +981,7 @@ function showSystem(system_data) {
                 {
                     label: 'Enable Emails',
                     id: 'email_enabled',
-                    tooltip: 'Send Alerts Via Email.',
+                    tooltip: 'Enable/Disable sending alerts via Email.',
                     type: 'select',
                     class: 'w-50',
                     options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
@@ -395,9 +1037,9 @@ function showSystem(system_data) {
                     class: 'w-50'
                 },
                 {
-                    label: 'Alert Email Addresses',
+                    label: 'System Alert Email Addresses',
                     id: 'system_alert_emails',
-                    tooltip: 'Comma separated list of Alert Emails',
+                    tooltip: 'Comma separated list of subscribed email addresses.',
                     type: 'textarea',
                     class: 'w-100'
                 },
@@ -418,13 +1060,55 @@ function showSystem(system_data) {
             ]
         },
         {
+            id: 'mqtt-tab-pane',
+            label: 'MQTT Configuration',
+            fields: [
+                {
+                    label: 'Enable MQTT',
+                    id: 'mqtt_enabled',
+                    tooltip: 'Enable/Disable sending alerts via MQTT.',
+                    type: 'select',
+                    class: 'w-50',
+                    options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                },
+                {
+                    label: 'MQTT Host',
+                    id: 'mqtt_hostname',
+                    tooltip: 'MQTT Hostname.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Port',
+                    id: 'mqtt_port',
+                    tooltip: 'MQTT Port.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Username',
+                    id: 'mqtt_username',
+                    tooltip: 'MQTT Username.',
+                    type: 'text',
+                    class: 'w-50'
+                },
+                {
+                    label: 'MQTT Password',
+                    id: 'mqtt_password',
+                    tooltip: 'MQTT Password.',
+                    type: 'password',
+                    class: 'w-50'
+                }
+            ]
+        },
+        {
             id: 'pushover-tab-pane',
             label: 'Pushover Configuration',
             fields: [
                 {
                     label: 'Enable Pushover',
                     id: 'pushover_enabled',
-                    tooltip: 'Send Alerts Via Pushover.',
+                    tooltip: 'Enable/Disable sending alerts via Pushover.',
                     type: 'select',
                     class: 'w-50',
                     options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
@@ -473,7 +1157,7 @@ function showSystem(system_data) {
                 {
                     label: 'Enable Facebook Posting',
                     id: 'facebook_enabled',
-                    tooltip: 'Post Alerts to Facebook Group or Page.',
+                    tooltip: 'Enable/Disable posting to Facebook.',
                     type: 'select',
                     class: 'w-50',
                     options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
@@ -537,7 +1221,7 @@ function showSystem(system_data) {
                 {
                     label: 'Enable Telegram Channel Posting',
                     id: 'telegram_enabled',
-                    tooltip: 'Post Alerts to Facebook Group or Page.',
+                    tooltip: 'Enable/Disable posting to Telegram.',
                     type: 'select',
                     class: 'w-50',
                     options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
@@ -914,7 +1598,7 @@ function showAgencies(system_data) {
         agencyInputDiv.appendChild(tabsUl);
 
         // Array of tab names
-        let tabNames = ['Agency', 'QCII Tones', 'Emails', 'MQTT', 'Pushover', 'Facebook'];
+        let tabNames = ['Agency', 'QCII Tones', 'Email', 'MQTT', 'Pushover', 'Webhook', 'Facebook', 'Telegram'];
 
         // Create li and button elements for each tab
         tabNames.forEach((tabName, index) => {
@@ -986,6 +1670,20 @@ function showAgencies(system_data) {
                         required: true
                     },
                     {
+                        label: 'Tone C Frequency',
+                        id: 'c_tone',
+                        tooltip: 'Quick Call II Tone C',
+                        type: 'text',
+                        class: 'w-75'
+                    },
+                    {
+                        label: 'Tone D Frequency',
+                        id: 'd_tone',
+                        tooltip: 'Quick Call II Tone D',
+                        type: 'text',
+                        class: 'w-75'
+                    },
+                    {
                         label: 'Tone Match Tolerance',
                         id: 'tone_tolerance',
                         tooltip: 'plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%',
@@ -1004,29 +1702,15 @@ function showAgencies(system_data) {
                 ]
             },
             {
-                id: 'emails-tab-pane',
+                id: 'email-tab-pane',
                 label: 'Alert Emails',
                 fields: [
                     {
-                        label: 'Alert Email Addresses',
+                        label: 'Subscriber Email Addresses',
                         id: 'alert_emails',
-                        tooltip: 'Comma separated list of Alert Emails',
+                        tooltip: 'Comma separated list of Email addresses.',
                         type: 'text',
                         class: 'w-50'
-                    },
-                    {
-                        label: 'Alert Email Subject Override',
-                        id: 'alert_email_subject',
-                        tooltip: 'Override Global Alert Email Subject',
-                        type: 'text',
-                        class: 'w-100'
-                    },
-                    {
-                        label: 'Alert Email Body',
-                        id: 'alert_email_body',
-                        tooltip: 'Override Global Alert Email Body',
-                        type: 'textarea',
-                        class: 'w-100'
                     }
                 ]
             },
@@ -1083,25 +1767,45 @@ function showAgencies(system_data) {
                         class: 'w-50'
                     },
                     {
-                        label: 'Pushover Message Override Subject',
-                        id: 'pushover_subject_override',
-                        tooltip: 'Override Global Subject for Pushover Message.',
+                        label: 'Agency Pushover Message Subject',
+                        id: 'pushover_subject',
+                        tooltip: 'Agency Alert Subject for Pushover Message.',
                         type: 'text',
                         class: 'w-50'
                     },
                     {
-                        label: 'Pushover Message HTML',
-                        id: 'pushover_body_override',
-                        tooltip: 'Override Global Message Body for Pushover.',
+                        label: 'Agency Pushover Message HTML',
+                        id: 'pushover_body',
+                        tooltip: 'Agency Alert Message Body for Pushover.',
                         type: 'textarea',
                         class: 'w-50'
                     },
                     {
                         label: 'Pushover Alert Sound',
-                        id: 'pushover_sound_override',
-                        tooltip: 'Override Global Alert Sound for Pushover Notification.',
+                        id: 'pushover_sound',
+                        tooltip: 'Agency Alert Sound for Pushover Notification.',
                         type: 'text',
                         class: 'w-50'
+                    }
+                ]
+            },
+            {
+                id: 'webhook-tab-pane',
+                label: 'Webhook Configuration',
+                fields: [
+                    {
+                        label: 'Webhook URL',
+                        id: 'webhook_url',
+                        tooltip: 'Group token from Pushover group for this agency.',
+                        type: 'text',
+                        class: 'w-50'
+                    },
+                    {
+                        label: 'Webhook Headers',
+                        id: 'webhook_headers',
+                        tooltip: 'JSON Array of Headers',
+                        type: 'textarea',
+                        class: 'w-100'
                     }
                 ]
             },
@@ -1112,7 +1816,21 @@ function showAgencies(system_data) {
                     {
                         label: 'Posting to Facebook',
                         id: 'enable_facebook_post',
-                        tooltip: 'Post Detection To Facebook.',
+                        tooltip: 'Post Agency Alerts To Facebook.',
+                        type: 'select',
+                        class: 'w-50',
+                        options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                    }
+                ]
+            },
+            {
+                id: 'telegram-tab-pane',
+                label: 'Telegram Configuration',
+                fields: [
+                    {
+                        label: 'Posting to Telegram',
+                        id: 'enable_telegram_post',
+                        tooltip: 'Post Agency Alerts To Telegram.',
                         type: 'select',
                         class: 'w-50',
                         options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
@@ -1347,6 +2065,30 @@ function showAlert(message, className) {
     }, 3000);
 }
 
+function handleSystemFormSubmit(systemId, form) {
+    const formData = new FormData(form);
+    formData.append('system_id', systemId); // Ensure system ID is included if not already part of the form
+
+    fetch('/admin/save_system', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateSystemSelection(systemId)
+                showAlert(data.message, 'alert-success');
+            } else {
+                updateSystemSelection(systemId)
+                showAlert(data.message, 'alert-danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating system:', error);
+            showAlert('An error occurred: ' + error.message, 'alert-danger');
+        });
+}
+
 submitAddFormButton.addEventListener('click', function () {
 
     const formData = new FormData(addSystemForm);
@@ -1454,9 +2196,8 @@ submitDeleteButton.addEventListener('click', function () {
 });
 
 submitAddAgencyButton.addEventListener('click', function () {
-
+    const addAgencyModal = document.getElementById('addAgencyModal')
     const formData = new FormData(addAgencyForm);
-    const agency_modal_alert_div = document.getElementById("add_agency_modal_alert")
 
     toggleDisplayClass(addAgencyForm, false)
 
@@ -1480,23 +2221,25 @@ submitAddAgencyButton.addEventListener('click', function () {
 
     fetchPromise
         .then(data => {
-            toggleDisplayClass(addSystemForm, true)
+            toggleDisplayClass(addAgencyForm, true)
             toggleDisplayClass(loadingElement, false)
 
             // Display success or error message
-            if (data.status === 'success') {
+            if (data.success) {
+                toggleModal(addAgencyModal)
                 showAlert(data.message, 'alert-success');
                 setTimeout(function () {
                     location.reload();
                 }, 1500);
             } else {
+                toggleModal(addAgencyModal)
                 showAlert(data.message, 'alert-danger');
             }
         })
         .catch(error => {
-            toggleDisplayClass(addSystemForm, true)
+            toggleDisplayClass(addAgencyForm, true)
             toggleDisplayClass(loadingElement, false)
-
+            toggleModal(addAgencyModal)
             showAlert('An error occurred: ' + error.message, 'alert-danger');
         });
 });
@@ -1508,9 +2251,23 @@ document.addEventListener('click', function (e) {
         const systemId = e.target.getAttribute('data-system-id');
 
         // Find the hidden input in the modal and update its value
-        const hiddenInput = document.querySelector('#addAgencyModal input[type="hidden"]');
+        const hiddenInput = document.getElementById('addAgencySystemId');
         if (hiddenInput) {
             hiddenInput.value = systemId;
+        }
+    } else if (e.target && e.target.id === 'deleteSystemButton') {
+        // Retrieve system ID from the clicked button
+        const systemId = e.target.getAttribute('data-system-id');
+        const systemName = e.target.getAttribute('data-system-name')
+
+        // Find the hidden input in the modal and update its value
+        const hiddenInput = document.getElementById('deleteSystemId');
+        if (hiddenInput) {
+            hiddenInput.value = systemId;
+        }
+        const deleteTitle = document.getElementById('deletesystemNameTitle')
+        if (deleteTitle) {
+            deleteTitle.innerText = `Delete ${systemName}?`
         }
     }
 });

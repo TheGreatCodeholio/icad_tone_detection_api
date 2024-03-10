@@ -3,9 +3,9 @@ CREATE TABLE IF NOT EXISTS `users`
 (
     `user_id`       int(11) AUTO_INCREMENT PRIMARY KEY,
     `user_email`    VARCHAR(255) DEFAULT NULL,
-    `user_username` VARCHAR(255) NOT NULL,
-    `user_password` VARCHAR(255) NOT NULL,
-    `user_level`    ENUM('ADMIN', 'MODERATOR', 'USER') NOT NULL
+    `user_username` VARCHAR(255)                        NOT NULL,
+    `user_password` VARCHAR(255)                        NOT NULL,
+    `user_level`    ENUM ('ADMIN', 'MODERATOR', 'USER') NOT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
@@ -27,12 +27,9 @@ CREATE TABLE IF NOT EXISTS `user_security`
 -- create user security table --
 CREATE TABLE IF NOT EXISTS `user_access`
 (
-    `user_access_id`        int(11) AUTO_INCREMENT PRIMARY KEY,
-    `user_id`               int(11)    NOT NULL,
-    `allowed_system`        int(11) NOT NULL DEFAULT NULL,
-    `last_login_date`       bigint(20) NOT NULL,
-    `failed_login_attempts` int(11)    NOT NULL DEFAULT 0,
-    `account_locked_until`  bigint(20) NOT NULL DEFAULT 0,
+    `user_access_id` int(11) AUTO_INCREMENT PRIMARY KEY,
+    `user_id`        int(11) NOT NULL,
+    `allowed_system` int(11) NOT NULL,
     FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -70,11 +67,25 @@ CREATE TABLE IF NOT EXISTS `system_email_settings`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS `system_mqtt_settings`
+(
+    `mqtt_setting_id` int(11) AUTO_INCREMENT PRIMARY KEY,
+    `system_id`       int(11),
+    `mqtt_enabled`    tinyint(1) NOT NULL DEFAULT 0,
+    `mqtt_hostname`   varchar(255)        DEFAULT NULL,
+    `mqtt_port`       int(11)             DEFAULT 1883,
+    `mqtt_username`   varchar(255)        DEFAULT NULL,
+    `mqtt_password`   varchar(255)        DEFAULT NULL,
+    FOREIGN KEY (`system_id`) REFERENCES `radio_systems` (`system_id`) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+
 CREATE TABLE IF NOT EXISTS `system_alert_emails`
 (
-    `email_id`         int(11) AUTO_INCREMENT PRIMARY KEY,
+    `email_id`  int(11) AUTO_INCREMENT PRIMARY KEY,
     `system_id` int(11),
-    `email`            varchar(255) NOT NULL,
+    `email`     varchar(255) NOT NULL,
     FOREIGN KEY (`system_id`) REFERENCES `radio_systems` (`system_id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -100,10 +111,10 @@ CREATE TABLE IF NOT EXISTS `system_facebook_settings`
     `facebook_setting_id`      int(11) AUTO_INCREMENT PRIMARY KEY,
     `system_id`                int(11),
     `facebook_enabled`         tinyint(1) NOT NULL DEFAULT 0,
-    `facebook_page_id`         varchar(255)                DEFAULT NULL,
-    `facebook_page_token`      varchar(512)                DEFAULT NULL,
-    `facebook_group_id`        varchar(255)                DEFAULT NULL,
-    `facebook_group_token`     varchar(512)                DEFAULT NULL,
+    `facebook_page_id`         varchar(255)        DEFAULT NULL,
+    `facebook_page_token`      varchar(512)        DEFAULT NULL,
+    `facebook_group_id`        varchar(255)        DEFAULT NULL,
+    `facebook_group_token`     varchar(512)        DEFAULT NULL,
     `facebook_comment_enabled` tinyint(1) NOT NULL DEFAULT 0,
     `facebook_post_body`       text,
     `facebook_comment_body`    text,
@@ -137,16 +148,16 @@ CREATE TABLE IF NOT EXISTS `system_stream_settings`
 CREATE TABLE IF NOT EXISTS `system_scp_settings`
 (
     `scp_setting_id`    int(11) AUTO_INCREMENT PRIMARY KEY,
-    `scp_enabled`       tinyint(1) DEFAULT 0,
+    `scp_enabled`       tinyint(1)   DEFAULT 0,
     `system_id`         int(11),
-    `scp_host`          varchar(255)        DEFAULT NULL,
-    `scp_port`          int(11)             DEFAULT NULL,
-    `scp_username`      varchar(255)        DEFAULT NULL,
-    `scp_password`      varchar(255)        DEFAULT NULL,
-    `scp_remote_folder` varchar(255)        DEFAULT NULL,
-    `web_url_path`      varchar(255)        DEFAULT NULL,
-    `scp_archive_days`  int(11)             DEFAULT 0,
-    `scp_private_key`   varchar(512)        DEFAULT NULL,
+    `scp_host`          varchar(255) DEFAULT NULL,
+    `scp_port`          int(11)      DEFAULT NULL,
+    `scp_username`      varchar(255) DEFAULT NULL,
+    `scp_password`      varchar(255) DEFAULT NULL,
+    `scp_remote_folder` varchar(255) DEFAULT NULL,
+    `web_url_path`      varchar(255) DEFAULT NULL,
+    `scp_archive_days`  int(11)      DEFAULT 0,
+    `scp_private_key`   varchar(512) DEFAULT NULL,
     FOREIGN KEY (`system_id`) REFERENCES `radio_systems` (`system_id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -171,18 +182,15 @@ CREATE TABLE IF NOT EXISTS `agencies`
     `system_id`                int(11)       NOT NULL,
     `agency_code`              varchar(128)           DEFAULT NULL,
     `agency_name`              varchar(255)  NOT NULL,
-    `alert_email_subject`      varchar(512)  NOT NULL DEFAULT 'Dispatch Alert - {detector_name}',
-    `alert_email_body`         text,
-    `mqtt_topic`               varchar(255)  DEFAULT NULL,
-    `mqtt_start_alert_message` varchar(255)  NOT NULL DEFAULT 'on',
-    `mqtt_end_alert_message`   varchar(255)  NOT NULL DEFAULT 'off',
+    `mqtt_topic`               varchar(255)           DEFAULT NULL,
+    `mqtt_start_alert_message` varchar(255)  DEFAULT NULL,
+    `mqtt_end_alert_message`   varchar(255)  DEFAULT NULL,
     `mqtt_message_interval`    decimal(6, 1) NOT NULL DEFAULT 5.0,
     `pushover_group_token`     varchar(255)           DEFAULT NULL,
     `pushover_app_token`       varchar(255)           DEFAULT NULL,
     `pushover_subject`         varchar(512)           DEFAULT NULL,
     `pushover_body`            TEXT,
     `pushover_sound`           varchar(128)           DEFAULT NULL,
-    `stream_url`               varchar(512)           DEFAULT NULL,
     `webhook_url`              varchar(512)           DEFAULT NULL,
     `webhook_headers`          TEXT,
     `enable_facebook_post`     tinyint(1)    NOT NULL DEFAULT 0,
@@ -247,8 +255,12 @@ CREATE TABLE IF NOT EXISTS `quickcall_tones`
     `transmission_id` VARCHAR(255) NOT NULL,
     `exact_tone_a`    DECIMAL(10, 2),
     `exact_tone_b`    DECIMAL(10, 2),
+    `exact_tone_c`    DECIMAL(10, 2) DEFAULT NULL,
+    `exact_tone_d`    DECIMAL(10, 2) DEFAULT NULL,
     `actual_tone_a`   DECIMAL(10, 2),
     `actual_tone_b`   DECIMAL(10, 2),
+    `actual_tone_c`   DECIMAL(10, 2) DEFAULT NULL,
+    `actual_tone_d`   DECIMAL(10, 2) DEFAULT NULL,
     `occurred`        DECIMAL(10, 2),
     FOREIGN KEY (`transmission_id`) REFERENCES `radio_transmissions` (`transmission_id`) ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -297,7 +309,9 @@ CREATE TABLE IF NOT EXISTS `quickcall_matches`
     `detector_name`      VARCHAR(255) NOT NULL,
     `a_tone`             DECIMAL(10, 2),
     `b_tone`             DECIMAL(10, 2),
-    `ignored`            TINYINT(1) DEFAULT 0,
+    `c_tone`             DECIMAL(10, 2) DEFAULT NULL,
+    `d_tone`             DECIMAL(10, 2) DEFAULT NULL,
+    `ignored`            TINYINT(1)     DEFAULT 0,
     FOREIGN KEY (`quickcall_id`) REFERENCES `quickcall_tones` (`quickcall_id`) ON DELETE CASCADE,
     FOREIGN KEY (`detector_id`) REFERENCES `qc_detectors` (`detector_id`) ON DELETE CASCADE
 ) ENGINE = InnoDB

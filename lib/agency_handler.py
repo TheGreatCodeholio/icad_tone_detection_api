@@ -1,3 +1,4 @@
+import json
 import logging
 
 from lib.quickcall_handler import add_quickcall_detector
@@ -17,7 +18,8 @@ def get_agency_emails(db, agency_id):
         for res in result:
             email_list.append(res.get("email_address"))
 
-    return {"success": False if not result.get("success") else True, "message": "Unknown Error" if not result.get("messsage") else result.get("message"), "result": email_list}
+    return {"success": False if not result.get("success") else True,
+            "message": "Unknown Error" if not result.get("messsage") else result.get("message"), "result": email_list}
 
 
 def get_agencies(db, system_ids=None, agency_id=None):
@@ -73,44 +75,71 @@ def get_agencies(db, system_ids=None, agency_id=None):
 
     return result
 
-(
-    `agency_id`                int(11) AUTO_INCREMENT PRIMARY KEY,
-    `system_id`                int(11)       NOT NULL,
-    `agency_code`              varchar(128)           DEFAULT NULL,
-    `agency_name`              varchar(255)  NOT NULL,
-    `alert_email_subject`      varchar(512)  NOT NULL DEFAULT 'Dispatch Alert - {detector_name}',
-    `alert_email_body`         text,
-    `mqtt_topic`               varchar(255)  DEFAULT NULL,
-    `mqtt_start_alert_message` varchar(255)  NOT NULL DEFAULT 'on',
-    `mqtt_end_alert_message`   varchar(255)  NOT NULL DEFAULT 'off',
-    `mqtt_message_interval`    decimal(6, 1) NOT NULL DEFAULT 5.0,
-    `pushover_group_token`     varchar(255)           DEFAULT NULL,
-    `pushover_app_token`       varchar(255)           DEFAULT NULL,
-    `pushover_subject`         varchar(512)           DEFAULT NULL,
-    `pushover_body`            TEXT,
-    `pushover_sound`           varchar(128)           DEFAULT NULL,
-    `stream_url`               varchar(512)           DEFAULT NULL,
-    `webhook_url`              varchar(512)           DEFAULT NULL,
-    `webhook_headers`          TEXT,
-    `enable_facebook_post`     tinyint(1)    NOT NULL DEFAULT 0,
-    `enable_telegram_post`     tinyint(1)    NOT NULL DEFAULT 0,
-    FOREIGN KEY (`system_id`) REFERENCES `radio_systems` (`system_id`) ON DELETE CASCADE
-)
+
+def check_agency(db, system_id, agency_code):
+    query = f"SELECT DISTINCT COUNT(agency_id) as total FROM agencies WHERE system_id = %s and agency_code = %s"
+    params = (system_id, agency_code)
+    check_result = db.execute_query(query, params)
+
+    module_logger.warning(check_result)
+
+    if check_result.get("result", [{}])[0].get("total", 0) >= 1:
+        return True
+    else:
+        return False
+
 
 def add_agency(db, agency_data):
+    module_logger.warning(agency_data)
     if not agency_data:
         module_logger.warning(f"Agency Data Empty")
-        return
-    query = f"INSERT INTO `agencies` (system_id, agency_code, agency_name, alert_email_subject, alert_email_body, mqtt_topic, mqtt_start_alert_message, mqtt_end_alert_message, mqtt_message_interval, pushover_group_token, pushover_app_token, pushover_subject, pushover_body, pushover_sound, stream_url, enable_facebook_post, enable_telegram_post) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-    params = (agency_data.get("system_id"), agency_data.get("agency_code", None), agency_data.get("agency_name", None),
-              agency_data.get("alert_email_subject", None), agency_data.get("alert_email_body", None),
-              agency_data.get("mqtt_topic", None), agency_data.get("mqtt_start_alert_message", None),
-              agency_data.get("mqtt_end_alert_message", None), agency_data.get("mqtt_message_interval", 5.0),
-              agency_data.get("pushover_group_token", None), agency_data.get("pushover_app_token", None),
-              agency_data.get("pushover_subject", None), agency_data.get("pushover_body", None),
-              agency_data.get("pushover_sound", None), agency_data.get("stream_url", None),
-              agency_data.get("enable_facebook_post", 0), agency_data.get("enable_telegram_post", 0))
+        return {"success": False, "message": "Agency Data Empty", "result": []}
+    if not agency_data.get('system_id'):
+        return {"success": False, "message": "No System ID Given.", "result": []}
+
+    if check_agency(db, agency_data.get('system_id'), agency_data.get('agency_code')):
+        return {"success": False, "message": "Agency with that agency code already exists.", "result": []}
+
+    query = f"INSERT INTO `agencies` (system_id, agency_code, agency_name, mqtt_topic, mqtt_start_alert_message, mqtt_end_alert_message, mqtt_message_interval, pushover_group_token, pushover_app_token, pushover_subject, pushover_body, pushover_sound, webhook_url, webhook_headers, enable_facebook_post, enable_telegram_post) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    params = (
+        agency_data.get("system_id"), agency_data.get("agency_code") or None, agency_data.get("agency_name") or None,
+        agency_data.get("mqtt_topic") or None, agency_data.get("mqtt_start_alert_message") or None,
+        agency_data.get("mqtt_end_alert_message") or None, agency_data.get("mqtt_message_interval") or 5.0,
+        agency_data.get("pushover_group_token") or None, agency_data.get("pushover_app_token") or None,
+        agency_data.get("pushover_subject") or None, agency_data.get("pushover_body") or None,
+        agency_data.get("pushover_sound") or None, agency_data.get("webhook_url") or None,
+        agency_data.get("webhook_headers") or json.dumps("{}"), agency_data.get("enable_facebook_post") or 0,
+        agency_data.get("enable_telegram_post") or 0)
     result = db.execute_commit(query, params, return_row=True)
+    return result
+
+
+def update_agency_settings(db, agency_data):
+    if not agency_data:
+        module_logger.warning(f"Agency Data Empty")
+        return {"success": False, "message": "No Agency Data.", "result": []}
+
+    if not agency_data.get('system_id'):
+        return {"success": False, "message": "No System ID Given.", "result": []}
+
+    if not check_agency(db, agency_data.get('system_id'), agency_data.get('agency_code')):
+        return {"success": False, "message": "Agency doesn't exist.", "result": []}
+
+    query = f"UPDATE agencies SET agency_code = %s"
+
+
+def delete_agency(db, system_id, agency_code):
+    if not system_id:
+        return {"success": False, "message": "No system ID given.", "result": []}
+    if not agency_code:
+        return {"success": False, "message": "No agency code given.", "result": []}
+
+    if not check_agency(db, system_id, agency_code):
+        return {"success": False, "message": "Agency Doesn't Exist", "result": []}
+
+    query = f"DELETE FROM agencies WHERE system_id = %s AND agency_code = %s"
+    params = (system_id, agency_code)
+    result = db.execute_commit(query, params)
     return result
 
 
@@ -123,19 +152,19 @@ def import_agencies_from_detectors(db, agency_data, system_id):
             "system_id": system_id,
             "agency_code": agency.get("station_number"),
             "agency_name": agency_name,
-            "alert_email_subject": agency.get("alert_email_subject"),
-            "alert_email_body": agency.get("alert_email_body"),
             "mqtt_topic": agency.get("mqtt_topic"),
             "mqtt_start_alert_message": agency.get("mqtt_start_message"),
             "mqtt_end_alert_message": agency.get("mqtt_stop_message"),
             "mqtt_message_interval ": agency.get("mqtt_message_interval"),
             "pushover_group_token": agency.get("pushover_group_token"),
             "pushover_app_token": agency.get("pushover_app_token"),
-            "pushover_subject_override": agency.get("pushover_subject"),
-            "pushover_body_override": agency.get("pushover_body"),
-            "pushover_sound_override ": agency.get("pushover_sound"),
-            "agency_stream_url ": agency.get("stream_url"),
-            "enable_facebook_post ": agency.get("post_to_facebook")
+            "pushover_subject": agency.get("pushover_subject"),
+            "pushover_body": agency.get("pushover_body"),
+            "pushover_sound": agency.get("pushover_sound"),
+            "webhook_url": agency.get("webhook_url") or None,
+            "webhook_headers": agency.get("webhook_headers") or {},
+            "enable_facebook_post": agency.get("post_to_facebook"),
+            "enable_telegram_post": agency.get("post_to_telegram")
         }
 
         agency_result = add_agency(db, mapped_agency_data)

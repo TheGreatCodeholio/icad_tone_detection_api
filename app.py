@@ -12,7 +12,7 @@ from functools import wraps
 import redis
 from pydub import AudioSegment
 
-from lib.agency_handler import import_agencies_from_detectors, get_agencies
+from lib.agency_handler import import_agencies_from_detectors, get_agencies, add_agency, delete_agency
 from lib.config_handler import load_config_file, save_config_file, load_systems_agencies_detectors
 from lib.logging_handler import CustomLogger
 from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
@@ -366,13 +366,18 @@ def edit_systems():
 def save_system_config():
     new_system = request.args.get("new_system", False)
     delete_system = request.args.get("delete_system", False)
+
     try:
         # Get Form Data
-        form_data = request.form
+        form_data = request.form.to_dict()
+
+        logger.debug(form_data)
 
         if delete_system:
             result = delete_radio_system(db, form_data.get("system_id"))
-            response = {'success': result.get("success", False), 'message': f'Successfully Removed System' if result.get("success", False) else result.get("message")}
+            response = {'success': result.get("success", False),
+                        'message': f'Successfully Removed System' if result.get("success", False) else result.get(
+                            "message")}
         elif new_system:
             add_system(db, form_data)
             response = {'success': True, 'message': f'Successfully added system.'}
@@ -389,6 +394,32 @@ def save_system_config():
     except Exception as e:
         flash(f'An unexpected error occurred: {e}', 'error')
         response = {'success': False, 'message': f'An unexpected error occurred: {e}'}
+    return jsonify(response)
+
+
+@app.route('/admin/save_agency', methods=['POST'])
+@login_required
+def save_agency_config():
+    new_system = request.args.get("new_agency", False)
+    deletion_flag = request.args.get("delete_agency", False)
+
+    agency_data = request.form.to_dict()
+
+    try:
+
+        if new_system:
+            response = add_agency(db, agency_data)
+        elif deletion_flag:
+            response = delete_agency(db, agency_data.get("system_id"), agency_data.get("agency_code"))
+        else:
+            response = {'success': True, 'message': f'Not Implemented'}
+
+        # flash(f'Not Implemented', 'success')
+        # response = {'success': True, 'message': f'Not Implemented'}
+    except Exception as e:
+        # flash(f'An unexpected error occurred: {e}', 'error')
+        response = {'success': False, 'message': f'An unexpected error occurred: {e}'}
+
     return jsonify(response)
 
 

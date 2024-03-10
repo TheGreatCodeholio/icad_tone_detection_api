@@ -1,8 +1,9 @@
 import json
 import logging
+import traceback
 import uuid
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 module_logger = logging.getLogger("icad_tone_detection.system_handler")
 
@@ -12,6 +13,17 @@ def encrypt_password(password, config_data):
     f = Fernet(config_data.get("fernet_key"))
     encrypted_password = f.encrypt(password.encode())
     return encrypted_password
+
+
+def is_fernet_token(possible_token, config_data):
+    f = Fernet(config_data.get("fernet_key"))
+    try:
+        # Attempt to decrypt. If this works, it's likely a Fernet token.
+        f.decrypt(possible_token.encode())
+        return True
+    except InvalidToken:
+        # If decryption fails, it's not a valid Fernet token.
+        return False
 
 
 # Decrypt a password
@@ -70,7 +82,12 @@ SELECT
     s.scp_remote_folder,
     s.web_url_path,
     s.scp_archive_days,
-    s.scp_private_key
+    s.scp_private_key,
+    sms.mqtt_enabled,
+    sms.mqtt_hostname,
+    sms.mqtt_port,
+    sms.mqtt_username,
+    sms.mqtt_password
 FROM radio_systems rs
 LEFT JOIN system_email_settings ses ON rs.system_id = ses.system_id
 LEFT JOIN system_pushover_settings sps ON rs.system_id = sps.system_id
@@ -78,6 +95,7 @@ LEFT JOIN system_facebook_settings sfs ON rs.system_id = sfs.system_id
 LEFT JOIN system_telegram_settings sts ON rs.system_id = sts.system_id
 LEFT JOIN system_stream_settings sss ON rs.system_id = sss.system_id
 LEFT JOIN system_webhook_settings sws ON rs.system_id = sws.system_id
+LEFT JOIN icad.system_mqtt_settings sms on rs.system_id = sms.system_id
 LEFT JOIN system_scp_settings s ON rs.system_id = s.system_id
 """
 
@@ -98,7 +116,7 @@ WHERE system_id = %s
         email_result = db.execute_query(email_query, (system['system_id'],), fetch_mode="one")
         # Add the concatenated emails to the system's dictionary
         system['system_alert_emails'] = email_result['result']['alert_emails'] if email_result['result'] else ''
-        system['webhook_headers'] = json.loads(system.get("webhook_headers", {}))
+        system['webhook_headers'] = json.loads(system.get("webhook_headers") or "{}")
 
     return systems_result
 
@@ -161,8 +179,9 @@ def update_system(db, system_data, config_data):
 
     query = f"UPDATE `radio_systems` SET system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
     params = (
-        system_data.get('system_name'), system_data.get("system_county", None), system_data.get("system_state", None),
-        system_data.get("system_fips", None), system_data.get('api_key', None), system_data.get('system_id'))
+        system_data.get('system_name'), system_data.get("system_county") or None,
+        system_data.get("system_state") or None,
+        system_data.get("system_fips") or None, system_data.get('api_key') or None, system_data.get('system_id'))
     result = db.execute_commit(query, params)
     return result
 
@@ -178,10 +197,17 @@ def update_system_settings(db, system_data, config_data):
 
         query = f"UPDATE `radio_systems` SET system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
         params = (
-            system_data.get('system_name'), system_data.get("system_county", None),
-            system_data.get("system_state", None),
-            system_data.get("system_fips", None), system_data.get('system_api_key', None), system_data.get('system_id'))
+            system_data.get('system_name'), system_data.get("system_county") or None,
+            system_data.get("system_state") or None,
+            system_data.get("system_fips") or None, system_data.get('system_api_key') or None,
+            system_data.get('system_id'))
         db.execute_commit(query, params)
+
+        smtp_password = system_data.get("smtp_password") or None
+
+        if smtp_password is not None:
+            if not is_fernet_token(smtp_password, config_data):
+                smtp_password = encrypt_password(smtp_password, config_data)
 
         # Insert updated email settings
         db.execute_commit(
@@ -189,28 +215,42 @@ def update_system_settings(db, system_data, config_data):
             "smtp_password = %s, smtp_security = %s, email_address_from = %s, email_text_from = %s, "
             "email_alert_subject = %s, email_alert_body = %s WHERE system_id = %s",
             (
-                system_data.get("email_enabled", 0), system_data.get("smtp_hostname", None),
-                system_data.get("smtp_port", None),
-                system_data.get("smtp_username", None),
-                encrypt_password(system_data.get("smtp_password", None), config_data),
-                system_data.get("smtp_security", 2), system_data.get("email_address_from", "dispatch@example.com"),
-                system_data.get("email_text_from", "iCAD Dispatch"),
-                system_data.get("email_alert_subject", "Dispatch Alert"),
-                system_data.get("email_alert_body",
-                                "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>"),
+                system_data.get("email_enabled") or 0, system_data.get("smtp_hostname") or None,
+                system_data.get("smtp_port") or None, system_data.get("smtp_username") or None,
+                smtp_password, system_data.get("smtp_security") or 2,
+                system_data.get("email_address_from") or "dispatch@example.com",
+                system_data.get("email_text_from") or "iCAD Dispatch",
+                system_data.get("email_alert_subject") or "Dispatch Alert",
+                system_data.get("email_alert_body") or
+                "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
                 system_data.get("system_id"))
         )
 
         update_system_alert_emails(db, system_data.get("system_id"), system_data.get("system_alert_emails"))
 
+        mqtt_password = system_data.get("mqtt_password") or None
+
+        if mqtt_password is not None:
+            if not is_fernet_token(mqtt_password, config_data):
+                mqtt_password = encrypt_password(mqtt_password, config_data)
+
+        # Update MQTT settings
+        db.execute_commit(
+            "UPDATE system_mqtt_settings SET mqtt_enabled = %s, mqtt_hostname = %s, mqtt_port = %s, mqtt_username = %s, mqtt_password = %s WHERE system_id = %s",
+            (system_data.get("mqtt_enabled") or 0, system_data.get("mqtt_hostname") or None,
+             system_data.get("mqtt_port") or 1883, system_data.get("mqtt_username") or None,
+             mqtt_password, system_data.get("system_id")
+             )
+        )
+
         # Update Pushover settings
         db.execute_commit(
             "UPDATE system_pushover_settings SET pushover_enabled = %s, pushover_all_group_token = %s, pushover_all_app_token = %s, pushover_body = %s, pushover_subject = %s, pushover_sound = %s WHERE system_id = %s",
-            (system_data.get("pushover_enabled", 0), system_data.get("pushover_all_group_token", None),
-             system_data.get("pushover_all_app_token", None),
-             system_data.get("pushover_body",
-                             "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>"),
-             system_data.get("pushover_subject", "Dispatch Alert"), system_data.get("pushover_sound", "pushover"),
+            (system_data.get("pushover_enabled", 0), system_data.get("pushover_all_group_token") or None,
+             system_data.get("pushover_all_app_token") or None,
+             system_data.get("pushover_body") or
+             "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+             system_data.get("pushover_subject") or "Dispatch Alert", system_data.get("pushover_sound") or "pushover",
              system_data.get("system_id")
              )
         )
@@ -220,46 +260,50 @@ def update_system_settings(db, system_data, config_data):
             "UPDATE system_facebook_settings SET facebook_enabled = %s, facebook_page_id = %s, facebook_page_token = %s, "
             "facebook_group_id = %s, facebook_group_token = %s, facebook_comment_enabled = %s, facebook_post_body = %s, "
             "facebook_comment_body = %s  WHERE system_id = %s",
-            (system_data.get("facebook_enabled", 0), system_data.get("facebook_page_id", None),
-             system_data.get("facebook_page_token", None), system_data.get("facebook_group_id", None),
-             system_data.get("facebook_group_token", None), system_data.get("facebook_comment_enabled", 0),
-             system_data.get("facebook_post_body",
-                             "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}"),
-             system_data.get("facebook_comment_body", "{transcript}{stream_url}"),
+            (system_data.get("facebook_enabled") or 0, system_data.get("facebook_page_id") or None,
+             system_data.get("facebook_page_token") or None, system_data.get("facebook_group_id") or None,
+             system_data.get("facebook_group_token") or None, system_data.get("facebook_comment_enabled") or 0,
+             system_data.get(
+                 "facebook_post_body") or "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
+             system_data.get("facebook_comment_body") or "{transcript}{stream_url}",
              system_data.get("system_id"))
-        )
+            )
 
         # Update telegram settings
         db.execute_commit(
             "UPDATE system_telegram_settings SET telegram_enabled = %s, telegram_bot_token = %s, telegram_channel_id = %s WHERE system_id = %s",
-            (system_data.get("telegram_enabled", 0), system_data.get("telegram_bot_token", None),
-             system_data.get("telegram_channel_id"), system_data.get("system_id"))
+            (system_data.get("telegram_enabled") or 0, system_data.get("telegram_bot_token") or None,
+             system_data.get("telegram_channel_id") or None, system_data.get("system_id"))
         )
 
         # Update webhook settings
         db.execute_commit(
             "UPDATE system_webhook_settings SET webhook_enabled = %s, webhook_url = %s, webhook_headers = %s WHERE system_id = %s",
-            (system_data.get("webhook_enabled", 0), system_data.get("webhook_url", None),
-             json.dumps(system_data.get("webhook_headers", None)), system_data.get("system_id"))
+            (system_data.get("webhook_enabled") or 0, system_data.get("webhook_url") or None,
+             json.dumps(system_data.get("webhook_headers") or "{}"), system_data.get("system_id"))
         )
 
         # Update stream settings
         db.execute_commit(
             "UPDATE system_stream_settings SET stream_url = %s WHERE system_id = %s",
-            (system_data.get("stream_url", None), system_data.get("system_id"))
+            (system_data.get("stream_url") or None, system_data.get("system_id"))
         )
+
+        scp_password = system_data.get("scp_password") or None
+
+        if scp_password is not None:
+            if not is_fernet_token(scp_password, config_data):
+                scp_password = encrypt_password(scp_password, config_data)
 
         # Update system scp settings
         db.execute_commit(
             "UPDATE system_scp_settings SET scp_enabled = %s, scp_host = %s, scp_port = %s, scp_username = %s, "
             "scp_password = %s, scp_remote_folder = %s, web_url_path = %s, scp_archive_days = %s, "
             "scp_private_key = %s WHERE system_id = %s",
-            (system_data.get("scp_enabled", 0), system_data.get("scp_host", None), system_data.get("scp_port", None),
-             system_data.get("scp_username", None),
-             encrypt_password(system_data.get("scp_password", None), config_data),
-             system_data.get("scp_remote_folder", None), system_data.get("web_url_path", None),
-             system_data.get("scp_archive_days", 0), system_data.get("scp_private_key", None),
-             system_data.get("system_id"))
+            (system_data.get("scp_enabled") or 0, system_data.get("scp_host") or None, system_data.get("scp_port") or None,
+             system_data.get("scp_username") or None, scp_password, system_data.get("scp_remote_folder") or None,
+             system_data.get("web_url_path") or None, system_data.get("scp_archive_days") or 0,
+             system_data.get("scp_private_key") or None, system_data.get("system_id"))
         )
         module_logger.info(f"Settings updated successfully for system_id: {system_data.get('system_id')}")
 
@@ -267,6 +311,7 @@ def update_system_settings(db, system_data, config_data):
                 'message': f"Settings updated successfully for system_id: {system_data.get('system_id')}"}
 
     except Exception as e:
+        traceback.print_exc()
         module_logger.error(
             f"Failed to update settings for system_id: {system_data.get('system_id')}. Error: {e}")
         return {'success': False,
@@ -275,7 +320,10 @@ def update_system_settings(db, system_data, config_data):
 
 def update_system_alert_emails(db, system_id, email_string):
     # Convert the comma-separated string into a set of emails
-    new_emails = set(email_string.split(','))
+    if email_string:
+        new_emails = set(email_string.split(','))
+    else:
+        return True
 
     # Fetch the current emails from the database
     current_emails = set()
@@ -304,6 +352,12 @@ def insert_default_system_settings(db, system_id):
             "INSERT INTO system_email_settings (system_id, email_alert_body) VALUES (%s, %s)",
             (system_id,
              "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+        )
+
+        # Insert default MQTT settings
+        db.execute_commit(
+            "INSERT INTO system_mqtt_settings (system_id) VALUES (%s)",
+            (system_id,)
         )
 
         # Insert default pushover settings
