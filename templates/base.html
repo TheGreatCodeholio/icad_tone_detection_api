@@ -45,7 +45,7 @@
     </div>
 </div>
 
-<nav class="navbar navbar-expand-lg bg-transparent">
+<nav class="navbar navbar-expand-lg bg-transparent" style="height: 50px">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
             <img
@@ -93,13 +93,18 @@
 </nav>
 
 <hr>
-<div class="container container-fluid">
+<div class="container container-fluid" style="padding-bottom: 50px; padding-top: 50px;">
     <div id="alert_list">
         {% for category, message in get_flashed_messages(with_categories=true) %}
             <div id="alert" class="alert alert-{{ category }}" role="alert">{{ message }}</div>
         {% endfor %}
     </div>
     {% block content %} {% endblock %}
+</div>
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3">
+    <!-- Toasts will be added here dynamically -->
+  </div>
 </div>
 
 <!-- Footer -->

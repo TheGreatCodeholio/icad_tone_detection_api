@@ -26,12 +26,13 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT}
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASS}
+      TZ: ${TIMEZONE}
     ports:
       - "9911:9911"
     volumes:
       - ${WORKING_PATH}/log:/app/log
       - ${WORKING_PATH}/etc:/app/etc
-      - ${WORKING_PATH}/audio:/app/audio
+      - ${WORKING_PATH}/audio:/app/static/audio
   redis:
     image: redis:7.2.3
     command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
@@ -47,6 +48,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TIMEZONE}
     volumes:
       - ./init:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
@@ -56,6 +58,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      TZ: ${TIMEZONE}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     ports:
@@ -67,6 +70,7 @@ services:
       PMA_HOST: mysql
       PMA_USER: ${MYSQL_USER}
       PMA_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TIMEZONE}
     ports:
       - "8086:80"
 

@@ -33,11 +33,12 @@ def decrypt_password(encrypted_password, config_data):
     return decrypted_password
 
 
-def get_systems(db, system_id=None):
+def get_systems(db, system_id=None, system_short_name=None):
     # Base query without GROUP_CONCAT for emails
     base_query = """
 SELECT 
     rs.system_id,
+    rs.system_short_name,
     rs.system_name,
     rs.system_county,
     rs.system_state,
@@ -95,15 +96,29 @@ LEFT JOIN system_facebook_settings sfs ON rs.system_id = sfs.system_id
 LEFT JOIN system_telegram_settings sts ON rs.system_id = sts.system_id
 LEFT JOIN system_stream_settings sss ON rs.system_id = sss.system_id
 LEFT JOIN system_webhook_settings sws ON rs.system_id = sws.system_id
-LEFT JOIN icad.system_mqtt_settings sms on rs.system_id = sms.system_id
+LEFT JOIN system_mqtt_settings sms on rs.system_id = sms.system_id
 LEFT JOIN system_scp_settings s ON rs.system_id = s.system_id
 """
 
-    where_clause = "WHERE rs.system_id = %s " if system_id else ""
-    final_query = f"{base_query} {where_clause}"
+    # Building the WHERE clause based on provided arguments
+    where_clauses = []
+    parameters = []
+    if system_id:
+        where_clauses.append("rs.system_id = %s")
+        parameters.append(system_id)
+    if system_short_name:
+        where_clauses.append("rs.system_short_name = %s")
+        parameters.append(system_short_name)
 
-    # Execute the base query
-    systems_result = db.execute_query(final_query, (system_id,) if system_id else None)
+    if where_clauses:
+        where_clause = "WHERE " + " AND ".join(where_clauses)
+        final_query = f"{base_query} {where_clause}"
+    else:
+        final_query = base_query
+
+    systems_result = db.execute_query(final_query, tuple(parameters) if parameters else None)
+    if not systems_result.get("success"):
+        module_logger.error("Systems Result Empty")
 
     # For each system, fetch its alert emails and concatenate them into a comma-separated string
     email_query = """
@@ -114,9 +129,11 @@ WHERE system_id = %s
 
     for system in systems_result['result']:
         email_result = db.execute_query(email_query, (system['system_id'],), fetch_mode="one")
+        if not email_result.get("success"):
+            module_logger.warning("Email Result Empty")
         # Add the concatenated emails to the system's dictionary
         system['system_alert_emails'] = email_result['result']['alert_emails'] if email_result['result'] else ''
-        system['webhook_headers'] = json.loads(system.get("webhook_headers") or "{}")
+        system['webhook_headers'] = json.loads(system.get("webhook_headers", {}) or {})
 
     return systems_result
 
@@ -142,14 +159,14 @@ def add_system(db, system_data):
     result = check_for_system(db, system_name=system_data.get('system_name'))
     if result:
         module_logger.warning(f"System already exists: {result}")
-        return
+        return {"success": False, "message": f"System already exists: {result}", "result": []}
 
     # Generate a unique API key for the new system
     api_key = str(uuid.uuid4())
-    query = "INSERT INTO `radio_systems` (system_name, system_county, system_state, system_fips, system_api_key) VALUES (%s, %s, %s, %s, %s)"
+    query = "INSERT INTO `radio_systems` (system_short_name, system_name, system_county, system_state, system_fips, system_api_key) VALUES (%s, %s, %s, %s, %s, %s)"
     params = (
-        system_data.get('system_name'), system_data.get("system_county"), system_data.get("system_state"),
-        system_data.get("system_fips"), api_key
+        system_data.get('system_short_name') or None, system_data.get('system_name') or None, system_data.get("system_county") or None, system_data.get("system_state") or None,
+        system_data.get("system_fips") or None, api_key
     )
 
     # Execute the query to insert the new system
@@ -162,11 +179,14 @@ def add_system(db, system_data):
         # Insert default settings for the new system
         insert_default_system_settings(db, system_id)
         module_logger.info("Default settings inserted for the new system.")
+        result['message'] = f"New system added with ID: {system_id}"
     else:
+        result['success'] = False
+        system_id = None
+        result['message'] = "Failed to add new system."
         module_logger.error("Failed to add new system.")
-        return
 
-    return system_id
+    return {"success": result['success'], "message": result.get("message"), "result": system_id}
 
 
 def update_system(db, system_data, config_data):
@@ -177,9 +197,9 @@ def update_system(db, system_data, config_data):
     result = check_for_system(db, system_id=system_data.get('system_id'))
     module_logger.warning(result)
 
-    query = f"UPDATE `radio_systems` SET system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
+    query = f"UPDATE `radio_systems` SET system_short_name = %s, system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
     params = (
-        system_data.get('system_name'), system_data.get("system_county") or None,
+        system_data.get('system_short_name') or None, system_data.get('system_name') or None, system_data.get("system_county") or None,
         system_data.get("system_state") or None,
         system_data.get("system_fips") or None, system_data.get('api_key') or None, system_data.get('system_id'))
     result = db.execute_commit(query, params)
@@ -195,9 +215,9 @@ def update_system_settings(db, system_data, config_data):
         result = check_for_system(db, system_id=system_data.get('system_id'))
         module_logger.warning(result)
 
-        query = f"UPDATE `radio_systems` SET system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
+        query = f"UPDATE `radio_systems` SET system_short_name = %s, system_name = %s, system_county = %s, system_state = %s, system_fips = %s, system_api_key = %s WHERE system_id = %s"
         params = (
-            system_data.get('system_name'), system_data.get("system_county") or None,
+            system_data.get('system_short_name') or None, system_data.get('system_name') or None, system_data.get("system_county") or None,
             system_data.get("system_state") or None,
             system_data.get("system_fips") or None, system_data.get('system_api_key') or None,
             system_data.get('system_id'))
@@ -222,7 +242,7 @@ def update_system_settings(db, system_data, config_data):
                 system_data.get("email_text_from") or "iCAD Dispatch",
                 system_data.get("email_alert_subject") or "Dispatch Alert",
                 system_data.get("email_alert_body") or
-                "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+                "{agency_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{audio_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
                 system_data.get("system_id"))
         )
 
@@ -249,7 +269,7 @@ def update_system_settings(db, system_data, config_data):
             (system_data.get("pushover_enabled", 0), system_data.get("pushover_all_group_token") or None,
              system_data.get("pushover_all_app_token") or None,
              system_data.get("pushover_body") or
-             "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
+             "<font color=\"red\"><b>{agency_name}</b></font><br><br><a href=\"{audio_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>",
              system_data.get("pushover_subject") or "Dispatch Alert", system_data.get("pushover_sound") or "pushover",
              system_data.get("system_id")
              )
@@ -264,7 +284,7 @@ def update_system_settings(db, system_data, config_data):
              system_data.get("facebook_page_token") or None, system_data.get("facebook_group_id") or None,
              system_data.get("facebook_group_token") or None, system_data.get("facebook_comment_enabled") or 0,
              system_data.get(
-                 "facebook_post_body") or "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
+                 "facebook_post_body") or "{timestamp} Departments:\n{agency_list}\n\nDispatch Audio:\n{audio_url}",
              system_data.get("facebook_comment_body") or "{transcript}{stream_url}",
              system_data.get("system_id"))
             )
@@ -280,7 +300,7 @@ def update_system_settings(db, system_data, config_data):
         db.execute_commit(
             "UPDATE system_webhook_settings SET webhook_enabled = %s, webhook_url = %s, webhook_headers = %s WHERE system_id = %s",
             (system_data.get("webhook_enabled") or 0, system_data.get("webhook_url") or None,
-             json.dumps(system_data.get("webhook_headers") or "{}"), system_data.get("system_id"))
+             json.dumps(system_data.get("webhook_headers", {})), system_data.get("system_id"))
         )
 
         # Update stream settings
@@ -321,7 +341,7 @@ def update_system_settings(db, system_data, config_data):
 def update_system_alert_emails(db, system_id, email_string):
     # Convert the comma-separated string into a set of emails
     if email_string:
-        new_emails = set(email_string.split(','))
+        new_emails = {email.strip() for email in email_string.split(',') if email.strip()}
     else:
         return True
 
@@ -351,7 +371,7 @@ def insert_default_system_settings(db, system_id):
         db.execute_commit(
             "INSERT INTO system_email_settings (system_id, email_alert_body) VALUES (%s, %s)",
             (system_id,
-             "{detector_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+             "{agency_list} Alert at {timestamp}<br><br>{transcript}<br><br><a href=\"{audio_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
         )
 
         # Insert default MQTT settings
@@ -364,13 +384,13 @@ def insert_default_system_settings(db, system_id):
         db.execute_commit(
             "INSERT INTO system_pushover_settings (system_id, pushover_body) VALUES (%s, %s)",
             (system_id,
-             "<font color=\"red\"><b>{detector_name}</b></font><br><br><a href=\"{mp3_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
+             "<font color=\"red\"><b>{agency_name}</b></font><br><br><a href=\"{audio_url}\">Click for Dispatch Audio</a><br><br><a href=\"{stream_url}\">Click Audio Stream</a>")
         )
 
         # Insert default facebook settings
         db.execute_commit(
             "INSERT INTO system_facebook_settings (system_id, facebook_post_body, facebook_comment_body) VALUES (%s, %s, %s)",
-            (system_id, "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
+            (system_id, "{timestamp} Departments:\n{agency_list}\n\nDispatch Audio:\n{audio_url}",
              "{transcript}{stream_url}")
         )
 
@@ -383,7 +403,7 @@ def insert_default_system_settings(db, system_id):
         # Insert default webhook settings
         db.execute_commit(
             "INSERT INTO system_webhook_settings (system_id, webhook_headers) VALUES (%s, %s)",
-            (system_id, None)
+            (system_id, json.dumps({}))
         )
 
         # Insert default stream settings

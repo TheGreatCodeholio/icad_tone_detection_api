@@ -4,7 +4,7 @@ from datetime import datetime
 import io
 import json
 import os
-import threading
+from threading import Event, Thread
 import time
 from os.path import splitext
 from functools import wraps
@@ -12,8 +12,11 @@ from functools import wraps
 import redis
 from pydub import AudioSegment
 
-from lib.agency_handler import import_agencies_from_detectors, get_agencies, add_agency, delete_agency
+from lib.agency_handler import import_agencies_from_detectors, get_agencies, add_agency, delete_agency, \
+    update_agency_settings
+from lib.audio_file_handler import validate_audio_file
 from lib.config_handler import load_config_file, save_config_file, load_systems_agencies_detectors
+from lib.helpers import load_json
 from lib.logging_handler import CustomLogger
 from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
 
@@ -23,8 +26,8 @@ from lib.mysql_handler import DatabaseFactory
 from lib.redis_handler import RedisCache
 from lib.system_handler import get_systems, add_system, delete_radio_system, update_system_settings
 from lib.tone_detection_handler import ToneDetection, get_active_detections_cache, add_active_detections_cache, \
-    delete_active_detections_cache
-from lib.tone_extraction_handler import ToneExtraction
+    delete_active_detections_cache, process_tone_detection
+from icad_tone_detection import tone_detect
 from lib.user_handler import authenticate_user
 
 app_name = "icad_tone_detection"
@@ -39,6 +42,8 @@ log_file_name = f"{app_name}.log"
 config_path = os.path.join(root_path, 'etc')
 
 audio_path = os.path.join(root_path, 'audio')
+
+stop_signals = {}
 
 detector_template = {"detector_id": 0, "station_number": 0, "a_tone": 0, "b_tone": 0,
                      "a_tone_length": 0.6, "b_tone_length": 1,
@@ -122,14 +127,16 @@ sess.init_app(app)
 
 
 # Loop to run that clears old detections.
-def clear_old_items():
-    while True:
+def clear_old_items(system_short_name):
+    logger.info(f"Starting Clear Loop for {system_short_name}")
+    stop_signal = stop_signals.get(system_short_name, Event())
+    while not stop_signal.is_set():
         time.sleep(1)  # Sleep to prevent a tight loop that hogs the CPU
 
         # Fetch the current list of detections
-        qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
+        qc_detector_list = get_active_detections_cache(rd, f"icad_current_detectors:{system_short_name}")
         current_time = time.time()
-        if len(qc_detector_list) < 1:
+        if len(qc_detector_list) == 0:
             # logger.warning(f"Empty Detector List")
             continue  # Skip this iteration if list is empty
 
@@ -137,21 +144,22 @@ def clear_old_items():
         for item in qc_detector_list:
             # Calculate the expiration time for each item
             expire_time = item['last_detected'] + item['ignore_seconds']
-            if current_time <= expire_time:
+            if current_time < expire_time:
                 # If the item hasn't expired, add it to the updated list
                 updated_list.append(item)
 
         # If the updated list is shorter, some items were removed
         if len(updated_list) < len(qc_detector_list):
+            logger.warning(f"Removing {len(qc_detector_list) - len(updated_list)}")
             # Clear the old list
-            delete_active_detections_cache(rd, "icad_current_detectors")
+            delete_active_detections_cache(rd, f"icad_current_detectors:{system_short_name}")
 
             # Add the updated items back, if any
             if updated_list:
                 # Push all items at once to the list
-                rd.lpush("icad_current_detectors", *updated_list)
+                rd.lpush(f"icad_current_detectors:{system_short_name}", *updated_list)
 
-                logger.warning(f"Removed {len(qc_detector_list) - len(updated_list)}")
+    logger.info(f"Stopped Clear Loop for {system_short_name}")
 
 
 def login_required(f):
@@ -264,92 +272,69 @@ def api_get_agencies():
 
 @app.route('/tone_detect', methods=['POST'])
 def tone_upload():
-    tones_with_data = []
-    logger.info("Got New HTTP request.")
+    start = time.time()
+    logger.debug("Got New HTTP request.")
 
-    if request.method != "POST":
-        return jsonify({"status": "error", "message": "Invalid request method"}), 400
+    audio_file = request.files.get('audioFile')
+    json_file = request.files.get('jsonFile')
 
-    call_data_post = request.form.to_dict()
+    # Get the filenames
+    audio_filename = audio_file.filename if audio_file else None
+    json_filename = json_file.filename if json_file else None
 
-    if not call_data_post:
-        return jsonify({"status": "error", "message": "No call data"}), 400
+    if not audio_file or not json_file:
+        result = {"status": "error", "message": "No file uploaded"}
+        logger.error("No file uploaded.")
+        return jsonify(result), 400
 
-    if config_data["general"].get("detection_mode", 0) == 0:
+    # Validate Audio File
+    is_valid_audio, validation_response = validate_audio_file(audio_file, config_data.get("audio_upload", {}).get(
+        "allowed_mimetypes", []), config_data.get("audio_upload", {}).get("max_audio_length", 300))
+    if not is_valid_audio:
+        logger.error(validation_response)
+        return jsonify({"status": "error", "message": validation_response}), 400
+
+    # Reset the pointed to allow re-reading audio file
+    audio_file.seek(0)
+
+    # Load and validate JSON file data
+    call_data, error = load_json(json_file)
+    if error:
+        logger.error(error)
+        return jsonify({"status": "error", "message": error}), 400
+
+    # Get Detection Mode and See if detections are enabled.
+    detection_mode = config_data.get("general", {}).get("detection_mode", 0)
+    if detection_mode == 0:
         return jsonify({"status": "error", "message": "Detection Disabled"}), 400
 
-    file = request.files.get('file')
-    if not file:
-        return jsonify({"status": "error", "message": "No file uploaded"}), 400
-
-    allowed_extensions = ['.mp3', '.wav', '.m4a']
-    ext = splitext(file.filename)[1]
-    if ext not in allowed_extensions:
-        return jsonify({"status": "error", "message": "File must be an MP3, WAV, or M4A"}), 400
-
-    qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
-    logger.warning(f'Active Detector List: {qc_detector_list}')
-
-    file_data = file.read()
-    audio_segment = AudioSegment.from_file(io.BytesIO(file_data))
-
+    # Send Audio Through Tone Detection Library
     try:
-        quick_call, hi_low, long_tone, dtmf_tone = ToneExtraction(config_data, audio_segment).main()
-        detection_data = {
-            "quick_call": quick_call,
-            "hi_low": hi_low,
-            "long": long_tone,
-            "dtmf": dtmf_tone,
-            "timestamp": float(call_data_post.get("start_time")),
-            "timestamp_string": datetime.fromtimestamp(float(call_data_post.get("start_time"))).strftime(
-                "%m/%d/%Y, %H:%M:%S"),
-            'call_length': float(call_data_post.get('call_length', 0)),
-            'talkgroup_decimal': int(call_data_post.get('talkgroup', 0)),
-            'talkgroup_alpha_tag': str(call_data_post.get('talkgroup_tag')),
-            'talkgroup_name': str(call_data_post.get('talkgroup_description')),
-            'talkgroup_service_type': str(call_data_post.get('talkgroup_group_tag')),
-            'talkgroup_group': str(call_data_post.get('talkgroup_group'))
-        }
-
+        detect_result = tone_detect(audio_file)
     except Exception as e:
-        return jsonify({"status": "error", "message": f"Exception while extracting tones. {e}"}), 500
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": f"Exception while detecting tones. {e}"}), 500
 
-    if quick_call:
-        tones_with_data.append(f"quick_call: {quick_call}")
-    if hi_low:
-        tones_with_data.append(f"hi_low: {hi_low}")
-    if long_tone:
-        tones_with_data.append(f"long_tone: {long_tone}")
-    if dtmf_tone:
-        tones_with_data.append(f"dtmf_tone: {dtmf_tone}")
+    if len(detect_result.two_tone_result) == 0 and len(detect_result.long_result) == 0 and len(
+            detect_result.hi_low_result) == 0:
+        logger.debug(
+            f"No tones found in audio. {detect_result.two_tone_result} {detect_result.long_result} {detect_result.hi_low_result}")
+        return jsonify({"status": "ok", "message": f"No tones found in audio.", "tones": [],
+                        "process_time_seconds": round((time.time() - start), 2)}), 200
 
-    if not tones_with_data:
-        logger.debug(f"No tones found in audio. {quick_call} {hi_low} {long_tone} {dtmf_tone}")
-    else:
-        data_message = ', '.join(tones_with_data)
-        logger.warning(f"Tones Detected: {data_message}")
-        file_name = f'{round(detection_data["timestamp"], -1)}_detection'
-        local_audio_path = os.path.join(audio_path, f"{file_name}.mp3")
-        local_json_path = os.path.join(audio_path, f"{file_name}_metadata.json")
-        audio_segment.export(local_audio_path, format='mp3')
-        detection_data["local_audio_path"] = local_audio_path
-        logger.info(f"Saving Audio and Metadata: {local_audio_path}")
-        with open(local_json_path, 'w') as outjs:
-            outjs.write(json.dumps(call_data_post, indent=4))
+    detected_tones = {
+        "two_tone": detect_result.two_tone_result,
+        "long_tone": detect_result.long_result,
+        "hi_low_tone": detect_result.hi_low_result
+    }
 
-        if config_data["general"].get("detection_mode", 0) in [2, 3]:
-            logger.warning("Processing Tones Through Detectors")
+    call_data["tones"] = detected_tones
 
-            logger.debug("Processing QuickCall Tones")
-            processed_detection_data = ToneDetection(config_data, detector_data, detection_data).detect_quick_call(rd)
-            detection_data = processed_detection_data
-        if config_data["general"].get("detection_mode", 0) in [1, 3]:
-            with open(local_audio_path.replace(".mp3", ".json"), 'w+') as outjs:
-                outjs.write(json.dumps(detection_data, indent=4))
-    qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
-    logger.warning(f"Active Detectors List: {qc_detector_list}")
-    logger.info("HTTP Request Completed")
-    return jsonify(detection_data), 200
+    process_result = process_tone_detection(db, rd, config_data, audio_file, audio_filename, json_filename, call_data)
+
+    return jsonify(
+        {"status": "ok" if process_result.get("success") else "error", "message": process_result.get("message"),
+         "tones": detected_tones, "process_time_seconds": round((time.time() - start), 2)}), 200
 
 
 @app.route('/admin/edit_systems', methods=['POST', 'GET'])
@@ -374,12 +359,26 @@ def save_system_config():
         logger.debug(form_data)
 
         if delete_system:
+            system_short_name = form_data.get("system_short_name")
+
             result = delete_radio_system(db, form_data.get("system_id"))
+            if result.get("success"):
+                if system_short_name in stop_signals:
+                    stop_signals[system_short_name].set()
+                    time.sleep(2)
+                    del stop_signals[system_short_name]
+
             response = {'success': result.get("success", False),
                         'message': f'Successfully Removed System' if result.get("success", False) else result.get(
                             "message")}
         elif new_system:
-            add_system(db, form_data)
+            add_result = add_system(db, form_data)
+            if add_result.get("success"):
+                system_name = form_data.get("system_short_name")
+                if system_name not in stop_signals:
+                    stop_signals[system_name] = Event()
+
+                Thread(target=clear_old_items, args=(system_name,), daemon=True).start()
             response = {'success': True, 'message': f'Successfully added system.'}
         else:
             update_system_settings(db, form_data, config_data)
@@ -410,9 +409,9 @@ def save_agency_config():
         if new_system:
             response = add_agency(db, agency_data)
         elif deletion_flag:
-            response = delete_agency(db, agency_data.get("system_id"), agency_data.get("agency_code"))
+            response = delete_agency(db, agency_data.get("system_id"), agency_data.get("agency_id"))
         else:
-            response = {'success': True, 'message': f'Not Implemented'}
+            response = update_agency_settings(db, agency_data)
 
         # flash(f'Not Implemented', 'success')
         # response = {'success': True, 'message': f'Not Implemented'}
@@ -716,7 +715,12 @@ def import_ttd():
     return redirect(url_for("admin_detector_config"), code=302)
 
 
-threading.Thread(target=clear_old_items, daemon=True).start()
+systems = get_systems(db)
+for system in systems.get("result"):
+    system_name = system.get("system_short_name")
+    if system_name not in stop_signals:
+        stop_signals[system_name] = Event()
+    Thread(target=clear_old_items, args=(system_name,), daemon=True).start()
 
 # if __name__ == '__main__':
 #     app.run(host="0.0.0.0", port=8002, debug=False)

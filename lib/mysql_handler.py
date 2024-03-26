@@ -1,6 +1,7 @@
 import logging
 import math
 import time
+from decimal import Decimal
 
 import bcrypt
 import mysql.connector
@@ -179,6 +180,7 @@ class MySQLDatabase:
 
                 if not result:
                     result = []
+                result = self.unserialize_query(result)
 
                 module_logger.debug(
                     f"<<MySQL>> <<Query>> Executed Successfully\n{query}\nParams: {params}\nFetch Mode: {fetch_mode}")
@@ -260,3 +262,28 @@ class MySQLDatabase:
             return {'success': False, 'message': f'MySQL Multi-Commit Error: {error}', 'result': []}
         finally:
             self._release_connection(conn)
+
+    def convert_decimal_to_float(self, value, prec=2):
+        """
+        Convert Decimal to float with specified precision.
+
+        Args:
+            value (Decimal): The Decimal value to convert.
+            prec (int): The precision (number of decimal places).
+
+        Returns:
+            float: The converted float value with the specified precision.
+        """
+        if isinstance(value, Decimal):
+            return round(float(value), prec)
+        return value
+
+    def unserialize_query(self, result):
+        if isinstance(result, dict):  # Single row
+            for key, value in result.items():
+                result[key] = self.convert_decimal_to_float(value)
+        elif isinstance(result, list):  # Multiple rows
+            for row in result:
+                for key, value in row.items():
+                    row[key] = self.convert_decimal_to_float(value)
+        return result

@@ -5,10 +5,12 @@ const systemSelect = document.getElementById('system_selection')
 const addSystemForm = document.getElementById('addSystemForm');
 const addAgencyForm = document.getElementById('agency_input_form');
 const deleteSystemForm = document.getElementById('deleteSystemForm')
+const deleteAgencyForm = document.getElementById('deleteAgencyForm');
 
 //System Button Elements Add/Update/Delete
 const submitAddFormButton = document.getElementById('submitAddForm');
 const submitAddAgencyButton = document.getElementById('submitAddAgencyForm')
+const submitDeleteAgencyButton = document.getElementById('submitDeleteAgencyForm')
 const submitDeleteButton = document.getElementById('submitDeleteForm')
 
 //Alert Area
@@ -105,6 +107,7 @@ function queryAgency() {
 }
 
 function showSystem(system_data) {
+    console.log(system_data)
     const systemConfig = document.getElementById('accordionSystem');
     systemConfig.innerHTML = '';
     const agencyConfig = document.getElementById('accordionAgency');
@@ -161,7 +164,8 @@ function showSystem(system_data) {
             'data-bs-toggle': 'modal',
             'data-bs-target': '#deleteSystemModal',
             'data-system-id': system.system_id,
-            'data-system-name': system.system_name
+            'data-system-name': system.system_name,
+            'data-system-short-name': system.system_short_name
         },
         innerHTML: 'Delete System'
     })
@@ -194,6 +198,13 @@ function showSystem(system_data) {
             value: system.system_id,
             readOnly: true,
             tooltip: 'System Identifier'
+        },
+        {
+            label: 'Short Name:',
+            id: 'system_short_name',
+            type: 'text',
+            value: system.system_short_name,
+            tooltip: 'Shorted System Name No Spaces'
         },
         {
             label: 'System Name:',
@@ -775,9 +786,11 @@ function showSystem_old(system_data) {
 
     // Populate Delete Modal
     const system_delete = document.getElementById('deleteSystemId')
+    const system_name_delete = document.getElementById('deleteSystemName')
     const del_system_title = document.getElementById('deletesystemNameTitle')
 
     system_delete.value = system_data.system_id;
+    system_name_delete.value = system_data.system_short_name;
     del_system_title.innerText = "Delete " + system_data.system_name + "?";
 
     const add_agency_system_id = document.getElementById('addAgencySystemId')
@@ -1501,16 +1514,16 @@ function showSystem_old(system_data) {
         fetchPromise
             .then(data => {
                 // Display success or error message
-                if (data.success === true) {
+                if (data.success) {
                     updateSystemSelection(system_data.system_id)
-                    showAlert(data.message, 'alert-success');
+                    showAlert(data.message, 'success');
                 } else {
                     updateSystemSelection(system_data.system_id)
-                    showAlert(data.message, 'alert-danger');
+                    showAlert(data.message, 'danger');
                 }
             })
             .catch(error => {
-                showAlert('An error occurred: ' + error.message, 'alert-danger');
+                showAlert('An error occurred: ' + error.message, 'danger');
             });
     });
 
@@ -1544,16 +1557,16 @@ function showAgencies(system_data) {
         // Create the accordion header
         let accordionHeader = document.createElement('h2');
         accordionHeader.className = 'accordion-header';
-        accordionHeader.id = 'heading_' + agency.agency_id;
+        accordionHeader.id = 'heading_agency_' + agency.agency_id;
 
         // Create the accordion button
         let accordionButton = document.createElement('button');
         accordionButton.className = 'accordion-button';
         accordionButton.type = 'button';
         accordionButton.setAttribute('data-bs-toggle', 'collapse');
-        accordionButton.setAttribute('data-bs-target', '#collapse_' + agency.agency_id);
+        accordionButton.setAttribute('data-bs-target', '#collapse_agency_' + agency.agency_id);
         accordionButton.setAttribute('aria-expanded', 'false');
-        accordionButton.setAttribute('aria-controls', 'collapse_' + agency.agency_id);
+        accordionButton.setAttribute('aria-controls', 'collapse_agency_' + agency.agency_id);
         accordionButton.textContent = agency.agency_name;
 
         // Append the accordion button to the accordion header
@@ -1561,9 +1574,9 @@ function showAgencies(system_data) {
 
         // Create the accordion collapse container
         let accordionCollapse = document.createElement('div');
-        accordionCollapse.id = 'collapse_' + agency.agency_id;
+        accordionCollapse.id = 'collapse_agency_' + agency.agency_id;
         accordionCollapse.className = 'accordion-collapse collapse';
-        accordionCollapse.setAttribute('aria-labelledby', 'heading_' + agency.agency_id);
+        accordionCollapse.setAttribute('aria-labelledby', 'heading_agency_' + agency.agency_id);
         accordionCollapse.setAttribute('data-bs-parent', '#accordionAgencies');
 
         // Create the accordion body
@@ -1584,6 +1597,15 @@ function showAgencies(system_data) {
         hiddenInput.name = 'system_id';
         hiddenInput.value = agency.system_id
         form.appendChild(hiddenInput);
+
+        // Hidden input for agency_id
+        let hiddenInputAgencyId = document.createElement('input');
+        hiddenInputAgencyId.setAttribute('type', 'hidden');
+        hiddenInputAgencyId.className = 'form-control';
+        hiddenInputAgencyId.id = 'addAgencyAgencyId_' + agency.agency_id;
+        hiddenInputAgencyId.name = 'agency_id';
+        hiddenInputAgencyId.value = agency.agency_id
+        form.appendChild(hiddenInputAgencyId);
 
         // Create the main div container
         let agencyInputDiv = document.createElement('div');
@@ -1608,12 +1630,12 @@ function showAgencies(system_data) {
 
             let button = document.createElement('button');
             button.className = 'conf-link nav-link' + (index === 0 ? ' active' : '');
-            button.id = tabName.toLowerCase().replace(/\s+/g, '') + '-tab_' + agency.agency_id;
+            button.id = tabName.toLowerCase().replace(/\s+/g, '') + '-tab_agency_' + agency.agency_id;
             button.setAttribute('data-bs-toggle', 'tab');
-            button.setAttribute('data-bs-target', '#' + tabName.toLowerCase().replace(/\s+/g, '') + '-tab-pane_' + agency.agency_id);
+            button.setAttribute('data-bs-target', '#' + tabName.toLowerCase().replace(/\s+/g, '') + '-tab-pane_agency_' + agency.agency_id);
             button.setAttribute('type', 'button');
             button.setAttribute('role', 'tab');
-            button.setAttribute('aria-controls', tabName.toLowerCase().replace(/\s+/g, '') + '-tab-pane_' + agency.agency_id);
+            button.setAttribute('aria-controls', tabName.toLowerCase().replace(/\s+/g, '') + '-tab-pane_agency_' + agency.agency_id);
             button.setAttribute('aria-selected', index === 0 ? 'true' : 'false');
             button.textContent = tabName;
 
@@ -1637,8 +1659,7 @@ function showAgencies(system_data) {
                         id: 'agency_name',
                         tooltip: 'Agency Name',
                         type: 'text',
-                        class: 'w-75',
-                        required: true
+                        class: 'w-75'
                     },
                     {
                         label: 'Agency Code',
@@ -1658,16 +1679,14 @@ function showAgencies(system_data) {
                         id: 'a_tone',
                         tooltip: 'Quick Call II Tone A',
                         type: 'text',
-                        class: 'w-75',
-                        required: true
+                        class: 'w-75'
                     },
                     {
                         label: 'Tone B Frequency',
                         id: 'b_tone',
                         tooltip: 'Quick Call II Tone B',
                         type: 'text',
-                        class: 'w-75',
-                        required: true
+                        class: 'w-75'
                     },
                     {
                         label: 'Tone C Frequency',
@@ -1688,16 +1707,14 @@ function showAgencies(system_data) {
                         id: 'tone_tolerance',
                         tooltip: 'plus/minus tolerance in decimal form applied to a frequency to determine a match. 0.05 is 5%',
                         type: 'text',
-                        class: 'w-50',
-                        required: true
+                        class: 'w-50'
                     },
                     {
                         label: 'Agency Ignore Time',
                         id: 'ignore_time',
                         tooltip: 'Ignore time in seconds after a successful match.',
                         type: 'text',
-                        class: 'w-75',
-                        required: true
+                        class: 'w-75'
                     }
                 ]
             },
@@ -1709,8 +1726,8 @@ function showAgencies(system_data) {
                         label: 'Subscriber Email Addresses',
                         id: 'alert_emails',
                         tooltip: 'Comma separated list of Email addresses.',
-                        type: 'text',
-                        class: 'w-50'
+                        type: 'textarea',
+                        class: 'w-100'
                     }
                 ]
             },
@@ -1819,7 +1836,7 @@ function showAgencies(system_data) {
                         tooltip: 'Post Agency Alerts To Facebook.',
                         type: 'select',
                         class: 'w-50',
-                        options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                        options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled'}]
                     }
                 ]
             },
@@ -1833,7 +1850,7 @@ function showAgencies(system_data) {
                         tooltip: 'Post Agency Alerts To Telegram.',
                         type: 'select',
                         class: 'w-50',
-                        options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled', selected: true}]
+                        options: [{value: '1', text: 'Enabled'}, {value: '0', text: 'Disabled'}]
                     }
                 ]
             }
@@ -1843,7 +1860,7 @@ function showAgencies(system_data) {
         tabPanes.forEach(pane => {
             let tabPane = document.createElement('div');
             tabPane.className = 'tab-pane fade' + (pane.id === 'agency-tab-pane' ? ' show active' : '');
-            tabPane.id = pane.id + '_' + agency.agency_id;
+            tabPane.id = pane.id + '_agency_' + agency.agency_id;
             tabPane.setAttribute('role', 'tabpanel');
             tabPane.setAttribute('aria-labelledby', pane.id);
             tabPane.setAttribute('tabindex', '0');
@@ -1905,7 +1922,14 @@ function showAgencies(system_data) {
                         let optionElement = document.createElement('option');
                         optionElement.value = option.value;
                         optionElement.textContent = option.text;
-                        if (option.value === value) optionElement.selected = true;  // Set the current value
+
+                        let fieldValue = isNaN(parseInt(value)) ? value : parseInt(value);
+                        let optionValue = isNaN(parseInt(option.value)) ? option.value : parseInt(option.value);
+
+                        if (fieldValue == optionValue) {
+                            optionElement.selected = true;
+                        }
+
                         select.appendChild(optionElement);
                     });
 
@@ -1928,6 +1952,7 @@ function showAgencies(system_data) {
 
         // Create the submit button
         let submitButton = document.createElement('button');
+        submitButton.id = "agency_submit_" + agency.agency_id
         submitButton.className = 'btn btn-success';
         submitButton.type = 'submit';
         submitButton.textContent = 'Save';
@@ -1941,7 +1966,7 @@ function showAgencies(system_data) {
 
             const fetchPromise = new Promise((resolve, reject) => {
                 setTimeout(reject, 180000, new Error('Request timed out')); // Reject the promise after 180 seconds (3 minutes)
-                fetch('/save_agency_config', {
+                fetch('/admin/save_agency', {
                     method: 'POST',
                     body: formData
                 })
@@ -1953,19 +1978,37 @@ function showAgencies(system_data) {
             fetchPromise
                 .then(data => {
                     // Display success or error message
-                    if (data.status === 'success') {
-                        showAlert(alertDiv, data.message, 'alert-success');
+                    if (data.success === true) {
+                        showAlert(data.message, 'success');
                     } else {
-                        showAlert(alertDiv, data.message, 'alert-danger');
+                        showAlert(data.message, 'danger');
                     }
                 })
                 .catch(error => {
-                    showAlert(alertDiv, 'An error occurred: ' + error.message, 'alert-danger');
+                    showAlert('An error occurred: ' + error.message, 'danger');
                 });
+
+
         });
 
         // Append the submit button to the form
         form.appendChild(submitButton);
+
+        // add delete button to the form
+        const agencyDeleteButton = createElement('button', {
+            parent: form,
+            id: 'deleteAgencyButton',
+            className: 'btn btn-danger mb-3 ms-2',
+            attributes: {
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#deleteAgencyModal',
+                'data-system-id': system_data.system_id,
+                'data-agency-id': agency.agency_id,
+                'data-agency-name': agency.agency_name
+            },
+            type: 'button',
+            innerHTML: 'Delete Agency'
+        })
 
         // Append the form to the accordion body
         accordionBody.appendChild(form);
@@ -2047,24 +2090,6 @@ function toggleModal(element) {
     }
 }
 
-function showAlert(message, className) {
-    // Find the alert list container
-    const alertList = document.getElementById('alert_list');
-
-    // Create a new div element for the alert
-    const alertDiv = document.createElement('div');
-    alertDiv.classList.add('alert', className, 'role-alert');
-    alertDiv.textContent = message;
-
-    // Append the new alert div to the alert list container
-    alertList.appendChild(alertDiv);
-
-    // Hide and remove the alert after 3 seconds
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 3000);
-}
-
 function handleSystemFormSubmit(systemId, form) {
     const formData = new FormData(form);
     formData.append('system_id', systemId); // Ensure system ID is included if not already part of the form
@@ -2077,15 +2102,15 @@ function handleSystemFormSubmit(systemId, form) {
         .then(data => {
             if (data.success) {
                 updateSystemSelection(systemId)
-                showAlert(data.message, 'alert-success');
+                showAlert(data.message, 'success');
             } else {
                 updateSystemSelection(systemId)
-                showAlert(data.message, 'alert-danger');
+                showAlert(data.message, 'danger');
             }
         })
         .catch(error => {
             console.error('Error updating system:', error);
-            showAlert('An error occurred: ' + error.message, 'alert-danger');
+            showAlert('An error occurred: ' + error.message, 'danger');
         });
 }
 
@@ -2122,13 +2147,13 @@ submitAddFormButton.addEventListener('click', function () {
             // Display success or error message
             if (data.success === true) {
                 toggleModal(addSystemModal)
-                showAlert(data.message, 'alert-success');
+                showAlert(data.message, 'success');
                 const params = new URLSearchParams(window.location.search);
                 const system_id = Number(params.get('system_id'));
                 updateSystemSelection(system_id);
             } else {
                 toggleModal(addSystemModal)
-                showAlert(data.message, 'alert-danger');
+                showAlert(data.message, 'danger');
                 const params = new URLSearchParams(window.location.search);
                 const system_id = Number(params.get('system_id'));
                 updateSystemSelection(system_id);
@@ -2138,7 +2163,7 @@ submitAddFormButton.addEventListener('click', function () {
             toggleDisplayClass(addSystemForm, true)
             toggleDisplayClass(loadingElement, false)
 
-            showAlert('An error occurred: ' + error.message, 'alert-danger');
+            showAlert('An error occurred: ' + error.message, 'danger');
         });
 });
 
@@ -2177,13 +2202,13 @@ submitDeleteButton.addEventListener('click', function () {
                 toggleModal(deleteSystemModal)
                 updateSystemSelection();
                 querySystem();
-                showAlert(data.message, 'alert-success');
+                showAlert(data.message, 'success');
 
             } else {
                 toggleModal(deleteSystemModal);
                 updateSystemSelection();
                 querySystem();
-                showAlert(data.message, 'alert-danger');
+                showAlert(data.message, 'danger');
             }
         })
         .catch(error => {
@@ -2191,7 +2216,7 @@ submitDeleteButton.addEventListener('click', function () {
             toggleDisplayClass(loadingElement, false)
             updateSystemSelection();
             querySystem();
-            showAlert('An error occurred: ' + error.message, 'alert-danger');
+            showAlert('An error occurred: ' + error.message, 'danger');
         });
 });
 
@@ -2227,20 +2252,73 @@ submitAddAgencyButton.addEventListener('click', function () {
             // Display success or error message
             if (data.success) {
                 toggleModal(addAgencyModal)
-                showAlert(data.message, 'alert-success');
+                showAlert(data.message, 'success');
                 setTimeout(function () {
                     location.reload();
                 }, 1500);
             } else {
                 toggleModal(addAgencyModal)
-                showAlert(data.message, 'alert-danger');
+                showAlert(data.message, 'danger');
             }
         })
         .catch(error => {
             toggleDisplayClass(addAgencyForm, true)
             toggleDisplayClass(loadingElement, false)
             toggleModal(addAgencyModal)
-            showAlert('An error occurred: ' + error.message, 'alert-danger');
+            showAlert('An error occurred: ' + error.message, 'danger');
+        });
+});
+
+submitDeleteAgencyButton.addEventListener('click', function () {
+
+    const formData = new FormData(deleteAgencyForm);
+    const deleteAgencyModal = document.getElementById('deleteAgencyModal')
+
+    toggleDisplayClass(deleteAgencyForm, false)
+
+    const loadingElement = document.getElementById('deleteAgencyLoadingIndicator');
+    toggleDisplayClass(loadingElement, true)
+
+    const params = new URLSearchParams({
+        delete_agency: true
+    });
+
+    const fetchPromise = new Promise((resolve, reject) => {
+        setTimeout(reject, 180000, new Error('Request timed out'));
+        fetch('/admin/save_agency?' + params.toString(), {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => resolve(data))
+            .catch(error => reject(error));
+    });
+
+    fetchPromise
+        .then(data => {
+            toggleDisplayClass(deleteAgencyForm, true)
+            toggleDisplayClass(loadingElement, false)
+
+            // Display success or error message
+            if (data.success === true) {
+                toggleModal(deleteAgencyModal)
+                updateSystemSelection();
+                querySystem();
+                showAlert(data.message, 'success');
+
+            } else {
+                toggleModal(deleteAgencyModal);
+                updateSystemSelection();
+                querySystem();
+                showAlert(data.message, 'danger');
+            }
+        })
+        .catch(error => {
+            toggleDisplayClass(deleteAgencyForm, true)
+            toggleDisplayClass(loadingElement, false)
+            updateSystemSelection();
+            querySystem();
+            showAlert('An error occurred: ' + error.message, 'danger');
         });
 });
 
@@ -2255,15 +2333,47 @@ document.addEventListener('click', function (e) {
         if (hiddenInput) {
             hiddenInput.value = systemId;
         }
+    }
+    else if (e.target && e.target.id === 'deleteAgencyButton') {
+        console.log("Delete Agency Button Clicked")
+        // Retrieve system ID from the clicked button
+        const systemId = e.target.getAttribute('data-system-id');
+        const agencyId = e.target.getAttribute('data-agency-id');
+        const agencyName = e.target.getAttribute('data-agency-name')
+
+        // Find the hidden input in the modal and update its value
+        const hiddenSystemIdInput = document.getElementById('deleteAgencySystemId');
+        if (hiddenSystemIdInput) {
+            hiddenSystemIdInput.value = systemId;
+        }
+         const hiddenAgencyIdInput = document.getElementById('deleteAgencyId');
+        if (hiddenAgencyIdInput) {
+            hiddenAgencyIdInput.value = agencyId;
+        }
+         const hiddenAgencyNameInput = document.getElementById('deleteAgencyName');
+        if (hiddenAgencyNameInput) {
+            hiddenAgencyNameInput.value = agencyName;
+        }
+
+        const deleteTitle = document.getElementById('deleteAgencyNameTitle')
+        if (deleteTitle) {
+            deleteTitle.innerText = `Delete ${agencyName}?`
+        }
+
     } else if (e.target && e.target.id === 'deleteSystemButton') {
         // Retrieve system ID from the clicked button
         const systemId = e.target.getAttribute('data-system-id');
         const systemName = e.target.getAttribute('data-system-name')
+        const systemShortName = e.target.getAttribute('data-system-short-name')
 
         // Find the hidden input in the modal and update its value
-        const hiddenInput = document.getElementById('deleteSystemId');
-        if (hiddenInput) {
-            hiddenInput.value = systemId;
+        const hiddenIdInput = document.getElementById('deleteSystemId');
+        if (hiddenIdInput) {
+            hiddenIdInput.value = systemId;
+        }
+        const hiddenNameInput = document.getElementById('deleteSystemName');
+        if (hiddenNameInput) {
+            hiddenNameInput.value = systemShortName;
         }
         const deleteTitle = document.getElementById('deletesystemNameTitle')
         if (deleteTitle) {

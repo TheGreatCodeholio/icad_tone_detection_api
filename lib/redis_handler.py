@@ -92,7 +92,7 @@ class RedisCache:
             else:
                 value = self.deserialize_from_redis(value.decode("utf-8"))
 
-            module_logger.debug(f"Redis Get Key <<success>>: {key}")
+            #module_logger.debug(f"Redis Get Key <<success>>: {key}")
             return {'success': True, 'message': 'success', 'result': value}
         except redis.RedisError as error:
             error_msg = f"Redis Get Key <<failed>>: {key}, error: {error}"
@@ -117,7 +117,7 @@ class RedisCache:
                 self.client.setex(key, ttl, serialized_value)
             else:
                 self.client.set(key, serialized_value)
-            module_logger.debug(f"Redis Set Key <<success>>: {key}")
+            #module_logger.debug(f"Redis Set Key <<success>>: {key}")
             return {'success': True, 'message': 'success', 'result': 0}
         except redis.RedisError as error:
             error_msg = f"Redis Set Key <<failed>>: {key}, error: {error}"
@@ -137,7 +137,7 @@ class RedisCache:
         """
         try:
             new_value = self.client.incr(key, increment)
-            module_logger.debug(f"Redis Incr <<success>>: {key} by {increment}")
+            #module_logger.debug(f"Redis Incr <<success>>: {key} by {increment}")
 
             return {
                 'success': True,
@@ -169,7 +169,7 @@ class RedisCache:
 
             deleted_count = self.client.delete(*existing_keys)
 
-            module_logger.debug(f"Redis Delete Key(s) <<success>>: Deleted {deleted_count} key(s)")
+            #module_logger.debug(f"Redis Delete Key(s) <<success>>: Deleted {deleted_count} key(s)")
             return {'success': True, 'message': 'success', 'result': deleted_count}
         except redis.RedisError as error:
             error_msg = f"Redis Delete Key(s) <<failed>>: {', '.join(keys)}, error: {error}"
@@ -265,18 +265,18 @@ class RedisCache:
             if not mapping:
                 value = self.serialize_for_redis(value)
                 fields_added = self.client.hset(hash_key, key, value)
-                module_logger.debug(f"Redis HSet Key-Value <<success>>: {hash_key}/{key}")
+                #module_logger.debug(f"Redis HSet Key-Value <<success>>: {hash_key}/{key}")
 
             # Prepare entire mapping for Redis
             else:
                 prepared_mapping = {k: self.serialize_for_redis(v) for k, v in mapping.items()}
                 fields_added = self.client.hset(hash_key, mapping=prepared_mapping)
-                module_logger.debug(f"Redis HSet Hash <<success>>: {hash_key} with mapping")
+                #module_logger.debug(f"Redis HSet Hash <<success>>: {hash_key} with mapping")
 
             # Set TTL if provided and if TTL is not already set for the hash
             if ttl:
                 self.client.expire(hash_key, ttl)
-                module_logger.debug(f"Redis TTL set for {hash_key}: {ttl} seconds")
+                #module_logger.debug(f"Redis TTL set for {hash_key}: {ttl} seconds")
 
             return {'success': True, 'message': 'success', 'result': fields_added}
 
@@ -336,7 +336,7 @@ class RedisCache:
                 return {'success': False, 'message': error_msg}
 
             new_value = self.client.hincrby(hash_name, key, increment)
-            module_logger.debug(f"Redis HIncrBy <<success>>: {hash_name}/{key} by {increment}")
+            #module_logger.debug(f"Redis HIncrBy <<success>>: {hash_name}/{key} by {increment}")
 
             return {
                 'success': True,
@@ -376,7 +376,7 @@ class RedisCache:
                 trim_start = max(0, trim_start)
                 self.client.ltrim(list_name, trim_start, -1)
 
-            module_logger.debug(f"Redis RPush to List {list_name} <<success>>: Appended values: {values}")
+            #module_logger.debug(f"Redis RPush to List {list_name} <<success>>: Appended values: {values}")
             return {'success': True, 'message': 'success', 'result': length_of_list}
         except redis.RedisError as error:
             error_msg = f"Redis RPush to List {list_name} <<failed>>, error: {error}"
@@ -406,7 +406,7 @@ class RedisCache:
             if trim_to_length is not None:
                 self.client.ltrim(list_name, 0, trim_to_length - 1)
 
-            module_logger.debug(f"Redis LPush to List {list_name} <<success>>: Prepended values: {values}")
+            #module_logger.debug(f"Redis LPush to List {list_name} <<success>>: Prepended values: {values}")
             return {'success': True, 'message': 'success', 'result': length_of_list}
         except redis.RedisError as error:
             error_msg = f"Redis LPush to List {list_name} <<failed>>, error: {error}"
@@ -433,7 +433,7 @@ class RedisCache:
                 else:
                     deserialized_value = self.deserialize_from_redis(raw_value)
 
-            module_logger.debug(f"Redis LPop from List {list_name} <<success>>: Popped value: {deserialized_value}")
+            #module_logger.debug(f"Redis LPop from List {list_name} <<success>>: Popped value: {deserialized_value}")
 
             return {
                 'success': True,
@@ -464,8 +464,8 @@ class RedisCache:
             # Deserialize the values before returning them
             deserialized_values = [self.deserialize_from_redis(value) for value in values]
 
-            module_logger.debug(
-                f"Redis LRange on List {list_name} <<success>>: Retrieved values: {deserialized_values}")
+            #module_logger.debug(
+            #    f"Redis LRange on List {list_name} <<success>>: Retrieved values: {deserialized_values}")
             return {'success': True, 'message': 'success', 'result': deserialized_values}
         except redis.RedisError as error:
             error_msg = f"Redis LRange on List {list_name} <<failed>>, error: {error}"
@@ -493,7 +493,7 @@ class RedisCache:
 
             added_count = self.client.zadd(set_name, serialized_mapping)
 
-            module_logger.debug(f"Redis ZAdd to Sorted Set {set_name} <<success>>: Added {added_count} members")
+            #module_logger.debug(f"Redis ZAdd to Sorted Set {set_name} <<success>>: Added {added_count} members")
 
             return {
                 'success': True,
@@ -523,7 +523,7 @@ class RedisCache:
         try:
             values = self.client.zrangebyscore(key, min_score, max_score, start=start, num=num)
             decoded_values = [self.deserialize_from_redis(value.decode("utf-8")) for value in values]
-            module_logger.debug(f"Redis ZRangeByScore Key <<success:>> {key}")
+            #module_logger.debug(f"Redis ZRangeByScore Key <<success:>> {key}")
             return {'success': True, 'message': 'success', 'result': decoded_values}
         except redis.RedisError as error:
             error_msg = f"Redis ZRangeByScore Key <<failed:>> {key}, error: {error}"
@@ -546,10 +546,10 @@ class RedisCache:
             removed_count = self.client.zremrangebyscore(set_name, min_score, max_score)
 
             if removed_count:
-                module_logger.debug(f"Redis ZRemRangeByScore {set_name} <<success>>: Removed {removed_count} members")
+                #module_logger.debug(f"Redis ZRemRangeByScore {set_name} <<success>>: Removed {removed_count} members")
                 message = f'Removed {removed_count} members from sorted set {set_name}'
             else:
-                module_logger.debug(f"Redis ZRemRangeByScore {set_name}: No members removed")
+                #module_logger.debug(f"Redis ZRemRangeByScore {set_name}: No members removed")
                 message = f'No members were removed from sorted set {set_name}'
 
             return {
@@ -577,7 +577,7 @@ class RedisCache:
                 """
         try:
             self.client.zinterstore(dest, keys, aggregate=aggregate)
-            module_logger.debug(f"Redis ZInterStore Key <<success:>> {dest}")
+            #module_logger.debug(f"Redis ZInterStore Key <<success:>> {dest}")
             return {'success': True, 'message': 'success', 'result': 0}
         except redis.RedisError as error:
             error_msg = f"Redis ZInterStore Key <<failed:>> {dest}, error: {error}"
@@ -597,7 +597,7 @@ class RedisCache:
         try:
             keys = self.client.keys(pattern)
             decoded_keys = [key.decode("utf-8") for key in keys]
-            module_logger.debug(f"Redis Keys Pattern <<success:>> {pattern}")
+            #module_logger.debug(f"Redis Keys Pattern <<success:>> {pattern}")
             return {'success': True, 'message': 'success', 'result': decoded_keys}
         except redis.RedisError as error:
             error_msg = f"Redis Keys Pattern <<failed:>> {pattern}, error: {error}"
@@ -617,7 +617,7 @@ class RedisCache:
                """
         try:
             self.client.expire(key, time_in_seconds)
-            module_logger.debug(f"Redis Expire Key <<success:>> {key}")
+            #module_logger.debug(f"Redis Expire Key <<success:>> {key}")
             return {'success': True, 'message': 'success', 'result': 0}
         except redis.RedisError as error:
             error_msg = f"Redis Expire Key <<failed:>> {key}, error: {error}"
@@ -639,7 +639,7 @@ class RedisCache:
         try:
             cursor, keys = self.client.scan(cursor, match, count)
             decoded_keys = [self.deserialize_from_redis(key.decode("utf-8")) for key in keys]
-            module_logger.debug(f"Redis Scan Pattern <<success>>: {match}")
+            #module_logger.debug(f"Redis Scan Pattern <<success>>: {match}")
             return {'success': True, 'cursor': cursor, 'message': 'success', 'result': decoded_keys}
         except redis.RedisError as error:
             error_msg = f"Redis Scan Pattern <<failed>>: {match}, error: {error}"
@@ -660,7 +660,7 @@ class RedisCache:
         try:
             key_generator = (self.deserialize_from_redis(key.decode("utf-8")) for key in
                              self.client.scan_iter(match, count))
-            module_logger.debug(f"Redis Scan_Iter Pattern <<success>>: {match}")
+            #module_logger.debug(f"Redis Scan_Iter Pattern <<success>>: {match}")
             return {'success': True, 'message': 'success', 'result': key_generator}
         except redis.RedisError as error:
             error_msg = f"Redis Scan_Iter Pattern <<failed>>: {match}, error: {error}"

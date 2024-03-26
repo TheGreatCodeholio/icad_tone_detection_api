@@ -28,7 +28,7 @@ function createElement(type, options = {}) {
 
 function createFormField(parent, field, systemId, fieldValue) {
     const fieldId = `${field.id}_${systemId}`;
-    const { type, label, tooltip, required, options, readOnly } = field;
+    const {type, label, tooltip, required, options, readOnly} = field;
 
     // Determine column sizing
     const colSizeClass = (field.id === 'system_api_key' || field.id.endsWith('_enabled')) ? 'col-12' : 'col-md-6';
@@ -60,7 +60,7 @@ function createFormField(parent, field, systemId, fieldValue) {
     inputElement.id = fieldId;
     inputElement.name = field.id;
     inputElement.className = 'form-control';
-    inputElement.value = (fieldValue !== null && fieldValue !== undefined) ? fieldValue.toString() : '';
+    inputElement.value = (fieldValue !== null && fieldValue !== undefined) ? (typeof fieldValue === 'object' ? JSON.stringify(fieldValue) : fieldValue) : '';
     if (readOnly) inputElement.setAttribute('readonly', true);
     if (required) inputElement.setAttribute('required', '');
     inputElement.setAttribute('data-bs-toggle', 'tooltip');
@@ -73,7 +73,9 @@ function createFormField(parent, field, systemId, fieldValue) {
             const optionElement = document.createElement('option');
             optionElement.value = option.value;
             optionElement.textContent = option.text;
-            if (fieldValue.toString() === option.value) optionElement.selected = true;
+            if (fieldValue.toString() === option.value) {
+                optionElement.selected = true;
+            }
             inputElement.appendChild(optionElement);
         });
         inputGroupDiv.appendChild(inputElement); // For select, append to inputGroupDiv
@@ -118,4 +120,34 @@ function createFormField(parent, field, systemId, fieldValue) {
 
     // Append the form group to the parent container
     parent.appendChild(formGroupDiv);
+}
+
+function showAlert(message, type) {
+    console.log(message)
+    const bgClass = {
+        success: 'bg-success',
+        warning: 'bg-warning',
+        info: 'bg-info',
+        danger: 'bg-danger'
+    };
+
+    const toastHtml = `
+    <div class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true" data-bs-delay="5000">
+      <div class="d-flex ${bgClass[type] || 'bg-primary'}">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  `;
+
+    const container = document.getElementById('toastContainer');
+    container.insertAdjacentHTML('beforeend', toastHtml);
+
+    const toastEl = container.lastElementChild;
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+
+    // The toast will automatically hide after 5 seconds due to data-bs-autohide and data-bs-delay
 }

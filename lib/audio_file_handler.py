@@ -1,3 +1,4 @@
+import io
 import json
 import logging
 import re
@@ -6,16 +7,35 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
 from tempfile import TemporaryDirectory
-from typing import List
 from uuid import uuid4
 import traceback
 
+import magic
+
+from pydub import AudioSegment
+
 module_logger = logging.getLogger('icad_tone_detection.audio_file_handler')
+
+
+def validate_audio_file(audio_file, allowed_mimetypes, max_audio_length):
+    mimetype = magic.from_buffer(audio_file.read(1024), mime=True)
+    audio_file.seek(0)
+    if mimetype not in allowed_mimetypes:
+        return False, "Audio MIMETYPE must be in {}".format(allowed_mimetypes)
+
+    audio = AudioSegment.from_file(io.BytesIO(audio_file.read()))
+
+    if audio.duration_seconds > max_audio_length:
+        return False, f"File duration must be under {max_audio_length * 60} minutes"
+
+    return True, "Valid audio file"
 
 
 def get_unique_file_path(temp_dir_path, suffix):
     """Generates a unique file path within the specified directory with the given suffix."""
     return f"{temp_dir_path}/{uuid4()}{suffix}"
+
+
 
 
 # def group_tones_by_time(tone_data: List[dict], time_gap: float) -> List[List[dict]]:
@@ -143,7 +163,6 @@ def extract_tone_times(detection_data, time_gap, post_cut_duration, pre_cut_dura
 
     # Sorting the tone data based on the 'occured' key in each tone data dictionary
     tone_data_sorted = sorted(detection_data["quick_call"], key=lambda x: x['occured'])
-
 
     # Grouping the sorted tones by time using the specified time gap
     tone_groups = group_tones_by_time(tone_data_sorted, time_gap)

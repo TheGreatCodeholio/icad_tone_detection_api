@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 import traceback
 from cryptography.fernet import Fernet
 
@@ -20,110 +21,39 @@ default_config = {
         "cookie_name": "icad_tone_detect",
         "cookie_path": "/"
     },
+    "audio_upload": {
+        "allowed_mimetypes": ["audio/x-wav", "audio/x-m4a", "audio/mpeg"],
+        "max_audio_length": 300,
+        "max_file_size": 3
+    },
     "tone_extraction": {
-        "threshold_percent": 2,
-        "dtmf": {
-            "enabled": 1
-        },
-        "quick_call": {
-            "enabled": 1
-        },
-        "long_tone": {
-            "enabled": 1
-        },
-        "hi-low_tone": {
-            "enabled": 1
-        }
+        "threshold_percent": 2
     },
-    "upload_processing": {
-        "check_for_split": 0,
-        "maximum_split_length": 30,
-        "maximum_split_interval": 45,
-        "minimum_audio_length": 4.5
-    },
-    "audio_processing": {
-        "trim_tones": 0,
-        "trim_post_cut": 5.5,
-        "trim_pre_cut": 2.0,
-        "trim_group_tone_gap": 6.5,
-        "normalize": 0,
-        "ffmpeg_filter": ""
-    },
-    "transcription_settings": {
-        "enabled": 0,
-        "transcribe_url": "https://example.com/transcribe",
-        "replacements_file": "etc/transcribe_replacements.csv"
-    },
-    "email_settings": {
-        "enabled": 0,
-        "smtp_hostname": "mail.example.com",
-        "smtp_port": 587,
-        "smtp_username": "dispatch@example.com",
-        "smtp_password": "CE3########QM",
-        "smtp_security": "TLS",
-        "email_address_from": "dispatch@example.com",
-        "email_text_from": "iCAD Example County",
-        "alert_email_subject": "Dispatch Alert - {detector_name}",
-        "alert_email_body": "{detector_name} Alert at {timestamp}<br><br>{transcript}",
-        "grouped_alert_emails": [],
-        "grouped_email_subject": "Dispatch Alert",
-        "grouped_email_body": "{detector_list} Alert at {timestamp}<br><br>{transcript}"
-    },
-    "pushover_settings": {
-        "enabled": 0,
-        "all_detector_group_token": "",
-        "all_detector_app_token": "",
-        "pushover_body": "<font color=\"red\"><b>{detector_name}</b></font>",
-        "pushover_subject": "Alert!",
-        "pushover_sound": "pushover"
-    },
-    "facebook_settings": {
-        "enabled": 0,
-        "page_id": 12345678910,
-        "page_token": "EA###########ZDZD",
-        "group_id": 12345678910,
-        "group_token": "EAAW##########g54ZD",
-        "post_comment": 1,
-        "post_body": "{timestamp} Departments:\n{detector_list}\n\nDispatch Audio:\n{mp3_url}",
-        "comment_body": "{transcript}{stream_url}"
-    },
-    "telegram_settings": {
-        "enabled": 0,
-        "telegram_bot_token": "57######:AA############ac",
-        "telegram_channel_id": 00000000000
-    },
-    "webhook_settings": {
-        "enabled": 0,
-        "webhook_url": "",
-        "webhook_headers": ""
-    },
-    "stream_settings": {
-        "stream_url": ""
-    },
-    "remote_storage_settings": {
-        "enabled": 0,
-        "storage_type": "scp",
-        "remote_path": "/var/www/example.com/detection_audio",
-        "google_cloud": {
-            "project_id": "some-projectname-444521",
-            "bucket_name": "bucket-name",
-            "credentials_path": "etc/google_cloud.json"
-        },
-        "aws_s3": {
-            "access_key_id": "AK###########B",
-            "secret_access_key": "l###################8",
-            "bucket_name": "bucket-name",
-            "region": "us-east-1"
+    "finder_mode": {
+        "email": {
+            "enabled": 0,
+            "host": "",
+            "port": 587,
+            "user": "",
+            "password": "",
+            "email_address_from": "",
+            "email_text_from": "",
+            "alert_email_recipients": []
         },
         "scp": {
-            "host": "upload.example.com",
+            "enabled": 0,
+            "host": "",
             "port": 22,
-            "user": "sshuser",
+            "user": "",
             "password": "",
-            "audio_url_path": "https://example.com/detection_audio",
-            "remote_path": "/var/www/example.com/detection_audio",
-            "keep_audio_days": 0,
-            "private_key": "/home/sshuser/.ssh/id_rsa"
+            "private_key_path": "",
+            "base_url": "",
+            "remote_path": ""
+        },
+        "webhook": {
+            "enabled": 0,
+            "webhook_url": "http://localhost",
+            "webhook_headers": {}
         }
     }
 }
@@ -157,6 +87,20 @@ default_detectors = {
         "post_to_telegram": 0
     }
 }
+
+
+def get_max_content_length(config_data, default_size_mb=3):
+    try:
+        # Attempt to retrieve and convert the max file size to an integer
+        max_file_size = int(config_data.get("audio_upload", {}).get("max_file_size", default_size_mb))
+    except (ValueError, TypeError) as e:
+        # Log the error and exit if the value is not an integer or not convertible to one
+        module_logger.error(f'Max File Size Must be an Integer: {e}')
+        time.sleep(5)
+        exit(1)
+    else:
+        # Return the size in bytes
+        return max_file_size * 1024 * 1024
 
 
 def deep_update(source, overrides):

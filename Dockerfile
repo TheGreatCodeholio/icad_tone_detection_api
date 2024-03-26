@@ -1,5 +1,5 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11
+# Use an official Python Alpine Image
+FROM python:3.12-alpine
 
 LABEL maintainer="ian@icarey.net"
 
@@ -13,11 +13,24 @@ COPY static /app/static
 COPY templates /app/templates
 COPY requirements.txt /app
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN apk update && apk add --no-cache \
+    build-base \
+    git \
+    file \
+    ffmpeg \
+    tzdata
 
-#install ffmpeg
-RUN apt update && apt install -y ffmpeg
+# Set the timezone (example: America/New_York)
+ENV TZ=America/New_York
+
+# Clean up APK cache
+RUN rm -rf /var/cache/apk/*
+
+#Upgrade pip
+RUN pip install --upgrade pip
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
 # Run app.py when the container launches
 CMD ["gunicorn", "-b", "0.0.0.0:9911", "app:app"]

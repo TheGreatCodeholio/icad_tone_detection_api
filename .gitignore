@@ -13,3 +13,4 @@ etc/detectors.json
 /log/
 /log/*.log
 /tests
+/test_audio/

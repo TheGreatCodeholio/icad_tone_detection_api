@@ -38,12 +38,13 @@ CREATE TABLE IF NOT EXISTS `user_access`
 -- create radio system table
 CREATE TABLE IF NOT EXISTS `radio_systems`
 (
-    `system_id`      int(11) AUTO_INCREMENT PRIMARY KEY,
-    `system_name`    varchar(255) DEFAULT NULL,
-    `system_county`  varchar(255) DEFAULT NULL,
-    `system_state`   varchar(255) DEFAULT NULL,
-    `system_fips`    int(11)      DEFAULT NULL,
-    `system_api_key` varchar(64)  DEFAULT NULL
+    `system_id`         int(11) AUTO_INCREMENT PRIMARY KEY,
+    `system_short_name` varchar(255) DEFAULT NULL,
+    `system_name`       varchar(255) DEFAULT NULL,
+    `system_county`     varchar(255) DEFAULT NULL,
+    `system_state`      varchar(255) DEFAULT NULL,
+    `system_fips`       int(11)      DEFAULT NULL,
+    `system_api_key`    varchar(64)  DEFAULT NULL
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
@@ -183,8 +184,8 @@ CREATE TABLE IF NOT EXISTS `agencies`
     `agency_code`              varchar(128)           DEFAULT NULL,
     `agency_name`              varchar(255)  NOT NULL,
     `mqtt_topic`               varchar(255)           DEFAULT NULL,
-    `mqtt_start_alert_message` varchar(255)  DEFAULT NULL,
-    `mqtt_end_alert_message`   varchar(255)  DEFAULT NULL,
+    `mqtt_start_alert_message` varchar(255)           DEFAULT NULL,
+    `mqtt_end_alert_message`   varchar(255)           DEFAULT NULL,
     `mqtt_message_interval`    decimal(6, 1) NOT NULL DEFAULT 5.0,
     `pushover_group_token`     varchar(255)           DEFAULT NULL,
     `pushover_app_token`       varchar(255)           DEFAULT NULL,
@@ -248,6 +249,22 @@ CREATE TABLE IF NOT EXISTS `radio_transmissions`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `finder_matches`
+(
+    `finder_match_id`     INT AUTO_INCREMENT PRIMARY KEY,
+    `two_tone`            TEXT         DEFAULT NULL,
+    `long_tone`           TEXT         DEFAULT NULL,
+    `hi_low_tone`         TEXT         DEFAULT NULL,
+    `system_short_name`   VARCHAR(512) DEFAULT NULL,
+    `talkgroup_id`        INT          DEFAULT NULL,
+    `talkgroup_alpha_tag` VARCHAR(128) DEFAULT NULL,
+    `audio_path`          VARCHAR(512) DEFAULT NULL,
+    `find_timestamp`      BIGINT       DEFAULT NULL
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_general_ci;
+
 
 CREATE TABLE IF NOT EXISTS `quickcall_tones`
 (

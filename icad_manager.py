@@ -80,7 +80,11 @@ def generate_env_file(working_path, url):
         }
     }
 
-    env_content = f"""# Redis Configuration
+    env_content = f"""
+#TimeZone
+TIMEZONE="America/New_York"
+
+# Redis Configuration
 REDIS_HOST={config_data["redis"]["host"]}
 REDIS_PORT={config_data["redis"]["port"]}
 REDIS_PASSWORD={config_data["redis"]["password"]}

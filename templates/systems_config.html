@@ -325,6 +325,36 @@
         </div>
     </div>
 
+    <!-- Delete Agency Modal -->
+    <div class="modal fade" id="deleteAgencyModal" tabindex="-1" role="dialog" aria-labelledby="deleteAgencyModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteAgencyModalLabel">Delete Agency</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="deleteAgencyModal_alert"></div>
+                    <div id="deleteAgencyLoadingIndicator" class="d-none">
+                        <div class="spinner"></div>
+                    </div>
+                    <h3 id="deleteAgencyNameTitle"></h3>
+                    <form id="deleteAgencyForm" class="d-block">
+                        <input hidden type="text" class="form-control" id="deleteAgencySystemId" name="system_id">
+                        <input hidden type="text" class="form-control" id="deleteAgencyId" name="agency_id">
+                        <input hidden type="text" class="form-control" id="deleteAgencyName" name="agency_name">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="submitDeleteAgencyForm">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Delete System Modal -->
     <div class="modal fade" id="deleteSystemModal" tabindex="-1" role="dialog" aria-labelledby="deleteSystemModalLabel"
          aria-hidden="true">
@@ -341,8 +371,9 @@
                         <div class="spinner"></div>
                     </div>
                     <h3 id="deletesystemNameTitle"></h3>
-                    <form id="deleteSystemForm" class="d-block">
+                    <form id="deleteAgencyForm" class="d-block">
                         <input hidden type="text" class="form-control" id="deleteSystemId" name="system_id">
+                        <input hidden type="text" class="form-control" id="deleteSystemName" name="system_short_name">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -370,8 +401,12 @@
                     </div>
                     <form id="addSystemForm" class="d-block">
                         <div class="form-group">
+                            <label for="systemShortName">System Short Name</label>
+                            <input id="systemShortName" class="form-control" type="text" name="system_short_name" required>
+                        </div>
+                        <div class="form-group">
                             <label for="systemName">System Name</label>
-                            <input id="systemName" class="form-control" type="text" name="system_name">
+                            <input id="systemName" class="form-control" type="text" name="system_name" required>
                         </div>
                         <div class="form-group">
                             <label for="systemCounty">System County</label>
