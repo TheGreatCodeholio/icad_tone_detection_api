@@ -121,7 +121,7 @@ def process_alert_actions(config_data, detection_data):
             if all(match["detector_config"].get("post_to_facebook", 0) == 0 for match in detection_data["matches"]):
                 module_logger.warning("Skipping Facebook post as all matches have 'post_to_facebook' set to 0")
             else:
-                post_body = generate_facebook_message(config_data, detection_data, config_data.get("test_mode", True))
+                post_body = generate_facebook_message(config_data, detection_data, config_data.get("general", {}).get("test_mode", True))
                 if config_data["facebook_settings"].get("post_comment", 0) == 1:
                     comment_body = generate_facebook_comment(config_data, detection_data)
                 else:
@@ -139,7 +139,7 @@ def process_alert_actions(config_data, detection_data):
             if all(match["detector_config"].get("post_to_telegram", 0) == 0 for match in detection_data["matches"]):
                 module_logger.debug("Skipping Telegram post as all matches have 'post_to_telegram' set to 0")
             else:
-                TelegramAPI(config_data["telegram_settings"]).post_audio(detection_data, config_data.get("test_mode"))
+                TelegramAPI(config_data["telegram_settings"]).post_audio(detection_data, config_data.get("general", {}).get("test_mode", True))
         except Exception as e:
             traceback.print_exc()
             module_logger.error(e)
@@ -152,7 +152,7 @@ def process_alert_actions(config_data, detection_data):
 
         try:
             webhook_sender = WebHook(config_data.get("webhook_settings", {}), detection_data)
-            wh_thread = Thread(target=webhook_sender.process_webhook, args=(config_data.get("test_mode"),)).start()
+            wh_thread = Thread(target=webhook_sender.process_webhook, args=(config_data.get("general", {}).get("test_mode", True),)).start()
             threads.append(wh_thread)
         except Exception as e:
             traceback.print_exc()
