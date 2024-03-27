@@ -2,8 +2,8 @@ import json
 import logging
 
 from lib.email_handler import EmailSender, generate_finder_email, generate_system_alert_email
+from lib.helpers import is_fernet_token, decrypt_password
 from lib.scp_handler import SCPStorage
-from lib.system_handler import get_systems
 from lib.webhook_handler import WebHook
 
 module_logger = logging.getLogger('icad_tone_detection.action_handler')
@@ -110,15 +110,21 @@ def process_finder_action_database(db, config_data, detection_mode, call_data):
     return insert_result
 
 
-def process_system_alert_scp(system_data, audio_file, audio_filename, call_data):
+def process_system_alert_scp(config_data, system_data, audio_file, audio_filename, call_data):
     try:
         if call_data.get("audio_url") is None and system_data.get("scp_enabled", 0) == 1:
+
+            scp_password = system_data.get("scp_password") or None
+
+            if scp_password is not None:
+                if is_fernet_token(scp_password, config_data):
+                    scp_password = decrypt_password(scp_password, config_data)
 
             scp_config = {"scp": {
                 "host": system_data.get("scp_host"),
                 "port": system_data.get("scp_port"),
                 "user": system_data.get("scp_username"),
-                "password": system_data.get("scp_password"),
+                "password": scp_password,
                 "private_key_path": system_data.get("scp_private_key"),
                 "base_url": system_data.get("web_url_path"),
                 "remote_path": system_data.get("scp_remote_folder")
@@ -147,15 +153,24 @@ def process_system_alert_scp(system_data, audio_file, audio_filename, call_data)
         return {"success": False, "message": f"SCP Exception Occurred: {e}"}
 
 
-def process_system_alert_email(system_data, detection_matches, call_data):
+def process_system_alert_email(config_data, system_data, detection_matches, call_data):
     try:
         if system_data.get("email_enabled", 0) == 1:
+
+            smtp_password = system_data.get("smtp_password") or None
+
+            if smtp_password is not None:
+                if is_fernet_token(smtp_password, config_data):
+                    smtp_password = decrypt_password(smtp_password, config_data)
+
+            module_logger.warning(f"Decrypted Email Password: {smtp_password}")
+
             email_config = {
                 "email": {
                     "host": system_data.get("smtp_hostname"),
                     "port": system_data.get("smtp_port"),
                     "user": system_data.get("smtp_username"),
-                    "password": system_data.get("smtp_password"),
+                    "password": smtp_password,
                     "email_address_from": system_data.get("email_address_from"),
                     "email_text_from": system_data.get("email_text_from"),
                 }

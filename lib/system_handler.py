@@ -3,34 +3,9 @@ import logging
 import traceback
 import uuid
 
-from cryptography.fernet import Fernet, InvalidToken
+from lib.helpers import encrypt_password, is_fernet_token, decrypt_password
 
 module_logger = logging.getLogger("icad_tone_detection.system_handler")
-
-
-# Encrypt a password
-def encrypt_password(password, config_data):
-    f = Fernet(config_data.get("fernet_key"))
-    encrypted_password = f.encrypt(password.encode())
-    return encrypted_password
-
-
-def is_fernet_token(possible_token, config_data):
-    f = Fernet(config_data.get("fernet_key"))
-    try:
-        # Attempt to decrypt. If this works, it's likely a Fernet token.
-        f.decrypt(possible_token.encode())
-        return True
-    except InvalidToken:
-        # If decryption fails, it's not a valid Fernet token.
-        return False
-
-
-# Decrypt a password
-def decrypt_password(encrypted_password, config_data):
-    f = Fernet(config_data.get("fernet_key"))
-    decrypted_password = f.decrypt(encrypted_password).decode()
-    return decrypted_password
 
 
 def get_systems(db, system_id=None, system_short_name=None):

@@ -3,6 +3,7 @@ import traceback
 from datetime import datetime
 import json
 import os
+from cryptography.fernet import Fernet, InvalidToken
 
 module_logger = logging.getLogger('icad_tone_detection.helpers')
 
@@ -56,3 +57,26 @@ def save_posted_files(audio_file, audio_filename, json_filename, call_data):
         traceback.print_exc()
         module_logger.error(f'Exception occurred while saving json and audio files: {e}')
         return {"success": False, "message": f"Unable to Save JSON and Audio File: {e}"}
+
+def encrypt_password(password, config_data):
+    f = Fernet(config_data.get("fernet_key"))
+    encrypted_password = f.encrypt(password.encode())
+    return encrypted_password
+
+
+def is_fernet_token(possible_token, config_data):
+    f = Fernet(config_data.get("fernet_key"))
+    try:
+        # Attempt to decrypt. If this works, it's likely a Fernet token.
+        f.decrypt(possible_token.encode())
+        return True
+    except InvalidToken:
+        # If decryption fails, it's not a valid Fernet token.
+        return False
+
+
+# Decrypt a password
+def decrypt_password(encrypted_password, config_data):
+    f = Fernet(config_data.get("fernet_key"))
+    decrypted_password = f.decrypt(encrypted_password).decode()
+    return decrypted_password

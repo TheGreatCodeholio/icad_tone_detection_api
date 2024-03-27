@@ -346,3 +346,11 @@ CREATE EVENT IF NOT EXISTS `prune_radio_transmissions`
     DELETE
     FROM `radio_transmissions`
     WHERE `transmission_timestamp` < UNIX_TIMESTAMP(CURRENT_DATE - INTERVAL 14 DAY);
+
+CREATE EVENT IF NOT EXISTS `prune_finder`
+    ON SCHEDULE EVERY 1 DAY
+        STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY)
+    DO
+    DELETE
+    FROM `finder_matches`
+    WHERE `find_timestamp` < UNIX_TIMESTAMP(CURRENT_DATE - INTERVAL 14 DAY);

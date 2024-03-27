@@ -56,12 +56,12 @@ def process_tone_detection(db, rd, config_data, audio_file, audio_filename, json
         detection_matches = match_result.get("result")
 
         if len(detection_matches) > 0:
-            scp_result = process_system_alert_scp(system_data, audio_file, audio_filename, call_data)
+            scp_result = process_system_alert_scp(config_data, system_data, audio_file, audio_filename, call_data)
             if not scp_result.get("success"):
                 result["success"] = False
                 error_messages.append(scp_result.get("message"))
 
-            email_result = process_system_alert_email(system_data, detection_matches, call_data)
+            email_result = process_system_alert_email(config_data, system_data, detection_matches, call_data)
             if not email_result.get("success"):
                 result["success"] = False
                 error_messages.append(email_result.get("message"))
