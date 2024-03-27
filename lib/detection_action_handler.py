@@ -170,7 +170,10 @@ def process_system_alert_email(system_data, detection_matches, call_data):
                 module_logger.warning("System Alert Email List Empty")
                 return {"success": True, "message": "System Alert Email List Empty"}
             else:
-                email_result = email.send_alert_email(recipients, subject, body)
+
+                recipient_list = [element.strip() for element in recipients.split(",")]
+
+                email_result = email.send_alert_email(recipient_list, subject, body)
                 if not email_result.get("success"):
                     module_logger.error(f"System Alert Email Failed: {email_result.get('message')}")
                 else:

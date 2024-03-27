@@ -432,6 +432,6 @@ def delete_radio_system(db, system_id):
     module_logger.debug(check_result)
 
     query = f"DELETE FROM radio_systems WHERE system_id = %s"
-    params = (system_id,)
+    params = (int(system_id),)
     result = db.execute_commit(query, params)
     return result

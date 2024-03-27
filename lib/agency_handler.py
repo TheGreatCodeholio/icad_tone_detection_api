@@ -294,7 +294,7 @@ def delete_agency(db, system_id, agency_id):
         return {"success": False, "message": "Agency Doesn't Exist", "result": []}
 
     query = f"DELETE FROM agencies WHERE system_id = %s AND agency_code = %s"
-    params = (system_id, agency_id)
+    params = (int(system_id), int(agency_id))
     result = db.execute_commit(query, params)
     return result
 
