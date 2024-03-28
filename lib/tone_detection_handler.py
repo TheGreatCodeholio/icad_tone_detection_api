@@ -155,132 +155,63 @@ def get_agency_matches(db, rd, call_data):
             "agency_data": agency_data, "result": matches_found}
 
 
+def get_tolerance(agency, tone_key):
+    """Calculate the tolerance for a tone."""
+    return agency.get("tone_tolerance", 2) / 100.0 * agency.get(tone_key)
+
+
+def is_within_range(tone, tone_range):
+    """Check if the tone is within the given range."""
+    return tone_range[0] <= tone <= tone_range[1]
+
+
 def detect_quick_call(rd, agency_data, call_data):
     matches_found = []
     matches_ignored = []
 
-    match_list = [(tone['detected'][0], tone['detected'][1], tone["tone_id"]) for tone in
-                  call_data.get("tones", {}).get("two_tone", [])]
+    # Simplify the extraction of match_list
+    match_list = [(tone['detected'][0], tone['detected'][1], tone["tone_id"])
+                  for tone in call_data.get("tones", {}).get("two_tone", [])]
+
+    # Get the list of excluded agency ids once for this agency
+    qc_detector_list = get_active_detections_cache(rd, f"icad_current_detectors:{call_data.get('short_name')}")
+    excluded_id_list = [t["agency_id"] for t in qc_detector_list]
 
     for agency in agency_data:
-        if agency.get("a_tone", None) is None:
-            continue
-        if agency.get("b_tone", None) is None:
+        a_tone, b_tone = agency.get("a_tone"), agency.get("b_tone")
+        # Skip the agency if either a_tone or b_tone is missing
+        if not a_tone or not b_tone:
             continue
 
-        qc_detector_list = get_active_detections_cache(rd,
-                                                       f"icad_current_detectors:{call_data.get('short_name')}")
+        tolerance_a, tolerance_b = get_tolerance(agency, "a_tone"), get_tolerance(agency, "b_tone")
+        detector_ranges = [(a_tone - tolerance_a, a_tone + tolerance_a), (b_tone - tolerance_b, b_tone + tolerance_b)]
 
-        module_logger.debug("qc_detector_list: {}".format(qc_detector_list))
-        excluded_id_list = [t["agency_id"] for t in qc_detector_list]
-        tolerance_a = agency.get("tone_tolerance", 2) / 100.0 * agency.get("a_tone")
-        tolerance_b = agency.get("tone_tolerance", 2) / 100.0 * agency.get("b_tone")
-        detector_ranges = [
-            (agency.get("a_tone") - tolerance_a, agency.get("a_tone") + tolerance_a),
-            (agency.get("b_tone") - tolerance_b, agency.get("b_tone") + tolerance_b)
-        ]
         for tone in match_list:
-            match_a = detector_ranges[0][0] <= tone[0] <= detector_ranges[0][1]
-            match_b = detector_ranges[1][0] <= tone[1] <= detector_ranges[1][1]
+            match_a, match_b = is_within_range(tone[0], detector_ranges[0]), is_within_range(tone[1],
+                                                                                             detector_ranges[1])
+
             if match_a and match_b:
-                module_logger.info(f"Match found for {agency.get('agency_name')}")
-                match_data = {"tone_id": tone[2], "agency_name": agency.get('agency_name'),
-                              "tones_matched": f'{tone[0]}, {tone[1]}',
-                              "agency_config": agency,
-                              "ignored": True if agency.get("agency_id") in excluded_id_list else False}
+                is_ignored = agency.get("agency_id") in excluded_id_list
+                match_data = {
+                    "tone_id": tone[2],
+                    "agency_name": agency.get('agency_name'),
+                    "tones_matched": f'{tone[0]}, {tone[1]}',
+                    "agency_config": agency,
+                    "ignored": is_ignored
+                }
 
-                if not agency.get("agency_id") in excluded_id_list:
+                if not is_ignored:
                     matches_found.append(match_data)
-                    active_dict = {"last_detected": time.time(), "ignore_seconds": agency.get("ignore_time", 300),
-                                   "agency_id": agency.get("agency_id")}
-
+                    excluded_id_list.append(agency.get("agency_id"))
+                    active_dict = {
+                        "last_detected": time.time(),
+                        "ignore_seconds": agency.get("ignore_time", 300),
+                        "agency_id": agency.get("agency_id")
+                    }
                     rd.rpush(f"icad_current_detectors:{call_data.get('short_name')}", active_dict)
+                    module_logger.info(f"Match found for {agency.get('agency_name')}")
                 else:
                     matches_ignored.append(match_data)
                     module_logger.warning(f"Ignoring {agency.get('agency_name')}")
 
     return matches_found, matches_ignored
-
-
-class ToneDetection:
-    """Matches tones that were extracted to a set detector"""
-
-    def __init__(self, config_data, call_data):
-        self.config_data = config_data
-        self.call_data = call_data
-
-    def get_agency_matches(self, db, rd):
-        system_data = get_systems(db, system_short_name=self.call_data.get('short_name'))
-        if not system_data.get("success", False) or len(system_data.get("result", [])) < 1:
-            return {"success": False,
-                    "message": f"Unable to retrieve system data for {self.call_data.get('short_name')}", "result": []}
-
-        system_data = system_data.get("result")[0]
-
-        agency_data = get_agencies(db, system_ids=[system_data.get("system_id")])
-        if not agency_data.get("success", False) or len(agency_data.get("result", [])) < 1:
-            return {"success": False,
-                    "message": f"Unable to retrieve agency data for {self.call_data.get('short_name')}", "result": []}
-
-    def detect_quick_call(self, rd):
-        qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
-        qc_detector_list = []
-
-        matches_found = []
-        matches_ignored = []
-        tone_mode = self.config_data["tone_extraction"]["quick_call"].get("tone_mode", "actual")
-        if tone_mode != "exact" and tone_mode != "actual":
-            tone_mode = "actual"
-
-        match_list = [(tone[tone_mode][0], tone[tone_mode][1], tone["tone_id"]) for tone in
-                      self.detection_data["quick_call"]]
-
-        if not match_list:
-            return self.detection_data
-
-        for detector in self.detector_data:
-            qc_detector_list = get_active_detections_cache(rd, "icad_current_detectors")
-            detector_config = self.detector_data[detector]
-            excluded_id_list = [t["detector_id"] for t in qc_detector_list]
-            tolerance_a = detector_config["tone_tolerance"] / 100.0 * detector_config["a_tone"]
-            tolerance_b = detector_config["tone_tolerance"] / 100.0 * detector_config["b_tone"]
-            detector_ranges = [
-                (detector_config["a_tone"] - tolerance_a, detector_config["a_tone"] + tolerance_a),
-                (detector_config["b_tone"] - tolerance_b, detector_config["b_tone"] + tolerance_b)
-            ]
-            for tone in match_list:
-                match_a = detector_ranges[0][0] <= tone[0] <= detector_ranges[0][1]
-                match_b = detector_ranges[1][0] <= tone[1] <= detector_ranges[1][1]
-                if match_a and match_b:
-                    module_logger.info(f"Match found for {detector}")
-                    match_data = {"tone_id": tone[2], "detector_name": detector,
-                                  "tones_matched": f'{tone[0]}, {tone[1]}',
-                                  "detector_config": detector_config,
-                                  "ignored": True if detector_config[
-                                                         "detector_id"] in excluded_id_list else False}
-
-                    if not detector_config["detector_id"] in excluded_id_list:
-                        matches_found.append(match_data)
-                        active_dict = {"last_detected": time.time(), "ignore_seconds": detector_config["ignore_time"],
-                                       "detector_id": detector_config["detector_id"]}
-
-                        rd.rpush("icad_current_detectors", active_dict)
-                    else:
-                        matches_ignored.append(match_data)
-                        module_logger.warning(f"Ignoring {detector}")
-
-        self.detection_data["matches"] = matches_found
-        self.detection_data["ignored_matches"] = matches_ignored
-
-        if len(matches_found) >= 1:
-            detection_data_processed = process_detection_audio(self.config_data, self.detection_data)
-            self.detection_data = detection_data_processed
-
-            for dd in self.detection_data:
-                module_logger.info(f"Starting Detection Action Thread for {dd}")
-                # threading.Thread(target=process_alert_actions, args=(
-                #     self.config_data, dd)).start()
-        else:
-            module_logger.warning(f"No matches for {match_list} found in detectors.")
-        module_logger.warning(f"Active Detector List: {qc_detector_list}")
-        return self.detection_data
