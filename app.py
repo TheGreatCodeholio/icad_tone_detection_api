@@ -269,7 +269,7 @@ def tone_upload():
         if not talkgroup:
             return jsonify({"status": "error", "message": "Talkgroup is required"}), 400
         if talkgroup in pending_audio_files:
-            if pending_audio_files[talkgroup]["call_data"].get("start_time", time.time()) - call_data_post.get("start_time") < config_data["upload_processing"].get("maximum_split_interval", 30):
+            if int(pending_audio_files[talkgroup]["call_data"].get("start_time", time.time())) - int(call_data_post.get("start_time")) < config_data["upload_processing"].get("maximum_split_interval", 30):
                 #found a previous segment of audio with tones that happened within 30 seconds of this one.
                 logger.warning("Found previous detection, with no dispatch. Appending...")
                 # Append 2 seconds of silence and then the new audio
