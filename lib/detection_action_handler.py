@@ -163,8 +163,6 @@ def process_system_alert_email(config_data, system_data, detection_matches, call
                 if is_fernet_token(smtp_password, config_data):
                     smtp_password = decrypt_password(smtp_password, config_data)
 
-            module_logger.warning(f"Decrypted Email Password: {smtp_password}")
-
             email_config = {
                 "email": {
                     "host": system_data.get("smtp_hostname"),

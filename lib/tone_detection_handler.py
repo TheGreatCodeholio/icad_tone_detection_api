@@ -16,6 +16,7 @@ module_logger = logging.getLogger('icad_tone_detection.tone_detection')
 
 
 def process_tone_detection(db, rd, config_data, audio_file, audio_filename, json_filename, call_data):
+    detection_matches = []
     error_messages = []
     detection_mode = config_data.get("general", {}).get('detection_mode', 0)
     result = {"success": True, "message": "Processed Detections"}
@@ -69,7 +70,11 @@ def process_tone_detection(db, rd, config_data, audio_file, audio_filename, json
     if len(error_messages) > 0:
         result["message"] = "Processed Detection with errors." + "; ".join(error_messages)
 
-    return {"success": result["success"], "message": result["message"]}
+    if len(detection_matches) > 0:
+        for match in detection_matches:
+            del match["agency_config"]
+
+    return {"success": result["success"], "message": result["message"], "matches": detection_matches}
 
 
 def add_active_detections_cache(rd, list_name, dict_data):

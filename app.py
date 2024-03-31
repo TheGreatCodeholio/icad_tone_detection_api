@@ -25,7 +25,7 @@ from flask_session import Session
 from lib.mysql_handler import DatabaseFactory
 from lib.redis_handler import RedisCache
 from lib.system_handler import get_systems, add_system, delete_radio_system, update_system_settings
-from lib.tone_detection_handler import ToneDetection, get_active_detections_cache, add_active_detections_cache, \
+from lib.tone_detection_handler import get_active_detections_cache, add_active_detections_cache, \
     delete_active_detections_cache, process_tone_detection
 from icad_tone_detection import tone_detect
 from lib.user_handler import authenticate_user
@@ -283,7 +283,7 @@ def tone_upload():
     json_filename = json_file.filename if json_file else None
 
     if not audio_file or not json_file:
-        result = {"status": "error", "message": "No file uploaded"}
+        result = {"success": False, "message": "No file uploaded"}
         logger.error("No file uploaded.")
         return jsonify(result), 400
 
@@ -292,7 +292,7 @@ def tone_upload():
         "allowed_mimetypes", []), config_data.get("audio_upload", {}).get("max_audio_length", 300))
     if not is_valid_audio:
         logger.error(validation_response)
-        return jsonify({"status": "error", "message": validation_response}), 400
+        return jsonify({"success": False, "message": validation_response}), 400
 
     # Reset the pointed to allow re-reading audio file
     audio_file.seek(0)
@@ -301,26 +301,26 @@ def tone_upload():
     call_data, error = load_json(json_file)
     if error:
         logger.error(error)
-        return jsonify({"status": "error", "message": error}), 400
+        return jsonify({"success": False, "message": error}), 400
 
     # Get Detection Mode and See if detections are enabled.
     detection_mode = config_data.get("general", {}).get("detection_mode", 0)
     if detection_mode == 0:
-        return jsonify({"status": "error", "message": "Detection Disabled"}), 400
+        return jsonify({"success": False, "message": "Detection Disabled"}), 400
 
     # Send Audio Through Tone Detection Library
     try:
         detect_result = tone_detect(audio_file)
     except Exception as e:
         traceback.print_exc()
-        return jsonify({"status": "error", "message": f"Exception while detecting tones. {e}"}), 500
+        return jsonify({"success": False, "message": f"Exception while detecting tones. {e}"}), 500
 
     if len(detect_result.two_tone_result) == 0 and len(detect_result.long_result) == 0 and len(
             detect_result.hi_low_result) == 0:
         logger.debug(
             f"No tones found in audio. {detect_result.two_tone_result} {detect_result.long_result} {detect_result.hi_low_result}")
-        return jsonify({"status": "ok", "message": f"No tones found in audio.", "tones": [],
-                        "process_time_seconds": round((time.time() - start), 2)}), 200
+        return jsonify({"success": True, "message": f"No tones found in audio.", "tones": [],
+                        "matches": [], "process_time_seconds": round((time.time() - start), 2)}), 200
 
     detected_tones = {
         "two_tone": detect_result.two_tone_result,
@@ -333,8 +333,8 @@ def tone_upload():
     process_result = process_tone_detection(db, rd, config_data, audio_file, audio_filename, json_filename, call_data)
 
     return jsonify(
-        {"status": "ok" if process_result.get("success") else "error", "message": process_result.get("message"),
-         "tones": detected_tones, "process_time_seconds": round((time.time() - start), 2)}), 200
+        {"success": True if process_result.get("success") else False, "message": process_result.get("message"),
+         "tones": detected_tones, "matches": process_result.get("matches", []), "process_time_seconds": round((time.time() - start), 2)}), 200
 
 
 @app.route('/admin/edit_systems', methods=['POST', 'GET'])
