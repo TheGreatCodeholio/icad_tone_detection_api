@@ -327,8 +327,7 @@ def tone_upload():
             logger.warning("Processing Tones Through Detectors")
 
             logger.debug("Processing QuickCall Tones")
-            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list,
-                                                                detection_data).detect_quick_call()
+            qc_result, processed_detection_data = ToneDetection(config_data, detector_data, qc_detector_list, detection_data).detect_quick_call()
 
             qc_detector_list = qc_result
             detection_data = processed_detection_data
