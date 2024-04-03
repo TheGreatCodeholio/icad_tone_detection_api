@@ -11,7 +11,7 @@ from functools import wraps
 from pydub import AudioSegment
 from werkzeug.security import check_password_hash
 
-from lib.config_handler import create_main_config, create_detector_config, save_main_config
+from lib.config_handler import create_main_config, create_detector_config
 from lib.database_handler import SQLiteDatabase
 from lib.logging_handler import CustomLogger
 from flask import Flask, request, session, redirect, url_for, render_template, flash, jsonify
