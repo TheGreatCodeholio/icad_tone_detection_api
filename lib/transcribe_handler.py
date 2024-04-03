@@ -25,14 +25,19 @@ def get_transcription(config_data, mp3_path):
     """
 
     try:
+        if not os.path.exists(mp3_path):
+            module_logger.error(f"Transcribe - Audio file does not exist: {mp3_path}")
+            return False
+
         with open(mp3_path, 'rb') as audio_file:
-            files = {'file': audio_file}
+            files = {'audioFile': audio_file}
             response = requests.post(config_data["transcribe_settings"]["transcribe_url"], files=files)
 
         if response:
             transcribe_result = response.json()
             if response.status_code == 200:
-                transcript = do_transcribe_replacements(config_data["transcribe_settings"], transcribe_result.get("transcription"))
+                transcript = do_transcribe_replacements(config_data["transcribe_settings"],
+                                                        transcribe_result.get("transcript"))
                 return transcript
             else:
                 module_logger.error(
@@ -57,7 +62,7 @@ def get_transcription(config_data, mp3_path):
 
 
 def do_transcribe_replacements(transcribe_config, transcript):
-    replacement_file_path = transcribe_config.get("replacements_file")
+    replacement_file_path = transcribe_config.get("replacements_file", "etc/transcribe_replacements.csv")
     if not os.path.exists(replacement_file_path):
         return transcript
 
@@ -78,7 +83,3 @@ def do_transcribe_replacements(transcribe_config, transcript):
     transcript = re.sub(pattern, replace_func, transcript, flags=re.IGNORECASE)
 
     return transcript
-
-
-
-
