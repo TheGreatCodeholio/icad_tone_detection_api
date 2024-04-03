@@ -51,7 +51,7 @@ def process_alert_actions(config_data, detection_data):
     else:
         detection_data["mp3_url"] = ""
 
-    if config_data["transcribe_settings"].get("transcribe_detection", 0) == 1:
+    if config_data["transcribe_settings"].get("enabled", 0) == 1:
         module_logger.info("Transcribing Audio")
         try:
             trans_result = get_transcription(config_data, detection_data['local_audio_path'])

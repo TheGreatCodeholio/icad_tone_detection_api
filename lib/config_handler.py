@@ -41,8 +41,8 @@ default_config = {
         "normalize": 0,
         "ffmpeg_filter": ""
     },
-    "transcription_settings": {
-        "transcribe_detection": 0,
+    "transcribe_settings": {
+        "enabled": 0,
         "transcribe_url": "https://example.com/transcribe",
         "replacements_file": "etc/transcribe_replacements.csv"
     },
