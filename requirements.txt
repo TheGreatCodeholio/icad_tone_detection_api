@@ -16,6 +16,5 @@ mysql-connector-python~=8.3.0
 requests~=2.31.0
 bcrypt~=4.1.2
 cryptography~=42.0.5
-icad-tone-detection~=0.5
 python-magic~=0.4.27
 icad_tone_detection~=0.6

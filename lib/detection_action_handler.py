@@ -201,10 +201,4 @@ def process_system_alert_email(config_data, system_data, detection_matches, call
         module_logger.error(f"System Alert Email Exception Occurred: {e}")
         return {"success": False, "message": f"System Alert Email Exception Occurred: {e}"}
 
-
-def process_alert_actions(config_data, audio_file, audio_filename, detector_match_list, call_data, system_data):
-    module_logger.info("Processing Tone Detection Alerts")
-
-    # Process Emails
-
-    module_logger.info("Notifications <<Completed>> Successfully!")
+def process_system_alert_transcript(config_data, system_data, call_data):
