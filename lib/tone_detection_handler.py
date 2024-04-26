@@ -1,11 +1,9 @@
 import logging
-import threading
 import time
 
 import redis
 
 from lib.agency_handler import get_agencies
-from lib.audio_file_handler import process_detection_audio
 from lib.detection_action_handler import process_finder_action_scp, \
     process_finder_action_email, process_finder_action_webhook, process_finder_action_database, \
     process_system_alert_scp, process_system_alert_email
