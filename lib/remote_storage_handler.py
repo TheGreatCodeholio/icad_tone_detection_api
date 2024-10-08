@@ -127,7 +127,6 @@ class SCPStorage:
         """
         try:
             full_remote_path = os.path.join(remote_path, remote_file_name)
-            ssh_client, sftp = self._create_sftp_session()
 
             if not os.path.exists(local_audio_path):
                 raise FileNotFoundError(f'Local File {local_audio_path} doesn\'t exist')
