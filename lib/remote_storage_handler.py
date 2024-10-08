@@ -132,14 +132,15 @@ class SCPStorage:
             if not os.path.exists(local_audio_path):
                 raise FileNotFoundError(f'Local File {local_audio_path} doesn\'t exist')
 
-            try:
-                sftp.stat(remote_path)
-            except FileNotFoundError:
-                raise FileNotFoundError(f'Remote Path {remote_path} doesn\'t exist')
+            with self._create_sftp_session() as (ssh_client, sftp):
+                try:
+                    sftp.stat(remote_path)
+                except FileNotFoundError:
+                    raise FileNotFoundError(f'Remote Path {remote_path} doesn\'t exist')
 
-            sftp.put(local_audio_path, full_remote_path)
-            sftp.close()
-            ssh_client.close()
+                sftp.put(local_audio_path, full_remote_path)
+                sftp.close()
+                ssh_client.close()
 
             file_url = urljoin(self.scp_config["audio_url_path"], remote_file_name)
 
@@ -164,10 +165,10 @@ class SCPStorage:
         :return: Dictionary containing the local file path or False if download fails.
         """
         try:
-            ssh_client, sftp = self._create_sftp_session()
-            sftp.get(remote_path, local_path)
-            sftp.close()
-            ssh_client.close()
+            with self._create_sftp_session() as (ssh_client, sftp):
+                sftp.get(remote_path, local_path)
+                sftp.close()
+                ssh_client.close()
 
             file_name = os.path.basename(remote_path)
             return {"file_path": os.path.join(local_path, file_name)}
@@ -187,10 +188,10 @@ class SCPStorage:
         :return: True if deletion succeeds, False otherwise.
         """
         try:
-            ssh_client, sftp = self._create_sftp_session()
-            sftp.remove(remote_path)
-            sftp.close()
-            ssh_client.close()
+            with self._create_sftp_session() as (ssh_client, sftp):
+                sftp.remove(remote_path)
+                sftp.close()
+                ssh_client.close()
 
             return True
         except SFTPError as error:
@@ -209,10 +210,10 @@ class SCPStorage:
         :return: List of files in the directory or None if the directory is empty, False if an error occurs.
         """
         try:
-            ssh_client, sftp = self._create_sftp_session()
-            files = sftp.listdir(remote_path)
-            sftp.close()
-            ssh_client.close()
+            with self._create_sftp_session() as (ssh_client, sftp):
+                files = sftp.listdir(remote_path)
+                sftp.close()
+                ssh_client.close()
 
             if not files:
                 return None
@@ -230,14 +231,14 @@ class SCPStorage:
     def clean_remote_files(self):
         """Cleans remote files older than the specified number of days from SCP storage."""
         try:
-            ssh_client, _ = self._create_sftp_session()
+            with self._create_sftp_session() as (ssh_client, sftp):
 
-            command = f"find {self.scp_config['remote_path']}* -mtime +{self.scp_config['keep_audio_days']} -exec rm {{}} \;"
-            stdin, stdout, stderr = ssh_client.exec_command(command)
-            for line in stdout:
-                module_logger.debug(str(line))
-            module_logger.debug("Cleaned Remote Files")
-            ssh_client.close()
+                command = fr"find {self.scp_config['remote_path']}* -mtime +{self.scp_config['keep_audio_days']} -exec rm {{}} \;"
+                stdin, stdout, stderr = ssh_client.exec_command(command)
+                for line in stdout:
+                    module_logger.debug(str(line))
+                module_logger.debug("Cleaned Remote Files")
+                ssh_client.close()
         except SSHException as error:
             traceback.print_exc()
             module_logger.critical(f'Error occurred during cleaning remote files: {error}')
