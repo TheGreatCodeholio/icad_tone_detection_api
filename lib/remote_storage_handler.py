@@ -1,5 +1,7 @@
 import logging
 import os
+import time
+from contextlib import contextmanager
 from urllib.parse import urljoin
 from google.cloud import storage
 import boto3
@@ -107,11 +109,12 @@ class AWSS3Storage:
 
 class SCPStorage:
     def __init__(self, config_data):
-        self.scp_config = config_data['scp']
-        self.host = self.scp_config['host']
-        self.port = self.scp_config['port']
-        self.username = self.scp_config['user']
-        self.password = self.scp_config['password']
+        self.scp_config = config_data.get('scp', {})
+        self.host = self.scp_config.get("host")
+        self.port = self.scp_config.get("port", 22)
+        self.username = self.scp_config.get("user", "")
+        self.password = self.scp_config.get("password", "")
+        self.private_key_path = self.scp_config.get('private_key_path', "")
 
     def upload_file(self, local_audio_path, remote_path, remote_file_name, make_public=True):
         """Uploads a file to the SCP storage.
@@ -242,26 +245,51 @@ class SCPStorage:
             traceback.print_exc()
             module_logger.critical(f'Error occurred during cleaning remote files: {error}')
 
-    def _create_sftp_session(self):
-        """Creates an SFTP session.
-
-        :return: A tuple of SSH client and SFTP session.
-        :raises: FileNotFoundError if private key file doesn't exist.
-                  SSHException for other SSH connection errors.
-        """
+    @contextmanager
+    def _create_sftp_session(self, timeout=15):
+        """Creates and manages an SFTP session using context management."""
         ssh_client = SSHClient()
         ssh_client.load_system_host_keys()
+        ssh_client.set_missing_host_key_policy(AutoAddPolicy())
+        sftp = None
 
-        if self.scp_config["private_key"]:
-            if not os.path.exists(self.scp_config["private_key"]):
-                raise FileNotFoundError(f"Private key file not found: {self.scp_config['private_key']}")
+        try:
+            ssh_connect_kwargs = {
+                "username": self.username,
+                "port": self.port,
+                "look_for_keys": False,
+                "allow_agent": False,
+                "timeout": timeout
+            }
 
-            private_key = RSAKey.from_private_key_file(self.scp_config["private_key"])
-            ssh_client.connect(self.host, port=self.port, username=self.username, look_for_keys=False,
-                               allow_agent=False, pkey=private_key)
-        else:
-            ssh_client.connect(self.host, port=self.port, username=self.username, password=self.password,
-                               look_for_keys=False, allow_agent=False)
+            if self.private_key_path and os.path.exists(self.private_key_path):
+                try:
+                    private_key = RSAKey.from_private_key_file(self.private_key_path)
+                    ssh_connect_kwargs["pkey"] = private_key
+                except SSHException as e:
+                    module_logger.error(f"Failed to load private key: {e}")
+                    if self.password:
+                        ssh_connect_kwargs["password"] = self.password
 
-        sftp = ssh_client.open_sftp()
-        return ssh_client, sftp
+            elif self.password:
+                ssh_connect_kwargs["password"] = self.password
+            else:
+                raise ValueError("No valid authentication method provided.")
+
+            start_ssh_time = time.time()
+            ssh_client.connect(self.host, **ssh_connect_kwargs)
+            ssh_connect_duration = time.time() - start_ssh_time
+            module_logger.debug(f"SSH connection to {self.host} established in {ssh_connect_duration:.2f} seconds.")
+
+            sftp = ssh_client.open_sftp()
+            yield ssh_client, sftp
+
+        except SSHException as e:
+            module_logger.error(f'SSH connection error: {e}')
+            raise
+        finally:
+            if sftp:
+                sftp.close()
+                module_logger.debug("SFTP session closed.")
+            ssh_client.close()
+            module_logger.debug("SSH connection closed.")
